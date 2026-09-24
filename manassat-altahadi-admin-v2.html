@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>منصة التحديات | العلوم الطبيعية</title>
+<style>
+:root{
+  --deep:#155c49;--green:#23846a;--blue:#397a9e;--gold:#d5ad55;
+  --orange:#e58a43;--ink:#173b34;--muted:#6e817a;
+  --cream:#f7f3e8;--mint:#e7f3ec;--sky:#e8f2f7;--line:#dbe7e1;
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:Tahoma,Arial,sans-serif;
+background:
+radial-gradient(circle at 8% 12%,rgba(213,173,85,.20) 0 75px,transparent 76px),
+radial-gradient(circle at 94% 25%,rgba(57,122,158,.12) 0 110px,transparent 111px),
+linear-gradient(135deg,#f4f8f2 0%,#f8f4e9 52%,#eef6f4 100%);
+min-height:100vh}
+header{padding:20px 6%;background:rgba(255,255,255,.65);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.nav{max-width:1120px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:15px;
+background:linear-gradient(145deg,var(--deep),var(--green));display:grid;place-items:center;color:#fff;font-size:25px}
+.brand h3{margin:0;font-size:20px}.brand small{color:var(--muted)}
+.badge{background:var(--mint);color:var(--deep);border:1px solid #cfe4d8;padding:9px 14px;border-radius:999px;font-weight:700;font-size:12px}
+main{max-width:1120px;margin:auto;padding:34px 18px 50px}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:35px;align-items:center;padding:22px 0 42px}
+.eyebrow{display:inline-block;color:var(--deep);background:var(--mint);border:1px solid #cfe5d8;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:800}
+h1{font-size:45px;line-height:1.2;margin:17px 0 12px;letter-spacing:-1.3px}
+h1 span{color:var(--green)}
+.hero p{font-size:16px;line-height:2;color:var(--muted);max-width:590px}
+.cta{display:inline-flex;align-items:center;gap:9px;margin-top:14px;background:var(--deep);color:white;text-decoration:none;padding:14px 23px;border-radius:15px;font-weight:800;box-shadow:0 10px 25px rgba(21,92,73,.20)}
+.art{position:relative;min-height:335px;display:grid;place-items:center}
+.orbit{width:300px;height:300px;border:2px dashed rgba(35,132,106,.30);border-radius:50%;position:absolute}
+.orbit:before,.orbit:after{content:"";position:absolute;width:14px;height:14px;border-radius:50%;background:var(--gold)}
+.orbit:before{top:28px;right:42px}.orbit:after{bottom:38px;left:32px}
+.target{position:relative;width:215px;height:215px;border-radius:50%;background:#fff8df;border:14px solid var(--gold);
+box-shadow:0 25px 55px rgba(21,92,73,.15);display:grid;place-items:center}
+.target:before{content:"";position:absolute;width:135px;height:135px;border-radius:50%;border:14px solid var(--orange)}
+.target:after{content:"20";position:absolute;width:75px;height:75px;border-radius:50%;background:var(--deep);color:#fff;display:grid;place-items:center;font-size:28px;font-weight:900}
+.mini{position:absolute;border-radius:17px;padding:12px 15px;background:#fff;border:1px solid var(--line);box-shadow:0 12px 30px rgba(22,60,48,.10);font-weight:800}
+.m1{top:22px;right:4px;color:var(--blue)}.m2{bottom:35px;right:8px;color:var(--orange)}.m3{bottom:24px;left:0;color:var(--green)}
+section{margin-top:22px}
+.spaces{margin-top:30px}.spaces-box{position:relative;background:rgba(255,255,255,.55);border:1px solid var(--line);border-radius:30px;padding:28px 22px;overflow:hidden;box-shadow:0 18px 45px rgba(22,60,48,.06)}.spaces-box:before,.spaces-box:after{content:"";position:absolute;border-radius:50%;pointer-events:none}.spaces-box:before{width:130px;height:130px;right:-45px;top:-55px;background:rgba(213,173,85,.12)}.spaces-box:after{width:150px;height:150px;left:-65px;bottom:-75px;background:rgba(57,122,158,.08)}.spaces-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.space-card{position:relative;display:block;min-height:175px;text-decoration:none;color:var(--ink);background:rgba(255,255,255,.84);border:1px solid var(--line);border-radius:23px;padding:24px 15px 18px;text-align:center;box-shadow:0 12px 30px rgba(22,60,48,.07);overflow:hidden;transition:transform .2s,box-shadow .2s}.space-card:before{content:"";position:absolute;width:72px;height:72px;border-radius:50%;right:-28px;top:-28px;background:rgba(35,132,106,.07)}.space-card:after{content:"✦";position:absolute;left:12px;bottom:8px;font-size:16px;color:var(--gold);opacity:.65}.space-card:hover{transform:translateY(-4px);box-shadow:0 18px 35px rgba(22,60,48,.11)}.space-icon{position:relative;z-index:1;width:62px;height:62px;margin:0 auto 13px;border-radius:19px;display:grid;place-items:center;font-size:29px;background:var(--mint);border:1px solid rgba(35,132,106,.12);box-shadow:0 8px 18px rgba(22,60,48,.08)}.space-card h3{position:relative;z-index:1;margin:0;font-size:16px}.space-card p{position:relative;z-index:1;margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.65}.space-card.hayat{border-color:#e5d39a;background:linear-gradient(145deg,#fffdf6,#f2f8f3)}.space-card.hayat .space-icon{background:#fff1c6;border-color:#eedc9e}.space-card.teachers .space-icon{background:#e8f2f7;border-color:#cfe2ed}.space-card.students .space-icon{background:#e7f3ec;border-color:#cce4d7}.space-card.parents .space-icon{background:#f7eee5;border-color:#ead8c6}.spaces-note{position:relative;z-index:1;text-align:center;margin:0 0 21px;color:var(--muted);font-size:13px}
+@media(max-width:900px){.spaces-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.spaces-grid{grid-template-columns:1fr 1fr}.space-card{min-height:165px;padding:21px 10px 16px}.space-card h3{font-size:14px}.space-card p{font-size:11px}.space-icon{width:56px;height:56px;font-size:26px}}
+ .section-title{text-align:center;margin-bottom:21px}.section-title h2{font-size:29px;margin:0 0 7px}.section-title p{margin:0;color:var(--muted)}
+.challenge{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:28px;padding:30px;box-shadow:0 18px 50px rgba(22,60,48,.08)}
+.challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:25px;align-items:center}
+.challenge-text h3{font-size:25px;margin:0 0 12px;color:var(--deep)}.challenge-text p{line-height:2;color:#5e716a}
+.points{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.point{background:var(--mint);border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;color:var(--deep)}
+.path{background:linear-gradient(145deg,#eff7f3,#edf4f8);border-radius:23px;padding:23px;border:1px solid #d9e8e1}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.step{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px;text-align:center}.step b{display:block;margin-top:8px;font-size:13px}.step i{font-style:normal;font-size:23px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:rgba(255,255,255,.76);border:1px solid var(--line);border-radius:23px;padding:25px;box-shadow:0 12px 35px rgba(22,60,48,.06)}
+.card h3{margin:0 0 13px;font-size:20px}.card p{color:var(--muted);line-height:1.9;font-size:14px}
+.register{background:var(--deep);color:white}.register h3{color:white}.register p{color:#d9eee5}.register .step{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.15);color:white}
+.faq details{background:rgba(255,255,255,.76);border:1px solid var(--line);border-radius:16px;margin:9px 0;padding:16px 18px}.faq summary{cursor:pointer;font-weight:800}.faq p{color:var(--muted);line-height:1.8;margin-bottom:0}
+footer{text-align:center;padding:28px;color:#71847d;font-size:12px}
+@media(max-width:760px){.hero,.challenge-grid,.info-grid{grid-template-columns:1fr}.hero{padding-top:15px}h1{font-size:34px}.art{min-height:300px}.orbit{width:255px;height:255px}.target{width:185px;height:185px}.steps{grid-template-columns:1fr}.nav{align-items:flex-start}.badge{display:none}}
+
+/* ===== تشغيل المنصة ===== */
+button,.action{font:inherit;cursor:pointer}.screen{display:none;animation:fade .25s ease}.screen.active{display:block}.app-screen.active{display:block}@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.app-screen{display:none;background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:28px;padding:25px;box-shadow:0 18px 45px rgba(22,60,48,.07);margin-top:28px}
+.screen-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}.screen-head h2{margin:0;font-size:27px}.back-btn{border:1px solid var(--line);background:#fff;color:var(--deep);padding:10px 15px;border-radius:13px;font-weight:800}
+.dashboard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.dash-card{border:1px solid var(--line);background:#fff;border-radius:20px;padding:19px;text-align:right;min-height:125px}.dash-card h3{margin:8px 0 6px;font-size:16px}.dash-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.7}.dash-icon{font-size:25px}
+.level-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.level-btn{border:1px solid var(--line);background:#fff;border-radius:20px;padding:20px;text-align:right;color:var(--ink);box-shadow:0 8px 22px rgba(22,60,48,.05)}.level-btn h3{margin:0 0 7px}.level-btn p{margin:0;color:var(--muted);font-size:12px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:16px}.panel h3{margin-top:0}.list{display:grid;gap:10px}.list-item{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:15px;padding:13px;background:#fbfdfb}.list-item small{color:var(--muted)}
+.primary{border:0;background:var(--deep);color:#fff;padding:11px 16px;border-radius:12px;font-weight:800}.secondary{border:1px solid var(--line);background:#fff;color:var(--deep);padding:10px 14px;border-radius:12px;font-weight:800}.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--mint);color:var(--deep);font-size:11px;font-weight:800}.warn{background:#fff1c6;color:#735b18}.bluepill{background:var(--sky);color:#2d627f}
+.progress-bar{height:10px;background:#e8efeb;border-radius:999px;overflow:hidden}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--deep),var(--green));transition:.3s}
+.quiz-q{font-weight:800;line-height:1.8;margin-bottom:12px}.answers{display:grid;gap:8px}.answers button{border:1px solid var(--line);background:#fff;padding:12px;border-radius:12px;text-align:right}.answers button.correct{background:#e4f4e9;border-color:#9bceb0}.answers button.wrong{background:#fae8e4;border-color:#ddb0a5}.score{font-size:24px;font-weight:900;color:var(--deep);text-align:center;padding:10px}
+.table-wrap{overflow:auto}.pay-table{width:100%;border-collapse:collapse;min-width:600px}.pay-table th,.pay-table td{border-bottom:1px solid var(--line);padding:11px;text-align:right;font-size:12px}.pay-table th{background:#f4f8f5}.input-row{display:grid;grid-template-columns:1fr 1fr auto;gap:9px}.input-row input,.input-row select{border:1px solid var(--line);border-radius:11px;padding:11px;background:#fff;font:inherit}
+.notice{padding:12px 14px;border-radius:13px;background:#eef7f2;color:var(--deep);font-size:12px;line-height:1.8;margin-bottom:14px}.notice.info{background:#eef4f8;color:#315f77}.empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:15px}
+.modal-back{position:fixed;inset:0;background:rgba(20,43,36,.42);display:none;align-items:center;justify-content:center;padding:18px;z-index:99}.modal-back.show{display:flex}.modal{max-width:520px;width:100%;background:#fff;border-radius:24px;padding:24px;box-shadow:0 25px 70px rgba(0,0,0,.22)}.modal h3{margin-top:0}.modal p{color:var(--muted);line-height:1.8}.modal-actions{display:flex;gap:8px;justify-content:flex-start}
+@media(max-width:760px){.dashboard-grid{grid-template-columns:1fr 1fr}.level-grid{grid-template-columns:1fr}.input-row{grid-template-columns:1fr}.screen-head{align-items:flex-start}.app-screen{padding:18px}}@media(max-width:450px){.dashboard-grid{grid-template-columns:1fr}}
+
+/* لوحة تحكم الأستاذة حياة */
+.admin-panel{display:none;max-width:1100px;margin:28px auto;padding:18px}
+.admin-panel.active{display:block}
+.admin-hero{background:linear-gradient(135deg,#155c49,#23846a);color:#fff;border-radius:28px;padding:26px;box-shadow:0 18px 40px rgba(21,92,73,.18)}
+.admin-hero h2{margin:0 0 8px;font-size:28px}.admin-hero p{margin:0;opacity:.9;line-height:1.8}
+.admin-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}
+.admin-stat{background:rgba(255,255,255,.9);border:1px solid #dbe7e1;border-radius:20px;padding:18px;text-align:center;box-shadow:0 8px 22px rgba(22,60,48,.06)}
+.admin-stat .num{font-size:30px;font-weight:900;color:#155c49}.admin-stat small{color:#6e817a}
+.admin-tools{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+.admin-tool{background:#fff;border:1px solid #dbe7e1;border-radius:22px;padding:20px;box-shadow:0 8px 22px rgba(22,60,48,.05)}
+.admin-tool h3{margin:0 0 8px}.admin-tool p{color:#6e817a;font-size:13px;line-height:1.8}
+.admin-btn{border:0;border-radius:12px;padding:11px 16px;background:#155c49;color:#fff;font-weight:800;cursor:pointer}
+.admin-btn.alt{background:#e7f3ec;color:#155c49}
+.student-form{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.student-form input,.student-form select{border:1px solid #dbe7e1;border-radius:11px;padding:11px;background:#fbfdfc;flex:1;min-width:130px}
+.student-list{margin-top:14px;display:grid;gap:8px}.student-row{display:flex;justify-content:space-between;align-items:center;background:#f7faf8;border:1px solid #e1ebe6;padding:12px;border-radius:13px}
+.pay{font-size:12px;padding:5px 9px;border-radius:999px;background:#fff1c6}.paid{background:#e7f3ec;color:#155c49}
+@media(max-width:700px){.admin-actions{grid-template-columns:repeat(2,1fr)}.admin-tools{grid-template-columns:1fr}}
+
+
+.teachers-panel{display:none;max-width:1100px;margin:28px auto;padding:18px}
+.teachers-panel.active{display:block}
+.teacher-hero{background:linear-gradient(135deg,#397a9e,#155c49);color:#fff;border-radius:28px;padding:26px;box-shadow:0 18px 40px rgba(21,92,73,.16)}
+.teacher-hero h2{margin:0 0 8px;font-size:28px}.teacher-hero p{margin:0;opacity:.92;line-height:1.8}
+.teacher-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:18px}
+.teacher-card{background:#fff;border:1px solid #dbe7e1;border-radius:22px;padding:20px;box-shadow:0 8px 22px rgba(22,60,48,.05)}
+.teacher-card h3{margin:0 0 8px}.teacher-card p{color:#6e817a;font-size:13px;line-height:1.8}
+.teacher-form{display:flex;gap:8px;flex-wrap:wrap}.teacher-form input,.teacher-form select{border:1px solid #dbe7e1;border-radius:11px;padding:11px;flex:1;min-width:130px}
+.teacher-btn{border:0;border-radius:12px;padding:11px 16px;background:#155c49;color:#fff;font-weight:800;cursor:pointer}
+.teacher-btn.alt{background:#e7f3ec;color:#155c49}
+.teacher-list{margin-top:14px;display:grid;gap:8px}.teacher-row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f7faf8;border:1px solid #e1ebe6;padding:12px;border-radius:13px}
+@media(max-width:700px){.teacher-grid{grid-template-columns:1fr}}
+
+
+.parent-panel{display:none;max-width:1100px;margin:28px auto;padding:18px}
+.parent-panel.active{display:block}
+.parent-hero{background:linear-gradient(135deg,#d5ad55,#e58a43);color:#fff;border-radius:28px;padding:26px;box-shadow:0 18px 40px rgba(170,110,45,.16)}
+.parent-hero h2{margin:0 0 8px;font-size:28px}.parent-hero p{margin:0;opacity:.94;line-height:1.8}
+.parent-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:18px}
+.parent-card{background:#fff;border:1px solid #dbe7e1;border-radius:22px;padding:20px;box-shadow:0 8px 22px rgba(22,60,48,.05)}
+.parent-card h3{margin:0 0 8px}.parent-card p{color:#6e817a;font-size:13px;line-height:1.8}
+.parent-form{display:flex;gap:8px;flex-wrap:wrap}.parent-form input,.parent-form select{border:1px solid #dbe7e1;border-radius:11px;padding:11px;flex:1;min-width:130px}
+.parent-btn{border:0;border-radius:12px;padding:11px 16px;background:#155c49;color:#fff;font-weight:800;cursor:pointer}
+.parent-btn.alt{background:#fff3d3;color:#765313}
+.parent-status{display:inline-block;padding:6px 10px;border-radius:999px;background:#e7f3ec;color:#155c49;font-size:12px;font-weight:800}
+.payment-methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.method{border:1px solid #dbe7e1;border-radius:16px;padding:14px;text-align:center;background:#fafcfb}
+@media(max-width:700px){.parent-grid{grid-template-columns:1fr}.payment-methods{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="brand"><div class="logo">🎯</div><div><h3>منصة التحديات</h3><small>في العلوم الطبيعية مع الأستاذة حياة</small></div></div><div class="badge">رحلتك نحو الـ20 تبدأ هنا</div></div></header>
+<main>
+<section class="hero">
+<div>
+<span class="eyebrow">✦ تحدٍّ • تعلّم • تقدّم</span>
+<h1>هل أنت مستعد لخوض <span>تحدّي الـ20؟</span></h1>
+<p>رحلة تعليمية في العلوم الطبيعية، نخوضها خطوة بخطوة من أجل الفهم والتفكير والاستدلال وتطوير المستوى.</p>
+<a class="cta" href="#challenge">🚀 ابدأ الرحلة</a>
+</div>
+<div class="art" aria-label="رسمة تعبر عن تحدي العشرين">
+<div class="orbit"></div><div class="target"></div>
+<div class="mini m1">⭐ إنجاز</div><div class="mini m2">🧠 تفكير</div><div class="mini m3">📚 تعلّم</div>
+</div>
+</section>
+
+<section class="spaces" id="spaces">
+<div class="spaces-box">
+<div class="section-title"><h2>👥 فضاءات المنصة</h2></div>
+<p class="spaces-note">اختر فضاءك وابدأ رحلتك داخل منصة التحديات.</p>
+<div class="spaces-grid">
+<a class="space-card hayat" href="#" aria-label="فضاء الأستاذة حياة"><div class="space-icon">👩‍🏫</div><h3>فضاء الأستاذة حياة</h3><p>إدارة المنصة ومتابعة المحتوى والتلاميذ.</p></a>
+<a class="space-card teachers" href="#" aria-label="فضاء الأساتذة"><div class="space-icon">👨‍🏫</div><h3>فضاء الأساتذة</h3><p>موارد وأدوات ومساحة خاصة بالأساتذة.</p></a>
+<a class="space-card students" href="#" aria-label="فضاء التلاميذ"><div class="space-icon">👨‍🎓</div><h3>فضاء التلاميذ</h3><p>الدروس والتحديات والتمارين والتقدم.</p></a>
+<a class="space-card parents" href="#" aria-label="فضاء الأولياء"><div class="space-icon">👨‍👩‍👧</div><h3>فضاء الأولياء</h3><p>متابعة تعلم الابن والحضور والنتائج.</p></a>
+</div>
+</div>
+</section>
+
+<section id="challenge">
+<div class="section-title"><h2>🎯 تحدّي الـ20</h2><p>خطوة جديدة، تحدٍّ جديد، وتقدّم جديد.</p></div>
+<div class="challenge"><div class="challenge-grid">
+<div class="challenge-text">
+<h3>رحلتك نحو الـ20 تبدأ من هنا</h3>
+<p>كل تحدٍّ فرصة لتختبر مكتسباتك، تكتشف أخطاءك، وتتقدم أكثر. الهدف ليس الحفظ فقط، بل أن تتعلم كيف تفهم وتفكر وتستدل.</p>
+<div class="points"><span class="point">الفهم</span><span class="point">التفكير</span><span class="point">الاستدلال</span><span class="point">التطور</span></div>
+</div>
+<div class="path"><div class="steps"><div class="step"><i>📖</i><b>تعلّم</b></div><div class="step"><i>🧩</i><b>تحدَّ</b></div><div class="step"><i>🏆</i><b>تقدّم</b></div></div></div>
+</div></div>
+</section>
+
+<section>
+<div class="info-grid">
+<div class="card register"><h3>📝 كيفية التسجيل في المنصة</h3><p>يمكنك التسجيل للانضمام إلى المنصة والاستفادة من فضاءك التعليمي ومتابعة التحديات والدروس.</p><div class="steps"><div class="step"><i>1</i><b>إنشاء الحساب</b></div><div class="step"><i>2</i><b>اختيار الفضاء</b></div><div class="step"><i>3</i><b>بدء الرحلة</b></div></div></div>
+<div class="card"><h3>✨ ماذا ينتظرك؟</h3><p>دروس وموارد تعليمية، تحديات، تمارين، متابعة للتقدم، ومساحات مخصصة للتلاميذ والأساتذة والأولياء.</p></div>
+</div>
+</section>
+
+<section class="faq">
+<div class="section-title"><h2>❓ الأسئلة الشائعة</h2><p>إجابات سريعة عن أهم الأسئلة.</p></div>
+<details><summary>من يمكنه التسجيل في المنصة؟</summary><p>التلاميذ والأساتذة والأولياء حسب الفضاء المخصص لكل فئة.</p></details>
+<details><summary>هل يمكنني متابعة تقدمي؟</summary><p>نعم، ستتضمن المنصة فضاءات مخصصة للمتابعة والتقدم.</p></details>
+<details><summary>هل التحديات خاصة بالعلوم الطبيعية؟</summary><p>نعم، المنصة موجهة للعلوم الطبيعية، وتبدأ برحلة تحدي الـ20.</p></details>
+</section>
+
+<!-- ===== فضاءات وتشغيل المنصة ===== -->
+<section id="app" class="app-screen" aria-live="polite">
+  <div id="home-screen" class="screen active"></div>
+  <div id="space-screen" class="screen"></div>
+</section>
+<div id="modalBack" class="modal-back"><div class="modal" id="modal"></div></div>
+<script>
+(function(){
+ const KEY='tahadi20_platform_v2';
+ const state=JSON.parse(localStorage.getItem(KEY)||'{}');
+ state.progress=state.progress||{}; state.payments=state.payments||[]; state.students=state.students||[];
+ function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+ const app=document.getElementById('app'), home=document.getElementById('home-screen'), space=document.getElementById('space-screen');
+ const modalBack=document.getElementById('modalBack'), modal=document.getElementById('modal');
+ function openModal(title,body,actions=''){modal.innerHTML='<h3>'+title+'</h3><div>'+body+'</div><div class="modal-actions">'+actions+'</div>';modalBack.classList.add('show');}
+ modalBack.addEventListener('click',e=>{if(e.target===modalBack)modalBack.classList.remove('show')});
+ function closeModal(){modalBack.classList.remove('show')}
+ function showApp(){app.scrollIntoView({behavior:'smooth',block:'start'})}
+ function backHome(){home.classList.remove('active');space.classList.remove('active');document.getElementById('app').classList.remove('active');window.scrollTo({top:0,behavior:'smooth'});}
+ function showSpace(title,html){home.classList.remove('active');space.classList.add('active');space.innerHTML='<div class="screen-head"><h2>'+title+'</h2><button class="back-btn" data-action="home">← العودة للرئيسية</button></div>'+html;app.classList.add('active');showApp();}
+ function goHome(){home.classList.add('active');space.classList.remove('active');app.classList.remove('active');window.scrollTo({top:0,behavior:'smooth'});}
+ function student(){showSpace('👨‍🎓 فضاء التلاميذ',`<div class="notice">اختَر مستواك الدراسي. كل الأزرار هنا تعمل داخل المنصة، وتُحفظ حالة التقدم على هذا الجهاز.</div><div class="level-grid">${['الأولى متوسط','الثانية متوسط','الثالثة متوسط','الرابعة متوسط','الأولى ثانوي'].map((x,i)=>`<button class="level-btn" data-level="${i+1}"><h3>${['🌱','🔬','🌍','🧠','🧪'][i]} السنة ${x}</h3><p>دروس • تمارين • تحديات • تقدم</p></button>`).join('')}</div><div id="student-detail"></div>`)}
+ function level(n){const names=['الأولى متوسط','الثانية متوسط','الثالثة متوسط','الرابعة متوسط','الأولى ثانوي'];const key='level'+n;const p=state.progress[key]||0;space.querySelector('#student-detail').innerHTML=`<div class="panel"><h3>السنة ${names[n-1]}</h3><div class="dashboard-grid"><button class="dash-card" data-learning="${n}"><div class="dash-icon">📖</div><h3>الدروس</h3><p>افتح قائمة الدروس والموارد.</p></button><button class="dash-card" data-exercises="${n}"><div class="dash-icon">📝</div><h3>التمارين</h3><p>تدرّب ثم راجع نتيجتك.</p></button><button class="dash-card" data-challenges="${n}"><div class="dash-icon">🎯</div><h3>التحديات</h3><p>اختبر مكتسباتك واحصل على نقاط.</p></button><button class="dash-card" data-progress="${n}"><div class="dash-icon">🏆</div><h3>التقدم</h3><p>تقدمك الحالي: ${p}%</p><div class="progress-bar"><div class="progress-fill" style="width:${p}%"></div></div></button></div></div>`;}
+ function content(kind,n){const title=kind==='learning'?'📖 الدروس':kind==='exercises'?'📝 التمارين':'🎯 التحديات';const items=kind==='learning'?['الدرس الأول — تمهيد ومفاهيم أساسية','الدرس الثاني — نشاط تطبيقي','ملخص ومراجعة']:kind==='exercises'?['تمرين 01 — أستخرج المعلومات','تمرين 02 — أفسر وأستنتج','مراجعة شاملة']:['تحدّي 01 — اختبار مكتسباتي','تحدّي 02 — الاستدلال العلمي','تحدّي 03 — نحو الـ20'];space.querySelector('#student-detail').innerHTML=`<div class="panel"><div class="screen-head"><h3>${title}</h3><span class="pill">السنة ${n}</span></div><div class="list">${items.map((x,i)=>`<div class="list-item"><span>${x}</span><button class="secondary" data-item="${kind}-${n}-${i}">فتح</button></div>`).join('')}</div></div>`}
+ function progress(n){const key='level'+n;let p=state.progress[key]||0;space.querySelector('#student-detail').innerHTML=`<div class="panel"><h3>🏆 تقدّم السنة ${n}</h3><p>مستوى الإنجاز الحالي</p><div class="progress-bar"><div class="progress-fill" style="width:${p}%"></div></div><div class="score">${p}%</div><button class="primary" data-add-progress="${n}">إكمال خطوة +10%</button></div>`}
+ function teacher(){showSpace('👨‍🏫 فضاء الأساتذة',`<div class="notice info">فضاء عملي لإدارة الموارد والمتابعة. البيانات التي تدخلينها هنا تُحفظ على هذا الجهاز.</div><div class="dashboard-grid"><button class="dash-card" data-teacher="content"><div class="dash-icon">📚</div><h3>الموارد</h3><p>إدارة الدروس والتمارين.</p></button><button class="dash-card" data-teacher="students"><div class="dash-icon">👥</div><h3>التلاميذ</h3><p>قائمة التلاميذ ومتابعتهم.</p></button><button class="dash-card" data-teacher="payments"><div class="dash-icon">💳</div><h3>الدفع</h3><p>متابعة حالة الاشتراك والإيصالات.</p></button><button class="dash-card" data-teacher="attendance"><div class="dash-icon">📋</div><h3>الحضور</h3><p>سجل الحضور والغياب.</p></button><button class="dash-card" data-teacher="reports"><div class="dash-icon">📈</div><h3>التقارير</h3><p>ملخص سريع للتقدم.</p></button><button class="dash-card" data-teacher="settings"><div class="dash-icon">⚙️</div><h3>الإعدادات</h3><p>إعدادات المنصة.</p></button></div><div id="teacher-detail"></div>`)}
+ function teacherDetail(kind){let box=space.querySelector('#teacher-detail');if(kind==='students'){box.innerHTML=`<div class="panel"><h3>👥 التلاميذ</h3><div class="input-row"><input id="stName" placeholder="اسم التلميذ"><select id="stLevel"><option>1AM</option><option>2AM</option><option>3AM</option><option>4AM</option><option>1AS</option></select><button class="primary" data-add-student>إضافة</button></div><div class="list" style="margin-top:12px">${state.students.length?state.students.map((s,i)=>`<div class="list-item"><span>${s.name} <small>• ${s.level}</small></span><button class="secondary" data-del-student="${i}">حذف</button></div>`).join(''):'<div class="empty">لم تتم إضافة تلاميذ بعد.</div>'}</div></div>`} else if(kind==='payments'){box.innerHTML=`<div class="panel"><h3>💳 متابعة الدفع</h3><div class="input-row"><input id="payName" placeholder="اسم التلميذ"><select id="payStatus"><option value="paid">دفع</option><option value="pending">لم يدفع</option></select><button class="primary" data-add-payment>تسجيل</button></div><div class="table-wrap" style="margin-top:15px"><table class="pay-table"><tr><th>التلميذ</th><th>الحالة</th><th>الإيصال</th></tr>${state.payments.length?state.payments.map((p,i)=>`<tr><td>${p.name}</td><td><span class="pill ${p.status==='pending'?'warn':''}">${p.status==='paid'?'مدفوع':'غير مدفوع'}</span></td><td>${p.receipt||'—'}</td></tr>`).join(''):'<tr><td colspan="3">لا توجد سجلات بعد.</td></tr>'}</table></div><div style="margin-top:12px"><label class="secondary" style="display:inline-block">إضافة إيصال <input id="receipt" type="file" accept="image/*,.pdf" style="display:none"></label></div></div>`} else if(kind==='attendance'){box.innerHTML=`<div class="panel"><h3>📋 سجل الحضور</h3><div class="notice">يمكنك استعمال هذه الصفحة كسجل سريع للحصص، ثم تطويرها لاحقًا إلى نظام كامل مرتبط بحسابات التلاميذ.</div><div class="list">${['حاضر','غائب','غياب مبرر'].map(x=>`<button class="list-item" data-att="${x}"><span>${x}</span><span>✓</span></button>`).join('')}</div></div>`} else if(kind==='reports'){box.innerHTML=`<div class="panel"><h3>📈 التقارير</h3><div class="dashboard-grid"><div class="dash-card"><div class="dash-icon">👥</div><h3>التلاميذ</h3><p>${state.students.length} مسجل محليًا</p></div><div class="dash-card"><div class="dash-icon">💳</div><h3>المدفوعات</h3><p>${state.payments.filter(x=>x.status==='paid').length} مدفوعة</p></div><div class="dash-card"><div class="dash-icon">🏆</div><h3>التقدم</h3><p>تُحسب من تقدم المستويات.</p></div></div></div>`} else {box.innerHTML=`<div class="panel"><h3>${kind==='content'?'📚 الموارد':'⚙️ الإعدادات'}</h3><p style="color:var(--muted);line-height:1.9">هذه الواجهة جاهزة، ويمكن إضافة التفاصيل الفعلية إليها دون تغيير تصميم المنصة.</p><button class="primary" data-demo>فتح</button></div>`}}
+ function parent(){showSpace('👨‍👩‍👧 فضاء الأولياء',`<div class="notice">فضاء متابعة الابن: التقدم، النتائج، الحضور وحالة الاشتراك.</div><div class="panel"><div class="input-row"><input id="childName" placeholder="اسم الابن"><select id="childLevel"><option>1AM</option><option>2AM</option><option>3AM</option><option>4AM</option><option>1AS</option></select><button class="primary" data-child-view>متابعة</button></div><div id="parent-detail" style="margin-top:14px"></div></div>`)}
+ function challenge(){showSpace('🎯 فضاء التحدّي',`<div class="notice">اختبر معلوماتك في تحدٍّ قصير. النتيجة تُحفظ محليًا على جهازك.</div><div class="panel"><div class="quiz-q">1) ما الهدف من الاستدلال العلمي؟</div><div class="answers"><button data-answer="wrong">حفظ المعلومات فقط</button><button data-answer="correct">تفسير المعطيات والوصول إلى استنتاج</button><button data-answer="wrong">نسخ السند</button></div><div id="quizResult"></div></div>`)}
+ function progressHub(){let vals=Object.values(state.progress), avg=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0;showSpace('🏆 فضاء التقدّم',`<div class="panel"><h3>رحلتك نحو الـ20</h3><p>متوسط التقدم المحفوظ على هذا الجهاز.</p><div class="progress-bar"><div class="progress-fill" style="width:${avg}%"></div></div><div class="score">${avg}%</div></div><div class="dashboard-grid"><div class="dash-card"><div class="dash-icon">🎯</div><h3>التحديات</h3><p>نتيجتك تُحفظ بعد كل تحدٍّ.</p></div><div class="dash-card"><div class="dash-icon">📚</div><h3>التعلّم</h3><p>تقدمك حسب المستوى.</p></div><div class="dash-card"><div class="dash-icon">⭐</div><h3>الإنجاز</h3><p>${avg>=80?'ممتاز، واصلي!':'استمري خطوة بخطوة.'}</p></div></div>`)}
+ function challengeHub(){showSpace('🚀 رحلة تحدّي الـ20',`<div class="dashboard-grid"><button class="dash-card" data-nav="learn"><div class="dash-icon">📖</div><h3>تعلّم</h3><p>اختيار المستوى والموارد.</p></button><button class="dash-card" data-nav="challenge"><div class="dash-icon">🧩</div><h3>تحدَّ</h3><p>اختبر مكتسباتك.</p></button><button class="dash-card" data-nav="progress"><div class="dash-icon">🏆</div><h3>تقدّم</h3><p>تابع رحلتك.</p></button></div>`)}
+ document.addEventListener('click',function(e){
+   const el=e.target.closest('[data-action]');if(el){if(el.dataset.action==='home')goHome();return}
+   const s=e.target.closest('.space-card');if(s){e.preventDefault();const a=s.classList;if(a.contains('students'))student();else if(a.contains('teachers'))teacher();else if(a.contains('parents'))parent();else if(a.contains('hayat'))showSpace('👩‍🏫 فضاء الأستاذة حياة',`<div class="notice">لوحة الإدارة الرئيسية.</div><div class="dashboard-grid"><button class="dash-card" data-teacher="students"><div class="dash-icon">👥</div><h3>التلاميذ</h3><p>إدارة التلاميذ.</p></button><button class="dash-card" data-teacher="payments"><div class="dash-icon">💳</div><h3>الدفع</h3><p>متابعة الاشتراكات والإيصالات.</p></button><button class="dash-card" data-teacher="attendance"><div class="dash-icon">📋</div><h3>الحضور</h3><p>سجل الحضور.</p></button><button class="dash-card" data-teacher="reports"><div class="dash-icon">📈</div><h3>التقارير</h3><p>ملخص المنصة.</p></button></div><div id="teacher-detail"></div>`);return}
+   const lv=e.target.closest('[data-level]');if(lv){level(+lv.dataset.level);return}
+   const dl=e.target.closest('[data-learning],[data-exercises],[data-challenges],[data-progress]');if(dl){const n=+Object.values(dl.dataset).find(v=>v);const k=dl.dataset.learning?'learning':dl.dataset.exercises?'exercises':dl.dataset.challenges?'challenges':'progress';k==='progress'?progress(n):content(k,n);return}
+   const add=e.target.closest('[data-add-progress]');if(add){const n=+add.dataset.addProgress;const key='level'+n;state.progress[key]=Math.min(100,(state.progress[key]||0)+10);save();progress(n);return}
+   const item=e.target.closest('[data-item]');if(item){openModal('فتح المورد','تم فتح المورد التجريبي. هذه البنية جاهزة لإضافة الدرس أو ملف PDF أو الفيديو الحقيقي.','<button class="primary" data-close>حسنًا</button>');return}
+   const nav=e.target.closest('[data-nav]');if(nav){nav.dataset.nav==='learn'?student():nav.dataset.nav==='challenge'?challenge():progressHub();return}
+   const tc=e.target.closest('[data-teacher]');if(tc){teacherDetail(tc.dataset.teacher);return}
+   const ast=e.target.closest('[data-add-student]');if(ast){const name=document.getElementById('stName').value.trim();const levelv=document.getElementById('stLevel').value;if(!name){openModal('تنبيه','اكتبي اسم التلميذ أولًا.','<button class="primary" data-close>حسنًا</button>');return}state.students.push({name,level:levelv});save();teacherDetail('students');return}
+   const ds=e.target.closest('[data-del-student]');if(ds){state.students.splice(+ds.dataset.delStudent,1);save();teacherDetail('students');return}
+   const ap=e.target.closest('[data-add-payment]');if(ap){const name=document.getElementById('payName').value.trim();const status=document.getElementById('payStatus').value;const file=document.getElementById('receipt');const receipt=file&&file.files[0]?file.files[0].name:'';if(!name){openModal('تنبيه','اكتبي اسم التلميذ أولًا.','<button class="primary" data-close>حسنًا</button>');return}state.payments.push({name,status,receipt});save();teacherDetail('payments');return}
+   const ca=e.target.closest('[data-answer]');if(ca){document.querySelectorAll('[data-answer]').forEach(b=>b.disabled=true);ca.classList.add(ca.dataset.answer);const ok=ca.dataset.answer==='correct';if(ok){state.quiz=(state.quiz||0)+1;save()}document.getElementById('quizResult').innerHTML='<div class="notice '+(ok?'':'info')+'" style="margin-top:14px">'+(ok?'🎉 إجابة صحيحة! أحسنت.':'💡 راجعي الفكرة ثم حاولي مرة أخرى.')+'</div>';return}
+   const cv=e.target.closest('[data-child-view]');if(cv){const name=document.getElementById('childName').value.trim()||'ابني/ابنتي';const lv=document.getElementById('childLevel').value;document.getElementById('parent-detail').innerHTML='<div class="dashboard-grid"><div class="dash-card"><div class="dash-icon">👤</div><h3>'+name+'</h3><p>المستوى: '+lv+'</p></div><div class="dash-card"><div class="dash-icon">📈</div><h3>التقدم</h3><p>يظهر بعد تسجيل الأنشطة.</p></div><div class="dash-card"><div class="dash-icon">💳</div><h3>الاشتراك</h3><p>يظهر بعد تسجيل الدفع.</p></div></div>';return}
+   if(e.target.closest('[data-demo]')){openModal('الواجهة جاهزة','يمكن الآن ربط هذا الجزء بالمحتوى الحقيقي دون تغيير الصفحة الرئيسية.','<button class="primary" data-close>إغلاق</button>');return}
+   if(e.target.closest('[data-close]')){closeModal();return}
+ });
+ // Start buttons and challenge steps
+ document.querySelectorAll('a.cta').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();challengeHub()}));
+ document.querySelectorAll('#challenge .step').forEach((st,i)=>st.style.cursor='pointer');
+ document.querySelectorAll('#challenge .step').forEach((st,i)=>st.addEventListener('click',()=>{if(i===0)student();else if(i===1)challenge();else progressHub()}));
+ // register card becomes an actual guide
+ const reg=document.querySelector('.register');if(reg){reg.style.cursor='pointer';reg.addEventListener('click',()=>openModal('📝 كيفية التسجيل','1. اختَر فضاءك من فضاءات المنصة. <br>2. افتح المستوى أو الحساب المناسب. <br>3. ابدأ التعلّم والتحديات. <br><br>في هذه النسخة، بيانات التجربة تُحفظ على نفس الجهاز.','<button class="primary" data-close>فهمت</button>'));}
+})();
+</script>
+
+</main>
+
+<section id="hayat-admin" class="admin-panel" dir="rtl">
+  <div class="admin-hero">
+    <h2>👩‍🏫 فضاء الأستاذة حياة</h2>
+    <p>لوحة التحكم الخاصة بك لإدارة التلاميذ، الاشتراكات، الحضور والموارد، مع فصل واضح بين فضاء الأستاذة والفضاءات الأخرى.</p>
+  </div>
+
+  <div class="admin-actions">
+    <div class="admin-stat"><div class="num" id="studentCount">0</div><small>التلاميذ</small></div>
+    <div class="admin-stat"><div class="num" id="paidCount">0</div><small>المدفوعات</small></div>
+    <div class="admin-stat"><div class="num" id="unpaidCount">0</div><small>غير مدفوع</small></div>
+    <div class="admin-stat"><div class="num" id="attendanceCount">0</div><small>الحضور المسجل</small></div>
+  </div>
+
+  
+    <div class="admin-tool" style="grid-column:1/-1">
+      <h3>⚡ لوحة المتابعة السريعة</h3>
+      <div class="dashboard-grid">
+        <div class="dash-card"><div class="dash-icon">👥</div><h3>التلاميذ</h3><p>إضافة ومتابعة التلاميذ حسب المستوى.</p></div>
+        <div class="dash-card"><div class="dash-icon">💳</div><h3>الدفع</h3><p>معرفة المدفوع والمتأخر وإضافة مرجع الوصل.</p></div>
+        <div class="dash-card"><div class="dash-icon">📋</div><h3>الحضور</h3><p>تسجيل الحضور للحصص ومتابعته.</p></div>
+        <div class="dash-card"><div class="dash-icon">📚</div><h3>الموارد</h3><p>تحضير مكان الدروس والملفات والفيديوهات.</p></div>
+      </div>
+    </div>
+
+    <div class="admin-tools">
+    <div class="admin-tool">
+      <h3>👥 إدارة التلاميذ</h3>
+      <p>أضيفي التلميذ مع المستوى وحالة الدفع، وستظهر القائمة مباشرة.</p>
+      <div class="student-form">
+        <input id="sName" placeholder="اسم التلميذ">
+        <select id="sLevel">
+          <option>1 متوسط</option><option>2 متوسط</option><option>3 متوسط</option><option>4 متوسط</option><option>1 ثانوي</option>
+        </select>
+        <select id="sPay"><option value="paid">مدفوع</option><option value="unpaid">غير مدفوع</option></select>
+        <button class="admin-btn" onclick="addStudent()">إضافة</button>
+      </div>
+      <div id="studentList" class="student-list"></div>
+    </div>
+
+    <div class="admin-tool">
+      <h3>💳 متابعة الدفع</h3>
+      <p>يمكنك تغيير حالة الدفع من قائمة التلاميذ. سنضيف لاحقًا رفع وصل الدفع وربطه بالتلميذ.</p>
+      <button class="admin-btn alt" onclick="showPayments()">عرض ملخص الدفع</button>
+      <p id="paymentSummary"></p>
+    </div>
+
+    <div class="admin-tool">
+      <h3>📅 الحضور</h3>
+      <p>سجلّي حضور التلاميذ، وسنربطه لاحقًا بالحصة والمستوى والتاريخ.</p>
+      <button class="admin-btn" onclick="recordAttendance()">تسجيل حضور اليوم</button>
+      <p id="attendanceMsg"></p>
+    </div>
+
+
+    <div class="admin-tool">
+      <h3>📦 إعداد الموارد</h3>
+      <p>حضّري موارد كل مستوى: درس، ملخص، تمرين، فيديو أو تحدي. هذه المرحلة تجهّز الهيكل قبل الربط السحابي.</p>
+      <div class="student-form">
+        <select id="resourceLevel">
+          <option>1 متوسط</option><option>2 متوسط</option><option>3 متوسط</option><option>4 متوسط</option><option>1 ثانوي</option>
+        </select>
+        <select id="resourceType">
+          <option>درس</option><option>ملخص</option><option>تمرين</option><option>فيديو</option><option>تحدي</option>
+        </select>
+        <input id="resourceTitle" placeholder="عنوان المورد">
+        <button class="admin-btn" onclick="addResource()">إضافة</button>
+      </div>
+      <div id="resourceList" class="student-list"></div>
+    </div>
+
+    <div class="admin-tool">
+      <h3>📚 الموارد والتحديات</h3>
+      <p>مكان مخصص لإضافة الدروس والتمارين والتحديات. الواجهة موجودة، ونبني أدوات الإضافة في الخطوات التالية.</p>
+      <button class="admin-btn alt" onclick="alert('قسم الموارد جاهز للمرحلة التالية.')">فتح القسم</button>
+    </div>
+  </div>
+
+  <button class="admin-btn" style="margin-top:18px" onclick="hideAdmin()">← العودة إلى الصفحة الرئيسية</button>
+</section>
+
+
+<section id="teachers-space" class="teachers-panel" dir="rtl">
+  <div class="teacher-hero">
+    <h2>👨‍🏫 فضاء الأساتذة</h2>
+    <p>فضاء مستقل لكل أستاذ للتعاون، تنظيم موارده ومتابعة تلاميذه، مع الحفاظ على استقلالية كل حساب.</p>
+  </div>
+
+  <div class="teacher-grid">
+    <div class="teacher-card">
+      <h3>👤 حساب الأستاذ</h3>
+      <p>الاسم والمادة والمستويات التي يدرّسها.</p>
+      <div class="teacher-form">
+        <input id="teacherName" placeholder="اسم الأستاذ">
+        <select id="teacherSubject">
+<option>العلوم الطبيعية</option>
+<option>العلوم الفيزيائية</option>
+<option>الرياضيات</option>
+<option>اللغة العربية</option>
+<option>اللغة الفرنسية</option>
+<option>اللغة الإنجليزية</option>
+<option>التاريخ والجغرافيا</option>
+<option>التربية المدنية</option>
+<option>التربية الإسلامية</option>
+</select>
+        <button class="teacher-btn" onclick="saveTeacherProfile()">حفظ</button>
+      </div>
+      <p id="teacherProfileMsg"></p>
+    </div>
+
+    <div class="teacher-card">
+      <h3>📚 مواردي</h3>
+      <p>مساحة مخصصة للدروس والتمارين والملفات التي يضيفها الأستاذ.</p>
+      <button class="teacher-btn alt" onclick="alert('قسم الموارد جاهز، ونضيف رفع الملفات في المرحلة التالية.')">فتح الموارد</button>
+    </div>
+
+    <div class="teacher-card">
+      <h3>👥 تلاميذي</h3>
+      <p>عرض تلاميذ الأستاذ ومتابعة مستوياتهم ونتائجهم.</p>
+      <button class="teacher-btn alt" onclick="alert('قسم التلاميذ جاهز للربط بقاعدة البيانات لاحقًا.')">عرض التلاميذ</button>
+    </div>
+
+    <div class="teacher-card">
+      <h3>🧩 تحدياتي</h3>
+      <p>إعداد التحديات والاختبارات الخاصة بالأستاذ.</p>
+      <button class="teacher-btn" onclick="alert('قسم التحديات جاهز للمرحلة التالية.')">إدارة التحديات</button>
+    </div>
+  </div>
+
+  <button class="teacher-btn" style="margin-top:18px" onclick="hideTeachers()">← العودة إلى الصفحة الرئيسية</button>
+</section>
+
+
+<section id="parent-space" class="parent-panel" dir="rtl">
+  <div class="parent-hero">
+    <h2>👨‍👩‍👧 فضاء الأولياء</h2>
+    <p>فضاء مخصص لمتابعة الأبناء: التقدم، الحضور، النتائج والاشتراك.</p>
+  </div>
+
+  <div class="parent-grid">
+    <div class="parent-card">
+      <h3>👤 بيانات الولي</h3>
+      <div class="parent-form">
+        <input id="parentName" placeholder="اسم الولي">
+        <input id="parentPhone" placeholder="رقم الهاتف">
+        <button class="parent-btn" onclick="saveParent()">حفظ</button>
+      </div>
+      <p id="parentMsg"></p>
+    </div>
+
+    <div class="parent-card">
+      <h3>👦 أبنائي</h3>
+      <p>اربط حساب الابن بالولي، ثم تظهر هنا معلوماته الخاصة.</p>
+      <div class="parent-form">
+        <input id="childName" placeholder="اسم الابن">
+        <select id="childLevel">
+          <option>1 متوسط</option><option>2 متوسط</option><option>3 متوسط</option><option>4 متوسط</option><option>1 ثانوي</option>
+        </select>
+        <button class="parent-btn" onclick="addChild()">إضافة</button>
+      </div>
+      <div id="childrenList"></div>
+    </div>
+
+    <div class="parent-card">
+      <h3>📊 متابعة الابن</h3>
+      <p>التقدم، النتائج، الحضور، الدروس والتحديات ستظهر هنا بعد ربط الابن بالحساب.</p>
+      <span class="parent-status">المتابعة جاهزة</span>
+    </div>
+
+    <div class="parent-card">
+      <h3>💳 الدفع والاشتراك</h3>
+      <p>اختَر طريقة الدفع، ثم أرسل وصل الدفع للمراجعة.</p>
+      <div class="payment-methods">
+        <div class="method">📱 <b>BaridiMob</b><br><small>دفع إلكتروني</small></div>
+        <div class="method">🏤 <b>البريد / CCP</b><br><small>الدفع عبر البريد</small></div>
+      </div>
+      <div class="parent-form">
+        <select id="payMethod"><option>BaridiMob</option><option>البريد / CCP</option></select>
+        <input id="payAmount" placeholder="المبلغ">
+        <input id="payPeriod" placeholder="الشهر / الفترة">
+      </div>
+      <div class="parent-form" style="margin-top:8px">
+        <input id="receiptRef" placeholder="رقم العملية / المرجع (اختياري)">
+        <button class="parent-btn" onclick="submitPayment()">إرسال طلب الدفع</button>
+      </div>
+      <p id="paymentMsg"></p>
+    </div>
+
+    <div class="parent-card">
+      <h3>📎 وصل الدفع</h3>
+      <p>يمكنك اختيار صورة الوصل من الهاتف. في هذه النسخة نسجل اسم الملف محليًا، أما رفعه إلى قاعدة بيانات مشتركة فيحتاج ربطًا خلفيًا.</p>
+      <input id="receiptFile" type="file" accept="image/*,.pdf">
+      <p id="fileMsg"></p>
+    </div>
+
+    <div class="parent-card">
+      <h3>🔔 الإشعارات</h3>
+      <p>مكان مخصص لتنبيهات الحصص، النتائج، الواجبات وحالة الاشتراك.</p>
+      <span class="parent-status">لا توجد إشعارات جديدة</span>
+    </div>
+  </div>
+
+  <button class="parent-btn" style="margin-top:18px" onclick="hideParent()">← العودة إلى الصفحة الرئيسية</button>
+</section>
+
+<footer>من إعداد الأستاذة حياة — منصة التحديات في العلوم الطبيعية</footer>
+
+<script>
+(function(){
+const KEY="hayat_platform_students_v1";
+function getStudents(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return[]}}
+function saveStudents(a){localStorage.setItem(KEY,JSON.stringify(a));renderStudents()}
+window.addStudent=function(){
+ const name=document.getElementById("sName").value.trim();
+ if(!name){alert("اكتبي اسم التلميذ أولًا.");return}
+ const level=document.getElementById("sLevel").value;
+ const pay=document.getElementById("sPay").value;
+ const a=getStudents(); a.push({id:Date.now(),name,level,pay}); saveStudents(a);
+ document.getElementById("sName").value="";
+}
+window.removeStudent=function(id){saveStudents(getStudents().filter(x=>x.id!==id))}
+window.togglePay=function(id){
+ const a=getStudents(); const x=a.find(s=>s.id===id); if(x)x.pay=x.pay==="paid"?"unpaid":"paid"; saveStudents(a)
+}
+window.showPayments=function(){
+ const a=getStudents(), paid=a.filter(x=>x.pay==="paid").length, unpaid=a.length-paid;
+ document.getElementById("paymentSummary").textContent=`المدفوع: ${paid} — غير المدفوع: ${unpaid}`;
+}
+window.recordAttendance=function(){
+ const n=Number(localStorage.getItem("hayat_attendance_v1")||0)+1;
+ localStorage.setItem("hayat_attendance_v1",n);
+ document.getElementById("attendanceMsg").textContent="تم تسجيل حضور اليوم. إجمالي السجلات: "+n;
+ renderStudents();
+}
+function renderStudents(){
+ const a=getStudents(), box=document.getElementById("studentList");
+ if(!box)return;
+ box.innerHTML=a.length?a.map(x=>`<div class="student-row"><div><b>${x.name}</b><br><small>${x.level}</small></div><div><button class="admin-btn alt" onclick="togglePay(${x.id})">${x.pay==="paid"?"مدفوع":"غير مدفوع"}</button> <button class="admin-btn" onclick="removeStudent(${x.id})">حذف</button></div></div>`).join(""):"لا يوجد تلاميذ بعد.";
+ document.getElementById("studentCount").textContent=a.length;
+ document.getElementById("paidCount").textContent=a.filter(x=>x.pay==="paid").length;
+ document.getElementById("unpaidCount").textContent=a.filter(x=>x.pay!=="paid").length;
+ document.getElementById("attendanceCount").textContent=localStorage.getItem("hayat_attendance_v1")||0;
+}
+window.showAdmin=function(){
+ document.querySelectorAll("main").forEach(x=>x.style.display="none");
+ document.querySelectorAll("footer").forEach(x=>x.style.display="none");
+ document.getElementById("hayat-admin").classList.add("active");
+ renderStudents();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+window.hideAdmin=function(){
+ document.getElementById("hayat-admin").classList.remove("active");
+ document.querySelectorAll("main").forEach(x=>x.style.display="");
+ document.querySelectorAll("footer").forEach(x=>x.style.display="");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+document.addEventListener("DOMContentLoaded",function(){
+ // Make the existing "فضاء الأستاذة حياة" link open the dashboard without changing its visual design.
+ document.querySelectorAll("a").forEach(a=>{
+   if((a.textContent||"").includes("فضاء الأستاذة حياة")){
+     a.setAttribute("href","#hayat-admin"); a.addEventListener("click",function(e){e.preventDefault();showAdmin()});
+   }
+ });
+});
+})();
+</script>
+
+
+<script>
+(function(){
+const TKEY="hayat_teacher_profile_v1";
+function showTeachers(){
+ document.querySelectorAll("main").forEach(x=>x.style.display="none");
+ document.querySelectorAll("footer").forEach(x=>x.style.display="none");
+ document.getElementById("teachers-space").classList.add("active");
+ const p=JSON.parse(localStorage.getItem(TKEY)||"null");
+ if(p){document.getElementById("teacherName").value=p.name||"";document.getElementById("teacherSubject").value=p.subject||"العلوم الطبيعية";}
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+window.hideTeachers=function(){
+ document.getElementById("teachers-space").classList.remove("active");
+ document.querySelectorAll("main").forEach(x=>x.style.display="");
+ document.querySelectorAll("footer").forEach(x=>x.style.display="");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+window.saveTeacherProfile=function(){
+ const name=document.getElementById("teacherName").value.trim();
+ const subject=document.getElementById("teacherSubject").value;
+ if(!name){alert("اكتبي اسم الأستاذ أولًا.");return}
+ localStorage.setItem(TKEY,JSON.stringify({name,subject}));
+ document.getElementById("teacherProfileMsg").textContent="تم حفظ بيانات الأستاذ على هذا الجهاز.";
+}
+document.addEventListener("DOMContentLoaded",function(){
+ document.querySelectorAll("a").forEach(a=>{
+   if((a.textContent||"").includes("فضاء الأساتذة") && !(a.textContent||"").includes("فضاء الأستاذة")){
+     a.setAttribute("href","#teachers-space");
+     a.addEventListener("click",function(e){e.preventDefault();showTeachers()});
+   }
+ });
+});
+})();
+</script>
+
+
+<script>
+(function(){
+const PKEY="hayat_parent_v1", CKEY="hayat_parent_children_v1", PAYKEY="hayat_parent_payments_v1";
+function read(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}
+function write(k,v){localStorage.setItem(k,JSON.stringify(v))}
+window.showParent=function(){
+ document.querySelectorAll("main").forEach(x=>x.style.display="none");
+ document.querySelectorAll("footer").forEach(x=>x.style.display="none");
+ document.getElementById("parent-space").classList.add("active");
+ const p=read(PKEY,null); if(p){parentName.value=p.name||"";parentPhone.value=p.phone||""}
+ renderChildren(); window.scrollTo({top:0,behavior:"smooth"});
+}
+window.hideParent=function(){
+ document.getElementById("parent-space").classList.remove("active");
+ document.querySelectorAll("main").forEach(x=>x.style.display="");
+ document.querySelectorAll("footer").forEach(x=>x.style.display="");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+window.saveParent=function(){
+ const name=parentName.value.trim(), phone=parentPhone.value.trim();
+ if(!name){alert("اكتب اسم الولي أولًا.");return}
+ write(PKEY,{name,phone}); parentMsg.textContent="تم حفظ بيانات الولي على هذا الجهاز.";
+}
+window.addChild=function(){
+ const name=childName.value.trim(); if(!name){alert("اكتب اسم الابن أولًا.");return}
+ const a=read(CKEY,[]); a.push({id:Date.now(),name,level:childLevel.value}); write(CKEY,a); childName.value=""; renderChildren();
+}
+window.removeChild=function(id){write(CKEY,read(CKEY,[]).filter(x=>x.id!==id));renderChildren()}
+function renderChildren(){
+ const a=read(CKEY,[]); const box=document.getElementById("childrenList"); if(!box)return;
+ box.innerHTML=a.length?a.map(x=>`<div style="margin-top:8px;padding:10px;border:1px solid #e1ebe6;border-radius:12px"><b>${x.name}</b> — ${x.level} <button class="parent-btn alt" onclick="removeChild(${x.id})">حذف</button></div>`).join(""):"لا يوجد أبناء مضافون بعد.";
+}
+window.submitPayment=function(){
+ const a=read(PAYKEY,[]); a.push({id:Date.now(),method:payMethod.value,amount:payAmount.value,period:payPeriod.value,ref:receiptRef.value,status:"في انتظار التحقق"});
+ write(PAYKEY,a); paymentMsg.textContent="تم تسجيل طلب الدفع: في انتظار التحقق من طرف الإدارة.";
+}
+document.getElementById("receiptFile")?.addEventListener("change",function(){
+ fileMsg.textContent=this.files.length?"تم اختيار الوصل: "+this.files[0].name:"";
+});
+document.addEventListener("DOMContentLoaded",function(){
+ document.querySelectorAll("a").forEach(a=>{
+   if((a.textContent||"").includes("فضاء الأولياء")){
+     a.setAttribute("href","#parent-space");a.addEventListener("click",function(e){e.preventDefault();showParent()});
+   }
+ });
+});
+})();
+</script>
+
+
+<script>
+(function(){
+  const RKEY="hayat_resources_v1";
+  function getResources(){try{return JSON.parse(localStorage.getItem(RKEY)||"[]")}catch(e){return[]}}
+  function saveResources(a){localStorage.setItem(RKEY,JSON.stringify(a));renderResources()}
+  window.addResource=function(){
+    const title=document.getElementById("resourceTitle").value.trim();
+    const level=document.getElementById("resourceLevel").value;
+    const type=document.getElementById("resourceType").value;
+    if(!title){alert("اكتبي عنوان المورد أولًا.");return}
+    const a=getResources();
+    a.push({id:Date.now(),title,level,type});
+    saveResources(a);
+    document.getElementById("resourceTitle").value="";
+  };
+  window.removeResource=function(id){saveResources(getResources().filter(x=>x.id!==id))};
+  function renderResources(){
+    const box=document.getElementById("resourceList");
+    if(!box)return;
+    const a=getResources();
+    box.innerHTML=a.length ? a.map(x =>
+      `<div class="student-row"><div><b>${x.title}</b><br><small>${x.level} • ${x.type}</small></div><button class="admin-btn" onclick="removeResource(${x.id})">حذف</button></div>`
+    ).join("") : "لا توجد موارد مضافة بعد.";
+  }
+  document.addEventListener("DOMContentLoaded",renderResources);
+})();
+</script>
+
+</body>
+</html>
