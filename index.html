@@ -1,1 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تحدي الـ20 في العلوم الطبيعية مع الأستاذة حياة</title>
+<style>
+:root{
+  --green:#2f7d5b;--green2:#4fa477;--light:#eef8f1;--dark:#173b2b;
+  --gold:#e2ad3b;--text:#203129;--muted:#6c7b74;--white:#fff;
+  --shadow:0 8px 24px rgba(30,70,50,.10);--radius:20px
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:#f6faf7;color:var(--text)}
+button{font-family:inherit;cursor:pointer;border:0}
+header{background:linear-gradient(135deg,var(--green),#1f6548);color:white;padding:24px 18px 30px}
+.header-inner{max-width:1100px;margin:auto}
+.badge{display:inline-block;background:rgba(255,255,255,.16);padding:7px 12px;border-radius:30px;font-size:13px}
+h1{margin:14px 0 5px;font-size:26px}
+.subtitle{opacity:.9;margin:0;font-size:14px}
+.container{max-width:1100px;margin:-16px auto 30px;padding:0 14px}
+.roles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.role{background:white;border-radius:18px;padding:16px;text-align:center;box-shadow:var(--shadow);transition:.2s}
+.role.active{outline:3px solid #9bd0b2;background:var(--light)}
+.role .ico{font-size:30px}.role strong{display:block;margin-top:7px}.role small{color:var(--muted)}
+.dashboard{margin-top:18px;background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.title{font-size:21px;font-weight:800;color:var(--dark)}
+.pill{background:var(--light);color:var(--green);padding:7px 12px;border-radius:30px;font-size:13px}
+.section{margin-top:20px}
+.section h2{font-size:18px;margin:0 0 12px;color:var(--dark)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{background:#fbfdfb;border:1px solid #e2eee6;border-radius:18px;padding:16px}
+.card h3{margin:0 0 8px;font-size:16px}.card p{margin:5px 0;color:#53645c;font-size:13px;line-height:1.7}
+.time{font-weight:800;color:var(--green);font-size:18px}
+.countdown{margin-top:10px;background:#173b2b;color:#fff;border-radius:14px;padding:10px;text-align:center;font-weight:bold;letter-spacing:1px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{padding:10px 13px;border-radius:12px;font-size:13px}
+.primary{background:var(--green);color:white}.secondary{background:#e9f4ed;color:var(--green)}
+.disabled{background:#edf0ee;color:#89958f}
+.notice{background:#fff8e8;border-right:4px solid var(--gold);padding:13px;border-radius:12px;font-size:13px;line-height:1.7}
+.info{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:var(--light);padding:14px;border-radius:15px;text-align:center}
+.stat b{display:block;font-size:22px;color:var(--green)}.stat span{font-size:12px;color:var(--muted)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.day{border:1px solid #e2eee6;border-radius:14px;padding:10px;min-height:100px;background:#fff}
+.day strong{font-size:12px}.day p{font-size:11px;line-height:1.6}
+.footer{text-align:center;color:#718078;padding:22px;font-size:12px}
+.hidden{display:none!important}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:18px;z-index:10}
+.modal-box{background:white;max-width:650px;width:100%;border-radius:22px;padding:22px;max-height:85vh;overflow:auto}
+.close{float:left;background:#edf5ef;color:var(--green);border-radius:10px;padding:7px 10px}
+.list{padding-right:18px;line-height:2}
+@media(max-width:800px){.roles{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr 1fr}.info{grid-template-columns:repeat(2,1fr)}.week{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:520px){h1{font-size:21px}.grid{grid-template-columns:1fr}.week{grid-template-columns:repeat(2,1fr)}.container{padding:0 10px}.dashboard{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+  <span class="badge">🌿 منصة تعليمية تفاعلية</span>
+  <h1>تحدي الـ20 في العلوم الطبيعية</h1>
+  <p class="subtitle">مع الأستاذة حياة — معرفة الطبيعة سر الحياة</p>
+ </div>
+</header>
 
+<main class="container">
+ <div class="roles">
+  <button class="role active" onclick="setRole('student',this)"><div class="ico">👨‍🎓</div><strong>فضاء التلاميذ</strong><small>التعلم والتحديات</small></button>
+  <button class="role" onclick="setRole('parent',this)"><div class="ico">👨‍👩‍👧</div><strong>فضاء الأولياء</strong><small>متابعة الأبناء</small></button>
+  <button class="role" onclick="setRole('teacher',this)"><div class="ico">👩‍🏫</div><strong>فضاء الأساتذة</strong><small>التدريس والمتابعة</small></button>
+  <button class="role" onclick="setRole('admin',this)"><div class="ico">🌿</div><strong>فضاء الأستاذة حياة</strong><small>الإدارة الكاملة</small></button>
+ </div>
+
+ <section class="dashboard">
+  <div class="topline">
+   <div><div class="title" id="roleTitle">لوحة اليوم — فضاء التلاميذ</div><span class="pill" id="roleHint">السنة الرابعة متوسط</span></div>
+   <button class="btn secondary" onclick="showInfo('platform')">ℹ️ عن المنصة</button>
+  </div>
+
+  <div class="section">
+   <h2>📅 ماذا يوجد اليوم؟</h2>
+   <div class="grid">
+    <article class="card">
+      <h3>🏫 حصة دعم — السنة الرابعة متوسط</h3>
+      <p>الجمعة · 19:00 — 21:00</p>
+      <p>💻 Zoom · الحصة 1 من 4</p>
+      <div class="countdown" data-time="2026-09-25T19:00:00">جارٍ حساب العدّاد...</div>
+      <div class="actions"><button class="btn primary" onclick="showInfo('support')">📋 معلومات الحصة</button><button class="btn disabled">🔒 الدخول عند البداية</button></div>
+    </article>
+    <article class="card">
+      <h3>🎓 دورة مراجعة</h3>
+      <p>السنة الرابعة متوسط</p><p>الساعة 17:00 · حصة مراجعة</p>
+      <div class="countdown" data-time="2026-09-26T17:00:00">جارٍ حساب العدّاد...</div>
+      <div class="actions"><button class="btn primary" onclick="showInfo('course')">📋 معلومات الدورة</button></div>
+    </article>
+    <article class="card">
+      <h3>⚡ تحدي المستوى</h3>
+      <p>15 سؤالًا متنوعًا · العلامة /20</p><p>يبدأ بعد انتهاء العدّاد</p>
+      <div class="countdown" data-time="2026-09-25T20:30:00">جارٍ حساب العدّاد...</div>
+      <div class="actions"><button class="btn secondary" onclick="showInfo('challenge')">📋 تفاصيل التحدي</button></div>
+    </article>
+   </div>
+  </div>
+
+  <div class="section">
+   <h2>📊 لوحة الأسبوع</h2>
+   <div class="week">
+    <div class="day"><strong>السبت</strong><p>🎓 دورة<br>16:30</p></div>
+    <div class="day"><strong>الأحد</strong><p>⚡ تحدي<br>نشاط</p></div>
+    <div class="day"><strong>الاثنين</strong><p>🎥 درس مسجّل</p></div>
+    <div class="day"><strong>الثلاثاء</strong><p>📝 حل تمارين</p></div>
+    <div class="day"><strong>الأربعاء</strong><p>⚡ سؤال سريع</p></div>
+    <div class="day"><strong>الخميس</strong><p>📄 وثائق</p></div>
+    <div class="day"><strong>الجمعة</strong><p>🏫 دعم<br>19:00</p></div>
+   </div>
+  </div>
+
+  <div class="section">
+   <h2>🎯 ملخص التقدم</h2>
+   <div class="info">
+    <div class="stat"><b>50%</b><span>تقدم الدورة</span></div>
+    <div class="stat"><b>2/4</b><span>حصص الدعم</span></div>
+    <div class="stat"><b>3</b><span>تحديات منجزة</span></div>
+    <div class="stat"><b>60%</b><span>هدف الأسبوع</span></div>
+   </div>
+  </div>
+
+  <div class="section">
+   <div class="notice">📢 <strong>إعلان مهم:</strong> المعلومات والأنشطة تظهر حسب المستوى والصلاحيات. الحصص الفردية خاصة ولا تظهر في اللوحات العامة.</div>
+  </div>
+ </section>
+
+ <div class="footer">من إعداد الأستاذة حياة — صفحة تحدي الـ20 في العلوم الطبيعية</div>
+</main>
+
+<div id="modal" class="modal hidden" onclick="closeModal(event)">
+ <div class="modal-box">
+  <button class="close" onclick="hideModal()">✕</button>
+  <div id="modalContent"></div>
+ </div>
+</div>
+
+<script>
+function setRole(role,el){
+ document.querySelectorAll('.role').forEach(x=>x.classList.remove('active')); el.classList.add('active');
+ const names={student:'فضاء التلاميذ',parent:'فضاء الأولياء',teacher:'فضاء الأساتذة',admin:'فضاء الأستاذة حياة'};
+ document.getElementById('roleTitle').textContent='لوحة اليوم — '+names[role];
+ document.getElementById('roleHint').textContent=role==='admin'?'إدارة المنصة':'عرض حسب الصلاحيات';
+}
+function pad(n){return String(n).padStart(2,'0')}
+function updateCountdowns(){
+ document.querySelectorAll('.countdown').forEach(el=>{
+  const t=new Date(el.dataset.time).getTime(), now=Date.now(), d=t-now;
+  if(d<=0){el.textContent='🟢 بدأ الآن';return}
+  const days=Math.floor(d/86400000), hrs=Math.floor(d%86400000/3600000), mins=Math.floor(d%3600000/60000), secs=Math.floor(d%60000/1000);
+  el.textContent=(days?days+' يوم ':'')+pad(hrs)+' : '+pad(mins)+' : '+pad(secs);
+ })
+}
+setInterval(updateCountdowns,1000); updateCountdowns();
+
+const data={
+ platform:`<h2>🌿 منصة تحدي الـ20</h2><p>منصة تعليمية تفاعلية تجمع الدروس، حصص الدعم، الدورات، التحديات، المتابعة والنتائج في مكان واحد.</p><ul class="list"><li>👨‍🎓 فضاء التلاميذ</li><li>👨‍👩‍👧 فضاء الأولياء</li><li>👩‍🏫 فضاء الأساتذة</li><li>🌿 فضاء الأستاذة حياة</li></ul>`,
+ support:`<h2>🏫 معلومات حصة الدعم</h2><ul class="list"><li>المستوى: السنة الرابعة متوسط</li><li>النوع: Zoom</li><li>مدة الحصة: ساعتان</li><li>الاشتراك: 4 حصص</li><li>الحصة الحالية: 1 من 4</li><li>بعد انتهاء الاشتراك تُقفل الحصص الجديدة إلى غاية التجديد والتحقق من الدفع.</li></ul>`,
+ course:`<h2>🎓 معلومات الدورة</h2><ul class="list"><li>المستوى والفئة المستهدفة</li><li>هدف الدورة</li><li>محاور ودروس الدورة</li><li>عدد الحصص ومدة كل حصة</li><li>التواريخ والتوقيت</li><li>الوثائق والتسجيلات والتحديات المرتبطة</li><li>تقدم التلميذ داخل الدورة</li></ul>`,
+ challenge:`<h2>⚡ معلومات التحدي</h2><ul class="list"><li>15 سؤالًا متنوعًا</li><li>العلامة من 20</li><li>عدد المحاولات تحدده الأستاذة حياة</li><li>النتيجة والتقدم يُحفظان في حساب التلميذ</li></ul>`
+};
+function showInfo(k){document.getElementById('modalContent').innerHTML=data[k];document.getElementById('modal').classList.remove('hidden')}
+function hideModal(){document.getElementById('modal').classList.add('hidden')}
+function closeModal(e){if(e.target.id==='modal')hideModal()}
+</script>
+</body>
+</html>
