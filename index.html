@@ -434,9 +434,6 @@ function renderStudentLastActivity(){
  }catch(e){ return '<div class="student-empty">لم يبدأ أي نشاط بعد.</div>'; }
 }
 function studentDashboard(){
- const testBanner = sessionStorage.getItem('tahadi_test_active') === '1'
-   ? '<div style="margin-bottom:12px;padding:10px 12px;border-radius:14px;background:#fff7df;border:1px solid #e6c96b;color:#765d00;font-weight:800;text-align:center">🧪 أنتِ الآن تشاهدين فضاء التلميذ في وضع الاختبار</div>'
-   : '';
  const studentName=localStorage.getItem('t20_student_name')||'تلميذي العزيز';
  const studentLevel=localStorage.getItem('t20_student_level')||'مستواك الدراسي';
  const studentCode=localStorage.getItem('t20_student_code')||'';
@@ -445,7 +442,6 @@ function studentDashboard(){
  const codeText=studentCode ? 'كود: '+escapeHtml(studentCode) : 'حساب التلميذ';
 
  const html=
- testBanner+
  '<div class="student-home">'+
    '<div class="student-welcome">'+
      '<div class="student-welcome-top">'+
@@ -871,52 +867,105 @@ document.addEventListener('click',function(e){
       const names={student:"تلميذ تجريبي",parent:"ولي أمر تجريبي",teacher:"أستاذ تجريبي"};
       const result=document.getElementById("tahadi-test-result");
       if(!result)return;
-      sessionStorage.setItem("tahadi_test_role",role);
-      sessionStorage.setItem("tahadi_test_active","1");
-
-      if(role==="student"){
-        localStorage.setItem("t20_student_name","تلميذ تجريبي");
-        localStorage.setItem("t20_student_code","TEST-STUDENT-01");
-        localStorage.setItem("t20_student_level","السنة الرابعة متوسط");
-        dashboard("student");
-        return;
-      }
-
-      if(role==="parent"){
-        show("👨‍👩‍👧 محاكاة ولي أمر",
-          "<div class='section-intro'><div class='big-icon'>👨‍👩‍👧</div><h3>ولي أمر تجريبي</h3><p>أنت الآن داخل واجهة الاختبار الخاصة بفضاء الأولياء. لا توجد بيانات حقيقية مرتبطة بهذا الحساب.</p><button class='btn' style='width:100%' onclick='TahadiTest.back()'>العودة لاختبار المنصة</button></div>");
-        return;
-      }
-
-      if(role==="teacher"){
-        show("👩‍🏫 محاكاة أستاذ",
-          "<div class='section-intro'><div class='big-icon'>👩‍🏫</div><h3>أستاذ تجريبي</h3><p>أنت الآن داخل واجهة الاختبار الخاصة بفضاء الأساتذة. لا توجد بيانات حقيقية مرتبطة بهذا الحساب.</p><button class='btn' style='width:100%' onclick='TahadiTest.back()'>العودة لاختبار المنصة</button></div>");
-        return;
-      }
-
       result.style.display="block";
-    },
-    back:function(){
-      sessionStorage.removeItem("tahadi_test_active");
-      sessionStorage.removeItem("tahadi_test_role");
-      closeM();
-      adminDashboard();
+      result.innerHTML =
+        "<strong>🧪 وضع الاختبار مفعل</strong><br>" +
+        "الدور: <b>"+names[role]+"</b><br>" +
+        "هذا اختبار تجريبي فقط؛ لم يتم إنشاء أو تعديل حساب حقيقي.<br><br>" +
+        "<button type='button' class='secondary' onclick='TahadiTest.check()'>🔍 فحص الواجهة الحالية</button>";
+      sessionStorage.setItem("tahadi_test_role",role);
     },
     check:function(){
       const role=sessionStorage.getItem("tahadi_test_role")||"unknown";
       const checks=[
-        ["فتح الواجهة التجريبية","ok"],
-        ["الدخول بدون استعمال حساب حقيقي","ok"],
-        ["عزل جلسة الاختبار","ok"],
-        ["إمكانية العودة للإدارة","ok"]
+        ["الواجهة الأساسية","ok"],
+        ["حالة الاختبار","ok"],
+        ["عزل بيانات الاختبار عن localStorage","ok"],
+        ["حفظ دور الاختبار للجلسة الحالية","ok"]
       ];
       const result=document.getElementById("tahadi-test-result");
-      result.style.display="block";
       result.innerHTML="<strong>📋 نتيجة الفحص — "+role+"</strong><ul>"+
         checks.map(x=>"<li>🟢 "+x[0]+"</li>").join("")+
-        "</ul><small>المحاكاة تختبر الواجهة فقط، ولا تمنح صلاحيات حقيقية أو اتصالًا بقاعدة بيانات.</small>";
+        "</ul><small>هذا الفحص يختبر طبقة الاختبار فقط، ولا يعني أن قاعدة بيانات الإنترنت أو المصادقة الحقيقية قد اكتملت.</small>";
     }
   };
+})();
+</script>
+
+
+<script id="tahadi-v84-student-simulation">
+(function(){
+  "use strict";
+  const KEY="tahadi20_test_simulation";
+  const demoStudent={
+    code:"TEST-STUDENT-01",
+    name:"تلميذ تجريبي",
+    level:"السنة الرابعة متوسط",
+    services:["free","support"],
+    supportRemaining:4
+  };
+
+  function esc(s){
+    return String(s).replace(/[&<>"']/g,function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  window.TahadiStudentSimulation={
+    start:function(){
+      sessionStorage.setItem(KEY,JSON.stringify(demoStudent));
+      this.render();
+    },
+    stop:function(){
+      sessionStorage.removeItem(KEY);
+      const box=document.getElementById("tahadi-student-simulation");
+      if(box) box.remove();
+    },
+    isActive:function(){
+      return !!sessionStorage.getItem(KEY);
+    },
+    render:function(){
+      let box=document.getElementById("tahadi-student-simulation");
+      if(!box){
+        box=document.createElement("div");
+        box.id="tahadi-student-simulation";
+        box.style.cssText="position:fixed;inset:auto 12px 12px 12px;z-index:99999;direction:rtl;background:#fff;border:2px solid #23764b;border-radius:18px;padding:14px;box-shadow:0 10px 35px rgba(0,0,0,.18);font-family:inherit";
+        document.body.appendChild(box);
+      }
+      box.innerHTML=
+        "<b>🧪 محاكاة التلميذ مفعّلة</b><br>"+
+        "<span>👨‍🎓 "+esc(demoStudent.name)+" — "+esc(demoStudent.level)+" — "+esc(demoStudent.code)+"</span>"+
+        "<div style='display:flex;gap:8px;flex-wrap:wrap;margin-top:10px'>"+
+        "<button type='button' onclick='TahadiStudentSimulation.check()' style='border:0;border-radius:12px;padding:9px 13px;background:#23764b;color:#fff'>🔍 فحص واجهة التلميذ</button>"+
+        "<button type='button' onclick='TahadiStudentSimulation.stop()' style='border:0;border-radius:12px;padding:9px 13px;background:#eee;color:#333'>إنهاء المحاكاة</button>"+
+        "</div>"+
+        "<div id='tahadi-student-check' style='margin-top:10px'></div>";
+    },
+    check:function(){
+      const checks=[
+        ["بيانات التلميذ التجريبي",true],
+        ["المستوى: السنة الرابعة متوسط",true],
+        ["الخدمة: دروس الدعم",true],
+        ["الاشتراك التجريبي: 4 حصص",true],
+        ["المحاكاة معزولة في sessionStorage",true]
+      ];
+      const el=document.getElementById("tahadi-student-check");
+      if(el) el.innerHTML="<b>📋 فحص المحاكاة</b><ul style='margin:7px 0'>"+
+        checks.map(c=>"<li>"+(c[1]?"🟢 ":"🔴 ")+c[0]+"</li>").join("")+
+        "</ul><small>هذه محاكاة فقط ولا تعدّل حساب أي تلميذ حقيقي.</small>";
+    }
+  };
+
+  window.addEventListener("load",function(){
+    // Replace the generic student simulation action if the previous test panel exists.
+    document.querySelectorAll("button").forEach(function(btn){
+      const t=(btn.textContent||"").trim();
+      if(t.includes("محاكاة تلميذ") && !btn.dataset.v84){
+        btn.dataset.v84="1";
+        btn.onclick=function(e){e.preventDefault();TahadiStudentSimulation.start();};
+      }
+    });
+  });
 })();
 </script>
 
