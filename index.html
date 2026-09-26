@@ -474,7 +474,7 @@ function studentDashboard(){
    '</div>'+
 
    '<div class="student-section-title"><b>🔄 آخر نشاط</b></div>'+
-   '<div class="student-empty">لم يبدأ أي نشاط بعد.<br><small>عند مشاهدة درس أو بدء تحدٍّ سيظهر آخر نشاط لك هنا.</small></div>'+
+   (function(){try{const a=JSON.parse(localStorage.getItem('t20_student_last_activity')||'null');return a?'<div class="student-empty">📖 آخر محتوى فتحته: <b>'+escapeHtml(a.title||'محتوى')+'</b><br><small>'+new Date(a.at).toLocaleString('ar-DZ')+'</small></div>':'<div class="student-empty">لم يبدأ أي نشاط بعد.<br><small>عند فتح محتوى أو بدء تحدٍّ سيظهر آخر نشاط لك هنا.</small></div>';}catch(e){return '<div class="student-empty">لم يبدأ أي نشاط بعد.</div>';}})()+
 
    '<button class="btn secondary" style="width:100%;margin-top:2px" onclick="adminDashboard()">العودة للوحة الأستاذة حياة</button>'+
  '</div>';
@@ -500,10 +500,38 @@ function studentLessonTypes(){
  html+='</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentDashboard()">العودة لفضاء التلاميذ</button>';
  show('👨‍🎓 الدروس',html);
 }
+function getStudentProfile(){
+ return {
+  name:localStorage.getItem('t20_student_name')||'',
+  level:localStorage.getItem('t20_student_level')||'',
+  code:localStorage.getItem('t20_student_code')||''
+ };
+}
+function contentMatchesStudent(x){
+ const st=getStudentProfile();
+ if(x.status!=='منشور') return false;
+ // المحتوى المجاني يمكن أن يظهر دون اشتراك، أما بقية المحتوى فيحترم المستوى.
+ if(x.service==='مجاني' || x.type==='🆓 الحصص المجانية' || x.type==='الحصص المجانية') return true;
+ if(!st.level) return false;
+ return !x.level || x.level===st.level;
+}
 function studentLessonType(type){
- const all=getContents().filter(x=>x.status==='منشور' && (x.type===type || x.type.endsWith(type)));
- const rows=all.length?all.slice().reverse().map(x=>'<div class="content-row"><div><strong>'+escapeHtml(x.title)+'</strong><div style="color:#63766f;font-size:12px;margin-top:4px">'+escapeHtml(x.level)+' • '+escapeHtml(x.service)+'</div></div><span class="notif-badge">منشور</span></div>').join(''):'<div class="request-empty">📭 لا يوجد محتوى منشور من هذا النوع حاليًا.</div>';
- show('👨‍🎓 '+type,'<div class="section-intro"><div class="big-icon">'+({'الدروس المسجّلة':'🎥','حلّ التمارين':'📝','الوثائق':'📄','الملفات':'📁','حصص الدعم المسجّلة':'💻','الحصص المجانية':'🆓'}[type]||'📚')+'</div><h3>'+type+'</h3><p>المحتويات المنشورة لهذا القسم تظهر هنا تلقائيًا بعد نشرها من إدارة المحتوى.</p></div><div class="content-list">'+rows+'</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonTypes()">العودة إلى أنواع الدروس</button>');
+ const all=getContents().filter(x=>contentMatchesStudent(x) && (x.type===type || x.type.endsWith(type)));
+ const icon=({'الدروس المسجّلة':'🎥','حلّ التمارين':'📝','الوثائق':'📄','الملفات':'📁','حصص الدعم المسجّلة':'💻','الحصص المجانية':'🆓'}[type]||'📚');
+ const rows=all.length?all.slice().reverse().map(x=>`<div class="content-row" style="align-items:center;gap:10px">
+   <div style="flex:1"><strong>${escapeHtml(x.title)}</strong><div style="color:#63766f;font-size:12px;margin-top:4px">${escapeHtml(x.level||'محتوى مجاني')} • ${escapeHtml(x.service||'')}</div></div>
+   <button type="button" class="btn" style="padding:8px 11px;min-width:86px" onclick="openStudentContent('${escapeHtml(x.id)}')">فتح</button>
+ </div>`).join(''):'<div class="request-empty">📭 لا يوجد محتوى متاح لك من هذا النوع حاليًا.</div>';
+ show('👨‍🎓 '+type,'<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+type+'</h3><p>المحتويات المنشورة المسموح بها لحسابك تظهر هنا تلقائيًا.</p></div><div class="content-list">'+rows+'</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonTypes()">العودة إلى أنواع الدروس</button>');
+}
+function openStudentContent(id){
+ const item=getContents().find(x=>String(x.id)===String(id));
+ if(!item || !contentMatchesStudent(item)){show('🔒 محتوى غير متاح','<div class="student-empty">🔒 هذا المحتوى غير متاح لحسابك أو لم يعد منشورًا.</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonTypes()">العودة إلى الدروس</button>');return;}
+ localStorage.setItem('t20_student_last_activity',JSON.stringify({id:item.id,title:item.title,type:item.type,at:new Date().toISOString()}));
+ const icon=({'🎥 الدروس المسجّلة':'🎥','📝 حلّ التمارين':'📝','📄 الوثائق':'📄','📁 الملفات':'📁','💻 حصص الدعم المسجّلة':'💻','🆓 الحصص المجانية':'🆓'}[item.type]||'📚');
+ const media=item.fileName||item.fileUrl||item.url;
+ const mediaBox=media?'<div style="background:#f7fbf8;border:1px solid #dcebe2;border-radius:16px;padding:14px;margin-top:12px"><b>📎 المورد المرتبط</b><p style="margin:7px 0 0;color:#63766f">'+escapeHtml(item.fileName||media)+'</p></div>':'<div style="background:#fff9e9;border:1px dashed #d5ad57;border-radius:16px;padding:14px;margin-top:12px;color:#6d6548">▶️ المحتوى محفوظ في المنصة، لكن لم يتم ربط ملف/فيديو فعلي به بعد.</div>';
+ show('👨‍🎓 '+item.title,'<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.level||'محتوى مجاني')+' • '+escapeHtml(item.service||'')+'</p></div><div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;line-height:1.9"><b>📌 حالة المحتوى</b><p style="margin:6px 0;color:#63766f">منشور ومتاح لحسابك.</p>'+mediaBox+'</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonType('+JSON.stringify(item.type.replace(/^[^ ]+ /,'')).replace(/</g,'\u003c')+')">العودة إلى القائمة</button>');
 }
 function studentModule(title){
  if(title==='الدروس'){studentLessonTypes();return;}
