@@ -149,6 +149,8 @@ body{background:radial-gradient(circle at 10% 10%,#f2dfac88,transparent 25%),lin
 }
 
 .content-admin{padding:4px}.section-intro{text-align:center;padding:8px 4px}.section-intro .big-icon{font-size:46px}.section-intro h3{color:var(--deep);margin:7px 0}.section-intro p{color:var(--muted);line-height:1.9;margin:5px 0}.admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.admin-actions .btn{flex:1;min-width:150px}.btn.secondary{background:#fff;color:var(--deep);border:1px solid #c9d9d2}.subhead{color:var(--deep);margin:16px 0 9px}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.admin-mini{border:1px solid #d8e5df;border-radius:18px;background:#f8fcfa;padding:13px;text-align:right;color:var(--deep);cursor:pointer}.admin-mini span{display:block;font-weight:800}.admin-mini small{display:block;color:var(--muted);margin-top:4px}.content-list{margin-top:14px}.content-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #d8e5df;border-radius:18px;padding:13px;background:#fff}.content-row strong,.content-row small{display:block}.content-row small{color:var(--muted);margin-top:4px;line-height:1.6}.status{background:#fff4c9;border:1px solid #e3ca6d;padding:5px 9px;border-radius:999px;font-size:12px;white-space:nowrap}.form-stack{padding:4px}.form-stack label{display:block;color:var(--deep);font-weight:700;margin:9px 0 5px}.form-stack .field{width:100%}@media(max-width:430px){.admin-grid{grid-template-columns:1fr}.admin-actions{flex-direction:column}.admin-actions .btn{width:100%}}
+
+.notif-wrap{display:flex;flex-direction:column;gap:12px}.notif-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:10px}.notif-item{background:#fff;border:1px solid #dce8e3;border-radius:18px;padding:14px;box-shadow:0 5px 14px rgba(20,70,55,.06);position:relative}.notif-item.unread{border-right:5px solid #0f7b66;background:#f5fbf8}.notif-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.notif-title{font-weight:800;color:#164f45}.notif-meta{font-size:12px;color:#71837d;margin-top:4px}.notif-body{color:#63766f;line-height:1.8;margin-top:8px}.notif-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.notif-actions button{border:1px solid #b9d7c8;background:#fff;color:#164f45;border-radius:12px;padding:8px 10px}.notif-badge{display:inline-block;background:#0f7b66;color:#fff;border-radius:999px;padding:3px 8px;font-size:11px}.notif-empty{text-align:center;padding:22px;color:#71837d;background:#f7fbf9;border:1px dashed #c8ddd4;border-radius:18px}
 .today-wrap{display:flex;flex-direction:column;gap:12px}.today-head{text-align:center;padding:8px 0}.today-head h3{margin:4px 0;font-size:26px}.today-head p{margin:0;color:#71837d}.today-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.today-stat{background:#eef8f3;border:1px solid #d7e8e0;border-radius:18px;padding:14px;text-align:center}.today-stat b{display:block;font-size:26px;color:#0d594c}.today-stat span{font-size:13px;color:#6d7e78}.today-card{background:#fff;border:1px solid #dce8e3;border-radius:18px;padding:15px;box-shadow:0 5px 14px rgba(20,70,55,.06)}.today-card strong{display:block;color:#164f45;margin-bottom:5px}.today-card small{display:block;color:#71837d;line-height:1.7}.today-wrap .subhead{margin:6px 0 0}
 </style>
 
@@ -778,7 +780,7 @@ function adminDashboard(){
  ];
  let html='<div class="admin-head"><div><strong>مرحبًا أستاذة حياة 🌿</strong><p>هذه لوحة التحكم الرئيسية للمنصة. سنفعّل كل قسم تدريجيًا.</p></div><div class="admin-badge">🔐 الإدارة</div></div><div class="admin-grid">';
  cards.forEach((c,i)=>html+='<button type="button" class="admin-card" onclick="adminModule(\''+c[1]+'\')"><span class="admin-card-icon">'+c[0]+'</span><span><b>'+c[1]+'</b><small>'+c[2]+'</small></span><span class="admin-arrow">←</span></button>');
- html+='</div><div class="admin-note">🔓 <b>دخول الإدارة الكامل</b> — يمكنكِ من هنا فتح أي فضاء للاختبار دون إدخال كود، لأن الأستاذة حياة مسؤولة عن المنصة كاملة.</div><div class="admin-access"><h3>🔓 الدخول السريع إلى الفضاءات</h3><div class="admin-access-grid"><button type="button" data-admin-space="teacher">👩‍🏫 فضاء الأساتذة</button><button type="button" data-admin-space="parent">👨‍👩‍👧 فضاء الأولياء</button><button type="button" data-admin-space="student">👨‍🎓 فضاء التلاميذ</button><button type="button" data-test-broadcast="1">🎥 بث تجريبي</button></div></div><div class="admin-note">🧪 <b>V64 تجريبية</b> — هذه الإضافة للاختبار فقط، ولا تغيّر بيانات المنصة.</div>';
+ html+='</div><div class="admin-note">🔓 <b>دخول الإدارة الكامل</b> — يمكنكِ من هنا فتح أي فضاء للاختبار دون إدخال كود، لأن الأستاذة حياة مسؤولة عن المنصة كاملة.</div><div class="admin-access"><h3>🔓 الدخول السريع إلى الفضاءات</h3><div class="admin-access-grid"><button type="button" data-admin-space="teacher">👩‍🏫 فضاء الأساتذة</button><button type="button" data-admin-space="parent">👨‍👩‍👧 فضاء الأولياء</button><button type="button" data-admin-space="student">👨‍🎓 فضاء التلاميذ</button><button type="button" data-test-broadcast="1">🎥 بث تجريبي</button></div></div><div class="admin-note">🧪 <b>V65 تجريبية</b> — مركز التنبيهات قيد الاختبار، ولا يغيّر بيانات المنصة.</div>';
  show('🌿 فضاء الأستاذة حياة',html);
 }
 
@@ -813,6 +815,7 @@ function stopTestBroadcast(){
 function adminModule(title){
  if(title==='المحتوى'){ return adminContent(); }
  if(title==='لوحة اليوم'){ return todayDashboard(); }
+ if(title==='الإشعارات'){ return notificationCenter(); }
  show('🌿 '+title,'<div style="text-align:center;padding:12px 4px"><div style="font-size:48px">🧩</div><h3 style="color:var(--deep);margin:8px 0">'+title+'</h3><p style="color:#63766f;line-height:1.9">هذا القسم أصبح موجودًا في لوحة الأستاذة حياة، وسنضيف وظائفه الفعلية خطوة بخطوة دون المساس بباقي المنصة.</p><button class="btn" style="width:100%;margin-top:12px" onclick="adminDashboard()">العودة للوحة التحكم</button></div>');
 }
 function todayDashboard(){
@@ -851,6 +854,47 @@ function saveContentDraft(){
 }
 function contentFilter(type){ show('📚 '+type,`<div class="section-intro"><div class="big-icon">📂</div><h3>${type}</h3><p>هذه واجهة إدارة هذا النوع من المحتوى. يمكنك إضافة مورد جديد وتحديد المستوى والخدمة وحالة النشر.</p></div><div class="admin-actions"><button class="btn" onclick="newContent()">➕ إضافة ${type}</button><button class="btn secondary" onclick="adminContent()">رجوع إلى المحتوى</button></div>`);
 }
+function getNotifications(){
+ try{return JSON.parse(localStorage.getItem('t20_notifications')||'[]')}catch(e){return []}
+}
+function setNotifications(list){localStorage.setItem('t20_notifications',JSON.stringify(list));}
+function notificationCenter(){
+ const list=getNotifications();
+ const unread=list.filter(n=>!n.read).length;
+ const rows=list.length?list.slice().reverse().map((n,i)=>`<div class="notif-item ${n.read?'':'unread'}">
+   <div class="notif-top"><div><div class="notif-title">${escapeHtml(n.title)}</div><div class="notif-meta">${escapeHtml(n.type)} • ${escapeHtml(n.audience)} • ${escapeHtml(n.when||'فوري')}</div></div><span class="notif-badge">${n.read?'مقروء':'جديد'}</span></div>
+   <div class="notif-body">${escapeHtml(n.body||'')}</div>
+   <div class="notif-actions">${n.read?'':'<button type="button" onclick="markNotificationRead(\''+n.id+'\')">✓ تعليم كمقروء</button>'}<button type="button" onclick="deleteNotification(\''+n.id+'\')">🗑️ حذف</button></div>
+ </div>`).join(''):'<div class="notif-empty">🔔 لا توجد تنبيهات حاليًا.<br><small>يمكنك إنشاء أول تنبيه من الزر أعلاه.</small></div>';
+ show('🔔 مركز التنبيهات',`<div class="notif-wrap">
+  <div class="section-intro"><div class="big-icon">🔔</div><h3>مركز التنبيهات</h3><p>إدارة التنبيهات من مكان واحد، مع تحديد الجمهور وتوقيت الإرسال وحالة القراءة.</p><p><b>${unread}</b> تنبيه غير مقروء</p></div>
+  <div class="notif-toolbar"><button class="btn" onclick="newNotification()">➕ إنشاء تنبيه</button><button class="btn secondary" onclick="markAllNotificationsRead()">✓ تعليم الكل كمقروء</button></div>
+  <h4 class="subhead">📥 التنبيهات الحالية</h4>${rows}
+  <button class="btn secondary" style="width:100%" onclick="adminDashboard()">العودة إلى لوحة التحكم</button>
+ </div>`);
+}
+function newNotification(){
+ show('➕ إنشاء تنبيه',`<div class="form-stack">
+ <label>عنوان التنبيه</label><input id="nTitle" class="field" placeholder="مثال: حصة مباشرة جديدة">
+ <label>نوع التنبيه</label><select id="nType" class="field"><option>📌 إعلان مهم</option><option>🗓️ حصة</option><option>🎥 تسجيل جديد</option><option>⚡ تحدي</option><option>💳 دفع</option><option>🔔 تذكير</option></select>
+ <label>الجمهور</label><select id="nAudience" class="field"><option>الجميع</option><option>👨‍🎓 فضاء التلاميذ</option><option>👨‍👩‍👧 فضاء الأولياء</option><option>👩‍🏫 فضاء الأساتذة</option></select>
+ <label>متى يظهر؟</label><select id="nWhen" class="field"><option>فوري</option><option>24 ساعة قبل الموعد</option><option>ساعة قبل الموعد</option><option>عند بداية النشاط</option></select>
+ <label>نص التنبيه</label><textarea id="nBody" class="field" rows="4" placeholder="اكتبي نص التنبيه..."></textarea>
+ <div class="admin-actions"><button class="btn" onclick="saveNotification()">💾 حفظ التنبيه</button><button class="btn secondary" onclick="notificationCenter()">رجوع</button></div>
+ </div>`);
+}
+function saveNotification(){
+ const title=(document.getElementById('nTitle')||{}).value?.trim();
+ const body=(document.getElementById('nBody')||{}).value?.trim();
+ if(!title||!body){alert('يرجى إدخال عنوان ونص التنبيه');return;}
+ const list=getNotifications();
+ list.push({id:'n_'+Date.now(),title,body,type:document.getElementById('nType').value,audience:document.getElementById('nAudience').value,when:document.getElementById('nWhen').value,read:false,createdAt:new Date().toISOString()});
+ setNotifications(list); notificationCenter();
+}
+function markNotificationRead(id){const list=getNotifications().map(n=>n.id===id?{...n,read:true}:n);setNotifications(list);notificationCenter();}
+function markAllNotificationsRead(){setNotifications(getNotifications().map(n=>({...n,read:true})));notificationCenter();}
+function deleteNotification(id){setNotifications(getNotifications().filter(n=>n.id!==id));notificationCenter();}
+function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function teacher(){show('👩‍🏫 فضاء الأساتذة','<label>اللغة</label><select id="teacherLang" class="field"><option>العربية</option><option>Français</option><option>English</option></select><label>المادة</label><select id="teacherSubject" class="field"><option>العلوم الطبيعية</option><option>الرياضيات</option><option>اللغة العربية</option><option>اللغة الفرنسية</option><option>اللغة الإنجليزية</option></select><label>كود الأستاذ</label><input id="teacherCode" class="field" placeholder="أدخل كود الأستاذ" autocomplete="off"><button class="btn" style="width:100%;margin-top:8px" onclick="loginTeacher()">دخول</button>')}
 function loginTeacher(){const code=document.getElementById('teacherCode').value.trim();if(!code){alert('يرجى إدخال كود الأستاذ');return;}dashboard('teacher')}
 function parentLogin(){show('👨‍👩‍👧 فضاء الأولياء','<label>اسم الولي</label><input id="parentName" class="field" placeholder="الاسم واللقب"><label>كود الولي</label><input id="parentCode" class="field" placeholder="أدخل كود الولي" autocomplete="off"><button class="btn" style="width:100%;margin-top:8px" onclick="loginParent()">دخول</button>')}
