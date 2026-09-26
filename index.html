@@ -310,6 +310,19 @@ body.modal-open{overflow:hidden !important;}
  .student-welcome h3{font-size:19px}
 }
 </style>
+
+<style id="v76-today-dashboard">
+.student-today{display:flex;flex-direction:column;gap:14px}
+.today-head{background:linear-gradient(145deg,#0f5b49,#318f73);color:#fff;border-radius:24px;padding:18px;box-shadow:0 12px 28px rgba(18,82,65,.16)}
+.today-head-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.today-head h3{margin:0;font-size:21px}.today-head p{margin:5px 0 0;opacity:.9;line-height:1.7}
+.today-date{margin-top:13px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:9px 11px;font-size:13px}
+.today-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.today-stat{background:#fff;border:1px solid #d9e9e2;border-radius:17px;padding:12px;text-align:center}
+.today-stat strong{display:block;color:var(--deep);font-size:20px}.today-stat small{color:#63766f}
+.today-empty{background:#fff;border:1px dashed #b9d7c8;border-radius:19px;padding:20px;text-align:center;color:#63766f;line-height:1.9}
+.today-note{background:#fff8e7;border:1px solid #ecd79b;border-radius:17px;padding:12px 14px;color:#6f5b21;font-size:12px;line-height:1.8}
+</style>
 </head>
 <body>
 <header class="hero">
@@ -456,8 +469,24 @@ function studentLessonType(type){
 }
 function studentModule(title){
  if(title==='الدروس'){studentLessonTypes();return;}
- show('👨‍🎓 '+title,'<div style="text-align:center;padding:12px 4px"><div style="font-size:48px">'+({'الحصص المجانية':'🆓','دروس الدعم':'🏫','الدورات':'🎓','مراجعة وتطبيق':'📚','نتحدى':'🧩','نتطور':'📈','أرشيفي':'🗂️','مركز التنبيهات':'🔔','لوحة اليوم':'📅','ملفي':'👤'}[title]||'📚')+'</div><h3 style="color:var(--deep);margin:8px 0">'+title+'</h3><p style="color:#63766f;line-height:1.9">هذا القسم موجود في فضاء التلاميذ، وسيتم تفعيل وظائفه في المراحل التالية.</p><button class="btn" style="width:100%;margin-top:12px" onclick="studentDashboard()">العودة لفضاء التلاميذ</button></div>');
+ if(title==='لوحة اليوم'){studentTodayDashboard();return;}
+ show('👨‍🎓 '+title,'<div style="text-align:center;padding:12px 4px"><div style="font-size:48px">'+({'الحصص المجانية':'🆓','دروس الدعم':'🏫','الدورات':'🎓','مراجعة وتطبيق':'📚','نتحدى':'🧩','نتطور':'📈','أرشيفي':'🗂️','مركز التنبيهات':'🔔','ملفي':'👤'}[title]||'📚')+'</div><h3 style="color:var(--deep);margin:8px 0">'+title+'</h3><p style="color:#63766f;line-height:1.9">هذا القسم موجود في فضاء التلاميذ، وسيتم تفعيل وظائفه في المراحل التالية.</p><button class="btn" style="width:100%;margin-top:12px" onclick="studentDashboard()">العودة لفضاء التلاميذ</button></div>');
 }
+function studentTodayDashboard(){
+ const now=new Date();
+ const dateText=now.toLocaleDateString('ar-DZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ const activities=[];
+ let html='<div class="student-today">'+
+ '<div class="today-head"><div class="today-head-row"><div><h3>📅 لوحة اليوم</h3><p>كل ما يخص يومك الدراسي في مكان واحد.</p></div><span style="font-size:34px">🗓️</span></div><div class="today-date">'+dateText+'</div></div>'+
+ '<div class="today-summary"><div class="today-stat"><strong>'+activities.length+'</strong><small>أنشطة اليوم</small></div><div class="today-stat"><strong>0</strong><small>حصص مباشرة</small></div><div class="today-stat"><strong>0</strong><small>تحديات</small></div></div>';
+ if(!activities.length){
+   html+='<div class="today-empty">🌿 <b>لا توجد أنشطة مبرمجة لك اليوم.</b><br>عند إضافة حصة أو دورة أو تحدٍّ موجّه لمستواك، سيظهر هنا تلقائيًا مع موعده والعدّ التنازلي.</div>';
+ }
+ html+='<div class="today-note">🔔 <b>التنبيهات:</b> عند تفعيل الجدولة الحقيقية ستظهر التذكيرات قبل 24 ساعة، وقبل ساعة، وعند بداية النشاط.</div>'+
+ '<button class="btn secondary" style="width:100%;margin-top:2px" onclick="studentDashboard()">← العودة إلى الرئيسية</button></div>';
+ show('📅 لوحة اليوم',html);
+}
+
 function admin(){show('🌿 فضاء الأستاذة حياة','<p style="color:#63766f;line-height:1.8">الدخول مباشر إلى فضاء الأستاذة حياة، بدون كود.</p><button class="btn" style="width:100%;margin-top:8px" onclick="dashboard(\'admin\')">دخول الأستاذة حياة</button>')}
 function adminDashboard(){
  const cards=[
