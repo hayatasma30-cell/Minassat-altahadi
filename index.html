@@ -639,6 +639,47 @@ body{background:radial-gradient(circle at 10% 10%,#f2dfac88,transparent 25%),lin
 }
 </style>
 
+
+<style id="v62-admin-scroll-fix">
+/* V62 — إصلاح شاشة فضاء الأستاذة حياة على الهاتف: السماح بالتمرير داخل لوحة الإدارة */
+.modal{
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+  align-items:flex-start !important;
+  padding:12px !important;
+}
+.modal.on{
+  overflow-y:auto !important;
+}
+.modal .box{
+  max-height:calc(100dvh - 24px) !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+  margin:0 auto !important;
+  padding-bottom:24px !important;
+}
+@supports not (height: 100dvh){
+  .modal .box{max-height:calc(100vh - 24px) !important;}
+}
+@media(max-width:600px){
+  .modal{padding:8px !important;}
+  .modal .box{
+    width:100% !important;
+    max-height:calc(100dvh - 16px) !important;
+    border-radius:20px !important;
+    padding:20px 14px 24px !important;
+  }
+}
+</style>
+
+
+<style id="v62-scroll-final-fix">
+html,body{min-height:100%;}
+body.modal-open{overflow:hidden !important;}
+.modal{touch-action:pan-y !important;overscroll-behavior:contain !important;}
+.modal .box{touch-action:pan-y !important;overscroll-behavior:contain !important;}
+.admin-access-grid button{touch-action:manipulation !important;cursor:pointer !important;}
+</style>
 </head>
 <body>
 <header class="hero">
@@ -707,8 +748,8 @@ body{background:radial-gradient(circle at 10% 10%,#f2dfac88,transparent 25%),lin
 
 <script>
 const modal=document.getElementById('modal');
-function show(t,c){document.getElementById('mt').textContent=t;document.getElementById('mc').innerHTML=c;modal.classList.add('on')}
-function closeM(){modal.classList.remove('on')}
+function show(t,c){document.getElementById('mt').textContent=t;document.getElementById('mc').innerHTML=c;modal.classList.add('on');document.body.classList.add('modal-open');requestAnimationFrame(()=>{modal.scrollTop=0;const box=modal.querySelector('.box');if(box)box.scrollTop=0;});}
+function closeM(){modal.classList.remove('on');document.body.classList.remove('modal-open');}
 function home(){window.scrollTo({top:0,behavior:'smooth'})}
 function video(t){show(t,'<div style="height:240px;border-radius:20px;background:linear-gradient(145deg,#123f35,#4b9bb0);display:flex;align-items:center;justify-content:center;color:#fff;font-size:58px">▶</div><p style="color:#63766f;line-height:1.8">مكان الفيديو جاهز، وسيتم ربط الفيديو الحقيقي هنا لاحقًا.</p>')}
 
@@ -734,10 +775,16 @@ function adminDashboard(){
  ];
  let html='<div class="admin-head"><div><strong>مرحبًا أستاذة حياة 🌿</strong><p>هذه لوحة التحكم الرئيسية للمنصة. سنفعّل كل قسم تدريجيًا.</p></div><div class="admin-badge">🔐 الإدارة</div></div><div class="admin-grid">';
  cards.forEach((c,i)=>html+='<button type="button" class="admin-card" onclick="adminModule(\''+c[1]+'\')"><span class="admin-card-icon">'+c[0]+'</span><span><b>'+c[1]+'</b><small>'+c[2]+'</small></span><span class="admin-arrow">←</span></button>');
- html+='</div><div class="admin-note">🔓 <b>دخول الإدارة الكامل</b> — يمكنكِ من هنا فتح أي فضاء للاختبار دون إدخال كود، لأن الأستاذة حياة مسؤولة عن المنصة كاملة.</div><div class="admin-access"><h3>🔓 الدخول السريع إلى الفضاءات</h3><div class="admin-access-grid"><button onclick=&quot;adminOpenSpace(\"teacher\")&quot;>👩‍🏫 فضاء الأساتذة</button><button onclick=&quot;adminOpenSpace(\"parent\")&quot;>👨‍👩‍👧 فضاء الأولياء</button><button onclick=&quot;adminOpenSpace(\"student\")&quot;>👨‍🎓 فضاء التلاميذ</button><button onclick=&quot;testBroadcast()&quot;>🎥 بث تجريبي</button></div></div><div class="admin-note">🧪 <b>V61 تجريبية</b> — هذه الإضافة للاختبار فقط، ولا تغيّر بيانات المنصة.</div>';
+ html+='</div><div class="admin-note">🔓 <b>دخول الإدارة الكامل</b> — يمكنكِ من هنا فتح أي فضاء للاختبار دون إدخال كود، لأن الأستاذة حياة مسؤولة عن المنصة كاملة.</div><div class="admin-access"><h3>🔓 الدخول السريع إلى الفضاءات</h3><div class="admin-access-grid"><button type="button" data-admin-space="teacher">👩‍🏫 فضاء الأساتذة</button><button type="button" data-admin-space="parent">👨‍👩‍👧 فضاء الأولياء</button><button type="button" data-admin-space="student">👨‍🎓 فضاء التلاميذ</button><button type="button" data-test-broadcast="1">🎥 بث تجريبي</button></div></div><div class="admin-note">🧪 <b>V61 تجريبية</b> — هذه الإضافة للاختبار فقط، ولا تغيّر بيانات المنصة.</div>';
  show('🌿 فضاء الأستاذة حياة',html);
 }
 
+document.addEventListener('click',function(e){
+ const b=e.target.closest('[data-admin-space]');
+ if(b){e.preventDefault();e.stopPropagation();adminOpenSpace(b.getAttribute('data-admin-space'));return;}
+ const tb=e.target.closest('[data-test-broadcast]');
+ if(tb){e.preventDefault();e.stopPropagation();testBroadcast();}
+});
 function adminOpenSpace(role){
  const titles={teacher:'👩‍🏫 فضاء الأساتذة',parent:'👨‍👩‍👧 فضاء الأولياء',student:'👨‍🎓 فضاء التلاميذ'};
  show(titles[role],'<div style="text-align:center;padding:12px 4px"><div style="font-size:48px;margin-bottom:8px">🔓</div><h3 style="color:var(--deep);margin:0 0 8px">دخول الأستاذة حياة</h3><p style="color:#63766f;line-height:1.9;margin:0">تم فتح هذا الفضاء بصلاحية الإدارة الكاملة، دون طلب كود.</p><button class="btn" style="width:100%;margin-top:18px" onclick="closeM()">متابعة الاختبار</button><button class="btn" style="width:100%;margin-top:8px;background:#fff;color:var(--deep);border:1px solid #b9d7c8" onclick="adminDashboard()">العودة للوحة الأستاذة حياة</button></div>');
