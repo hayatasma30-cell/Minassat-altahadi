@@ -510,8 +510,39 @@ function studentModule(title){
  if(title==='لوحة اليوم'){studentTodayDashboard();return;}
  if(title==='نتطور'){studentProgressDashboard();return;}
  if(title==='مركز التنبيهات'){studentNotifications();return;}
+ if(title==='دروس الدعم'){studentSupportDashboard();return;}
  show('👨‍🎓 '+title,'<div style="text-align:center;padding:12px 4px"><div style="font-size:48px">'+({'الحصص المجانية':'🆓','دروس الدعم':'🏫','الدورات':'🎓','مراجعة وتطبيق':'📚','نتحدى':'🧩','نتطور':'📈','أرشيفي':'🗂️','مركز التنبيهات':'🔔','ملفي':'👤'}[title]||'📚')+'</div><h3 style="color:var(--deep);margin:8px 0">'+title+'</h3><p style="color:#63766f;line-height:1.9">هذا القسم موجود في فضاء التلاميذ، وسيتم تفعيل وظائفه في المراحل التالية.</p><button class="btn" style="width:100%;margin-top:12px" onclick="studentDashboard()">العودة لفضاء التلاميذ</button></div>');
 }
+// V80 — فضاء التلاميذ: قسم دروس الدعم
+function studentSupportDashboard(){
+ const html='<div class="student-support-page">'+
+ '<div class="support-hero" style="background:linear-gradient(135deg,#eef9f2,#fff9e9);border:1px solid #cfe5d8;border-radius:22px;padding:18px;margin-bottom:12px">'+
+ '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><h3 style="margin:0;color:var(--deep);font-size:22px">🏫 دروس الدعم</h3><p style="margin:7px 0 0;color:#63766f;line-height:1.8">متابعة حصص الدعم الخاصة بمستواك، ومواعيدها، وحالتها، وتسجيلاتها بعد انتهاء الحصة.</p></div><span style="font-size:42px">📚</span></div></div>'+
+ '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px">'+
+ '<div style="font-weight:900;color:var(--deep);margin-bottom:8px">📌 اشتراكك الحالي</div>'+
+ '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">'+
+ '<div style="background:#f7fbf8;border-radius:14px;padding:11px"><small style="color:#71857d">الحالة</small><b style="display:block;margin-top:4px;color:#63766f">لا توجد بيانات بعد</b></div>'+
+ '<div style="background:#f7fbf8;border-radius:14px;padding:11px"><small style="color:#71857d">الحصص</small><b style="display:block;margin-top:4px;color:#63766f">0 / 4</b></div></div>'+
+ '<p style="margin:10px 0 0;color:#71857d;font-size:12px;line-height:1.7">ستظهر حالة اشتراكك الحقيقية وعدد الحصص المستعملة والمتبقية بعد ربط حسابك بخدمة الدعم.</p></div>'+
+ '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px">'+
+ '<div style="font-weight:900;color:var(--deep);margin-bottom:10px">💻 تلاميذ Zoom</div>'+
+ '<div class="student-empty">📅 لا توجد حصة Zoom مبرمجة لك حاليًا.<br><small>عند برمجة حصة موجّهة لمستواك ستظهر هنا مع التاريخ والساعة والعدّ التنازلي ورابط الدخول.</small></div></div>'+
+ '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px">'+
+ '<div style="font-weight:900;color:var(--deep);margin-bottom:10px">🏫 حصص فردية حضورية</div>'+
+ '<div class="student-empty">📅 لا توجد حصة حضورية مبرمجة لك حاليًا.<br><small>الحصص الحضورية تُعرض هنا بشكل منفصل عن حصص Zoom.</small></div></div>'+
+ '<div style="background:#fdf9e9;border:1px dashed #d5ad57;border-radius:18px;padding:14px;margin-bottom:12px;color:#5f604c;line-height:1.8;font-size:12px">🔔 <b>نظام الاشتراك:</b> اشتراك الدعم مخصص لأربع حصص في الشهر. كل حصة تُحتسب من الاشتراك، وعند استنفاد الحصص يظهر تنبيه التجديد قبل متابعة الحصص القادمة.</div>'+
+ '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px">'+
+ '<div style="font-weight:900;color:var(--deep);margin-bottom:10px">🎥 حصص الدعم المسجّلة</div>'+
+ '<div class="student-empty">📭 لا توجد تسجيلات دعم متاحة لك حاليًا.<br><small>بعد انتهاء الحصة المباشرة وحفظ التسجيل، سيظهر هنا إذا كان متاحًا لحسابك.</small></div></div>'+
+ '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px">'+
+ '<div style="font-weight:900;color:var(--deep);margin-bottom:10px">💬 أسئلة الحصص</div>'+
+ '<div class="student-empty">💬 لا توجد أسئلة أو أجوبة مرتبطة بحصصك بعد.<br><small>عند تفعيل الحصة، يمكن طرح الأسئلة ومشاهدة أجوبة الأستاذة حياة المرتبطة بها.</small></div></div>'+
+ '<div style="background:#f7fbf8;border-radius:16px;padding:12px;color:#63766f;font-size:12px;line-height:1.8">🔒 هذه المعلومات خاصة بحسابك، ولا تظهر للتلاميذ الآخرين.</div>'+
+ '<button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentDashboard()">← العودة إلى فضاء التلاميذ</button>'+
+ '</div>';
+ show('🏫 دروس الدعم',html);
+}
+
 function studentTodayDashboard(){
  const now=new Date();
  const dateText=now.toLocaleDateString('ar-DZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -571,7 +602,7 @@ function adminDashboard(){
  ];
  let html='<div class="admin-head"><div><strong>مرحبًا أستاذة حياة 🌿</strong><p>هذه لوحة التحكم الرئيسية للمنصة. سنفعّل كل قسم تدريجيًا.</p></div><div class="admin-badge">🔐 الإدارة</div></div><div class="admin-grid">';
  cards.forEach((c,i)=>html+='<button type="button" class="admin-card admin-module-card" data-admin-module="'+escapeHtml(c[1])+'"><span class="admin-card-icon">'+c[0]+'</span><span><b>'+c[1]+'</b><small>'+c[2]+'</small></span><span class="admin-arrow">←</span></button>');
- html+='</div><div class="admin-note">🔓 <b>دخول الإدارة الكامل</b> — يمكنكِ من هنا فتح أي فضاء للاختبار دون إدخال كود، لأن الأستاذة حياة مسؤولة عن المنصة كاملة.</div><div class="admin-access"><h3>🔓 الدخول السريع إلى الفضاءات</h3><div class="admin-access-grid"><button type="button" data-admin-space="teacher">👩‍🏫 فضاء الأساتذة</button><button type="button" data-admin-space="parent">👨‍👩‍👧 فضاء الأولياء</button><button type="button" data-admin-space="student">👨‍🎓 فضاء التلاميذ</button><button type="button" data-test-broadcast="1">🎥 بث تجريبي</button></div></div><div class="admin-note">🧪 <b>V79 تجريبية</b> — دمج فضاء التلاميذ ومركز التنبيهات، ولا يغيّر بيانات المنصة.</div>';
+ html+='</div><div class="admin-note">🔓 <b>دخول الإدارة الكامل</b> — يمكنكِ من هنا فتح أي فضاء للاختبار دون إدخال كود، لأن الأستاذة حياة مسؤولة عن المنصة كاملة.</div><div class="admin-access"><h3>🔓 الدخول السريع إلى الفضاءات</h3><div class="admin-access-grid"><button type="button" data-admin-space="teacher">👩‍🏫 فضاء الأساتذة</button><button type="button" data-admin-space="parent">👨‍👩‍👧 فضاء الأولياء</button><button type="button" data-admin-space="student">👨‍🎓 فضاء التلاميذ</button><button type="button" data-test-broadcast="1">🎥 بث تجريبي</button></div></div><div class="admin-note">🧪 <b>V80 تجريبية</b> — دمج فضاء التلاميذ ومركز التنبيهات، ولا يغيّر بيانات المنصة.</div>';
  show('🌿 فضاء الأستاذة حياة',html);
 }
 function adminOpenSpace(role){
