@@ -323,6 +323,25 @@ body.modal-open{overflow:hidden !important;}
 .today-empty{background:#fff;border:1px dashed #b9d7c8;border-radius:19px;padding:20px;text-align:center;color:#63766f;line-height:1.9}
 .today-note{background:#fff8e7;border:1px solid #ecd79b;border-radius:17px;padding:12px 14px;color:#6f5b21;font-size:12px;line-height:1.8}
 </style>
+
+<style id="v77-student-progress">
+.student-progress-page{display:flex;flex-direction:column;gap:14px}
+.progress-hero{background:linear-gradient(145deg,#0f5b49,#318f73);color:#fff;border-radius:24px;padding:18px;box-shadow:0 12px 28px rgba(18,82,65,.16)}
+.progress-hero h3{margin:0;font-size:21px}.progress-hero p{margin:5px 0 0;opacity:.9;line-height:1.7}
+.progress-main{background:#fff;border:1px solid #d9e9e2;border-radius:20px;padding:16px}
+.progress-main-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.progress-main-top b{color:var(--deep);font-size:16px}.progress-main-top span{color:#63766f;font-size:13px}
+.progress-track{height:12px;background:#dcebe4;border-radius:999px;overflow:hidden;margin-top:12px}
+.progress-track span{display:block;width:0%;height:100%;background:#2f8d72;border-radius:999px}
+.progress-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.progress-card{background:#fff;border:1px solid #d9e9e2;border-radius:18px;padding:15px}
+.progress-card .ico{font-size:27px;display:block;margin-bottom:7px}.progress-card b{display:block;color:var(--deep)}
+.progress-card small{display:block;color:#63766f;line-height:1.7;margin-top:3px}
+.progress-empty{background:#fff;border:1px dashed #b9d7c8;border-radius:19px;padding:18px;text-align:center;color:#63766f;line-height:1.9}
+.progress-note{background:#f5faf7;border:1px solid #d7e9df;border-radius:17px;padding:13px;color:#4e6960;font-size:12px;line-height:1.8}
+.progress-goal{background:#fff8e7;border:1px solid #ecd79b;border-radius:18px;padding:14px;color:#6f5b21}
+@media(max-width:520px){.progress-grid{grid-template-columns:1fr 1fr}}
+</style>
 </head>
 <body>
 <header class="hero">
@@ -470,6 +489,7 @@ function studentLessonType(type){
 function studentModule(title){
  if(title==='الدروس'){studentLessonTypes();return;}
  if(title==='لوحة اليوم'){studentTodayDashboard();return;}
+ if(title==='نتطور'){studentProgressDashboard();return;}
  show('👨‍🎓 '+title,'<div style="text-align:center;padding:12px 4px"><div style="font-size:48px">'+({'الحصص المجانية':'🆓','دروس الدعم':'🏫','الدورات':'🎓','مراجعة وتطبيق':'📚','نتحدى':'🧩','نتطور':'📈','أرشيفي':'🗂️','مركز التنبيهات':'🔔','ملفي':'👤'}[title]||'📚')+'</div><h3 style="color:var(--deep);margin:8px 0">'+title+'</h3><p style="color:#63766f;line-height:1.9">هذا القسم موجود في فضاء التلاميذ، وسيتم تفعيل وظائفه في المراحل التالية.</p><button class="btn" style="width:100%;margin-top:12px" onclick="studentDashboard()">العودة لفضاء التلاميذ</button></div>');
 }
 function studentTodayDashboard(){
@@ -485,6 +505,25 @@ function studentTodayDashboard(){
  html+='<div class="today-note">🔔 <b>التنبيهات:</b> عند تفعيل الجدولة الحقيقية ستظهر التذكيرات قبل 24 ساعة، وقبل ساعة، وعند بداية النشاط.</div>'+
  '<button class="btn secondary" style="width:100%;margin-top:2px" onclick="studentDashboard()">← العودة إلى الرئيسية</button></div>';
  show('📅 لوحة اليوم',html);
+}
+
+function studentProgressDashboard(){
+ const html='<div class="student-progress-page">'+
+ '<div class="progress-hero"><h3>📈 تطوري</h3><p>تابع تقدمك الحقيقي في التعلم والأنشطة والتحديات.</p></div>'+
+ '<div class="progress-main"><div class="progress-main-top"><b>📊 التقدم العام</b><span>لم يُحتسب بعد</span></div><div class="progress-track"><span></span></div><p style="margin:10px 0 0;color:#63766f;font-size:12px;line-height:1.7">ستظهر نسبة تقدمك تلقائيًا بعد ربط حسابك بالدروس والأنشطة والنتائج.</p></div>'+
+ '<div class="progress-grid">'+
+ '<div class="progress-card"><span class="ico">📚</span><b>الدروس المكتملة</b><small>لا توجد بيانات بعد.</small></div>'+
+ '<div class="progress-card"><span class="ico">🧩</span><b>التحديات المنجزة</b><small>لا توجد بيانات بعد.</small></div>'+
+ '<div class="progress-card"><span class="ico">📝</span><b>نتائج الاختبارات</b><small>لا توجد نتائج بعد.</small></div>'+
+ '<div class="progress-card"><span class="ico">🏆</span><b>إنجازاتي</b><small>ستظهر الشارات عند تحقيقها.</small></div>'+
+ '<div class="progress-card"><span class="ico">🔥</span><b>سلسلة التفاعل</b><small>تبدأ عند تفعيل الأنشطة.</small></div>'+
+ '<div class="progress-card"><span class="ico">🧠</span><b>أخطائي</b><small>ستُجمع الأخطاء بعد إنجاز التحديات والاختبارات.</small></div>'+
+ '</div>'+
+ '<div class="progress-goal">🎯 <b>هدف الأسبوع</b><br><span>لم يتم تحديد هدف بعد.</span></div>'+
+ '<div class="progress-note">🔒 المعلومات التي ستظهر هنا تخص حسابك أنت فقط، وتُبنى على نشاطك ونتائجك الفعلية.</div>'+
+ '<button class="btn secondary" style="width:100%;margin-top:2px" onclick="studentDashboard()">← العودة إلى الرئيسية</button>'+
+ '</div>';
+ show('📈 تطوري',html);
 }
 
 function admin(){show('🌿 فضاء الأستاذة حياة','<p style="color:#63766f;line-height:1.8">الدخول مباشر إلى فضاء الأستاذة حياة، بدون كود.</p><button class="btn" style="width:100%;margin-top:8px" onclick="dashboard(\'admin\')">دخول الأستاذة حياة</button>')}
