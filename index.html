@@ -893,56 +893,65 @@ document.addEventListener('click',function(e){
 </script>
 
 
-<style id="v84-sim-style">
-#v84-sim-panel{margin-top:12px;padding:14px;border-radius:16px;background:#f7fbf8;border:1px solid #cfe5d6;direction:rtl}
-#v84-sim-panel .v84-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-#v84-sim-panel button{border:0;border-radius:12px;padding:11px;font-weight:700;cursor:pointer}
-#v84-sim-panel .v84-primary{background:#19764a;color:white}
-#v84-sim-panel .v84-light{background:#e8f4ec;color:#155d3a}
-#v84-sim-result{margin-top:12px}
-.v84-check{padding:8px 10px;margin:5px 0;border-radius:10px;background:white}
-@media(max-width:700px){#v84-sim-panel .v84-actions{grid-template-columns:1fr}}
+<style id="v84-simulation-style">
+#v84-sim-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:none;padding:18px;box-sizing:border-box;direction:rtl}
+#v84-sim-panel{max-width:1100px;height:100%;margin:auto;background:#f6fbf8;border-radius:24px;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+#v84-sim-head{position:sticky;top:0;z-index:2;padding:16px 18px;background:#19764a;color:#fff;display:flex;gap:12px;align-items:center;justify-content:space-between}
+#v84-sim-head button{border:0;border-radius:12px;padding:9px 13px;font-weight:700;cursor:pointer}
+#v84-sim-body{padding:18px}
+.v84-card{background:#fff;border:1px solid #d9e9df;border-radius:18px;padding:16px;margin-bottom:12px}
+.v84-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.v84-action{border:0;border-radius:14px;padding:13px;background:#eaf5ee;font-weight:700;cursor:pointer}
+.v84-ok{color:#17613e;font-weight:700}
+@media(max-width:700px){.v84-grid{grid-template-columns:1fr}}
 </style>
-<script id="v84-sim-js">
+<div id="v84-sim-overlay" aria-hidden="true">
+  <div id="v84-sim-panel">
+    <div id="v84-sim-head">
+      <strong>🧪 محاكاة التلميذ — اختبار فقط</strong>
+      <button type="button" onclick="V84Sim.close()">✕ خروج من الاختبار</button>
+    </div>
+    <div id="v84-sim-body">
+      <div class="v84-card">
+        <h2>👨‍🎓 مرحبًا بك، تلميذ تجريبي</h2>
+        <p>هذه نسخة اختبار معزولة. لا تمثل حساب تلميذ حقيقي ولا تغيّر بيانات المنصة.</p>
+      </div>
+      <div class="v84-grid">
+        <button class="v84-action" onclick="V84Sim.show('🏠 الصفحة الرئيسية للتلميذ')">🏠 الرئيسية</button>
+        <button class="v84-action" onclick="V84Sim.show('📚 الدروس والمحتوى')">📚 الدروس</button>
+        <button class="v84-action" onclick="V84Sim.show('🏫 دروس الدعم')">🏫 دروس الدعم</button>
+        <button class="v84-action" onclick="V84Sim.show('📈 تطوري')">📈 تطوري</button>
+        <button class="v84-action" onclick="V84Sim.show('🔔 مركز التنبيهات')">🔔 التنبيهات</button>
+        <button class="v84-action" onclick="V84Sim.show('🏆 إنجازاتي')">🏆 إنجازاتي</button>
+      </div>
+      <div id="v84-sim-status" class="v84-card"><span class="v84-ok">🟢 المحاكاة جاهزة.</span></div>
+    </div>
+  </div>
+</div>
+<script id="v84-simulation-js">
 (function(){
-"use strict";
-const TEST_KEY="tahadi20_simulation";
-function getRole(){return sessionStorage.getItem(TEST_KEY)||"";}
-function setRole(role){sessionStorage.setItem(TEST_KEY,role); render();}
-function render(){
- const p=document.getElementById("v84-sim-panel"); if(!p)return;
- const role=getRole();
- const labels={student:"👨‍🎓 تلميذ تجريبي",parent:"👨‍👩‍👧 ولي أمر تجريبي",teacher:"👩‍🏫 أستاذ تجريبي"};
- const result=document.getElementById("v84-sim-result");
- if(!role){result.innerHTML="<div class='v84-check'>اختر دورًا لمحاكاة الواجهة.</div>";return;}
- result.innerHTML="<div class='v84-check'>🟢 المحاكاة النشطة: <b>"+labels[role]+"</b></div>"+
- "<div class='v84-check'>🟢 الصفحة الرئيسية — متاحة للاختبار</div>"+
- "<div class='v84-check'>🟢 التنقل داخل الواجهة — متاح للاختبار</div>"+
- "<div class='v84-check'>🟢 عزل جلسة المحاكاة — يعمل</div>"+
- "<button class='v84-light' type='button' onclick='TahadiSimulation.exit()'>↩️ إنهاء المحاكاة</button>";
-}
-window.TahadiSimulation={
- start:function(role){
-   setRole(role);
-   const result=document.getElementById("v84-sim-result");
-   if(result) result.scrollIntoView({behavior:"smooth",block:"center"});
- },
- exit:function(){sessionStorage.removeItem(TEST_KEY);render();}
-};
-document.addEventListener("DOMContentLoaded",function(){
- const host=document.getElementById("tahadi-test-mode");
- if(!host)return;
- if(document.getElementById("v84-sim-panel"))return;
- const box=document.createElement("div");
- box.id="v84-sim-panel";
- box.innerHTML="<strong>🔬 محاكاة فعلية للواجهة</strong>"+
- "<div class='v84-actions'>"+
- "<button class='v84-primary' type='button' onclick=\"TahadiSimulation.start('student')\">👨‍🎓 اختبار التلميذ</button>"+
- "<button class='v84-primary' type='button' onclick=\"TahadiSimulation.start('parent')\">👨‍👩‍👧 اختبار الولي</button>"+
- "<button class='v84-primary' type='button' onclick=\"TahadiSimulation.start('teacher')\">👩‍🏫 اختبار الأستاذ</button>"+
- "</div><div id='v84-sim-result'></div>";
- host.appendChild(box); render();
-});
+  "use strict";
+  window.V84Sim = {
+    open:function(){
+      var o=document.getElementById("v84-sim-overlay");
+      if(o){o.style.display="block";o.setAttribute("aria-hidden","false");}
+    },
+    close:function(){
+      var o=document.getElementById("v84-sim-overlay");
+      if(o){o.style.display="none";o.setAttribute("aria-hidden","true");}
+    },
+    show:function(label){
+      var s=document.getElementById("v84-sim-status");
+      if(s)s.innerHTML="<span class='v84-ok'>🟢 تم فتح: "+label+"</span><br><small>أنتِ الآن تشاهدين ما يمكن اختباره من جهة التلميذ، دون تغيير حسابات حقيقية.</small>";
+    }
+  };
+  var oldStart = window.TahadiTest && window.TahadiTest.start;
+  if(window.TahadiTest){
+    window.TahadiTest.start=function(role){
+      if(role==="student"){ V84Sim.open(); return; }
+      if(typeof oldStart==="function") oldStart(role);
+    };
+  }
 })();
 </script>
 
