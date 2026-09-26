@@ -685,7 +685,9 @@ body.modal-open{overflow:hidden !important;}
 .modal .box{touch-action:pan-y !important;overscroll-behavior:contain !important;}
 .admin-access-grid button{touch-action:manipulation !important;cursor:pointer !important;}
 </style>
-</head>
+<style id="v66-request-center">
+.request-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0 16px}.request-stats>div{background:#fff;border:1px solid #d7e7df;border-radius:15px;padding:10px;text-align:center}.request-stats b{display:block;font-size:22px;color:#08745c}.request-stats span{font-size:11px;color:#63766f}.request-item{background:#fff;border:1px solid #d7e7df;border-radius:18px;padding:14px;margin:10px 0;box-shadow:0 6px 18px rgba(3,55,47,.06)}.request-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.request-title{font-weight:900;color:#064f43}.request-meta{font-size:12px;color:#70817b;margin-top:4px}.request-body{margin:10px 0;color:#4e625b;line-height:1.7}.request-status{display:inline-flex;align-items:center;justify-content:center;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}.status-جديد{background:#fff1cf;color:#8a6410}.status-قيد-المعالجة{background:#e8f2ff;color:#315f91}.status-تمت-المعالجة{background:#e5f7ed;color:#147044}.status-مرفوض{background:#fde8e8;color:#9b3d3d}.request-actions{display:flex;gap:8px;flex-wrap:wrap}.request-actions button{border:1px solid #c9ded4;background:#fff;border-radius:10px;padding:8px 10px;color:#315f55;font-weight:800}.request-empty{text-align:center;padding:25px;color:#63766f;background:#fff;border:1px dashed #bfd8cd;border-radius:18px}@media(max-width:560px){.request-stats{grid-template-columns:repeat(2,1fr)}.request-top{flex-direction:column}.request-status{align-self:flex-start}}
+</style></head>
 <body>
 <header class="hero">
 <!-- V8: approved student illustration is used softly in the cover; old standalone SVG figures removed. -->
@@ -776,11 +778,11 @@ function adminDashboard(){
  const cards=[
  ['📊','لوحة اليوم','الحصص والمهام والتنبيهات'],['👨‍🎓','التلاميذ','الملفات والمتابعة والنتائج'],['👨‍👩‍👧','الأولياء','التسجيلات والطلبات والمتابعة'],['👩‍🏫','الأساتذة','الحسابات والمحتوى والصلاحيات'],
  ['📚','المحتوى','الدروس والوثائق والملفات'],['🗓️','الحصص والرزنامة','الدعم والدورات والحصص الفردية'],['💳','الدفع','الاشتراكات والوصول والوصلات'],['📈','الإحصائيات','التفاعل والحضور والنتائج'],
- ['🔔','الإشعارات','تنبيهات ومواعيد النشر'],['⚡','التحديات','الأسئلة والمسابقات والهدايا'],['🎥','بث تجريبي','اختبار الكاميرا والميكروفون قبل البث'],['🛠️','مركز الصيانة','الاختبار والنسخ وحالة المنصة'],['🔐','الحماية والصلاحيات','الدخول والعمليات الحساسة']
+ ['🔔','الإشعارات','تنبيهات ومواعيد النشر'],['📥','مركز الطلبات','طلبات التسجيل والدفع والتجديد والمتابعة'],['⚡','التحديات','الأسئلة والمسابقات والهدايا'],['🎥','بث تجريبي','اختبار الكاميرا والميكروفون قبل البث'],['🛠️','مركز الصيانة','الاختبار والنسخ وحالة المنصة'],['🔐','الحماية والصلاحيات','الدخول والعمليات الحساسة']
  ];
  let html='<div class="admin-head"><div><strong>مرحبًا أستاذة حياة 🌿</strong><p>هذه لوحة التحكم الرئيسية للمنصة. سنفعّل كل قسم تدريجيًا.</p></div><div class="admin-badge">🔐 الإدارة</div></div><div class="admin-grid">';
  cards.forEach((c,i)=>html+='<button type="button" class="admin-card" onclick="adminModule(\''+c[1]+'\')"><span class="admin-card-icon">'+c[0]+'</span><span><b>'+c[1]+'</b><small>'+c[2]+'</small></span><span class="admin-arrow">←</span></button>');
- html+='</div><div class="admin-note">🔓 <b>دخول الإدارة الكامل</b> — يمكنكِ من هنا فتح أي فضاء للاختبار دون إدخال كود، لأن الأستاذة حياة مسؤولة عن المنصة كاملة.</div><div class="admin-access"><h3>🔓 الدخول السريع إلى الفضاءات</h3><div class="admin-access-grid"><button type="button" data-admin-space="teacher">👩‍🏫 فضاء الأساتذة</button><button type="button" data-admin-space="parent">👨‍👩‍👧 فضاء الأولياء</button><button type="button" data-admin-space="student">👨‍🎓 فضاء التلاميذ</button><button type="button" data-test-broadcast="1">🎥 بث تجريبي</button></div></div><div class="admin-note">🧪 <b>V65 تجريبية</b> — مركز التنبيهات قيد الاختبار، ولا يغيّر بيانات المنصة.</div>';
+ html+='</div><div class="admin-note">🔓 <b>دخول الإدارة الكامل</b> — يمكنكِ من هنا فتح أي فضاء للاختبار دون إدخال كود، لأن الأستاذة حياة مسؤولة عن المنصة كاملة.</div><div class="admin-access"><h3>🔓 الدخول السريع إلى الفضاءات</h3><div class="admin-access-grid"><button type="button" data-admin-space="teacher">👩‍🏫 فضاء الأساتذة</button><button type="button" data-admin-space="parent">👨‍👩‍👧 فضاء الأولياء</button><button type="button" data-admin-space="student">👨‍🎓 فضاء التلاميذ</button><button type="button" data-test-broadcast="1">🎥 بث تجريبي</button></div></div><div class="admin-note">🧪 <b>V66 تجريبية</b> — مركز التنبيهات قيد الاختبار، ولا يغيّر بيانات المنصة.</div>';
  show('🌿 فضاء الأستاذة حياة',html);
 }
 
@@ -816,6 +818,7 @@ function adminModule(title){
  if(title==='المحتوى'){ return adminContent(); }
  if(title==='لوحة اليوم'){ return todayDashboard(); }
  if(title==='الإشعارات'){ return notificationCenter(); }
+ if(title==='مركز الطلبات'){ return requestCenter(); }
  show('🌿 '+title,'<div style="text-align:center;padding:12px 4px"><div style="font-size:48px">🧩</div><h3 style="color:var(--deep);margin:8px 0">'+title+'</h3><p style="color:#63766f;line-height:1.9">هذا القسم أصبح موجودًا في لوحة الأستاذة حياة، وسنضيف وظائفه الفعلية خطوة بخطوة دون المساس بباقي المنصة.</p><button class="btn" style="width:100%;margin-top:12px" onclick="adminDashboard()">العودة للوحة التحكم</button></div>');
 }
 function todayDashboard(){
@@ -854,6 +857,49 @@ function saveContentDraft(){
 }
 function contentFilter(type){ show('📚 '+type,`<div class="section-intro"><div class="big-icon">📂</div><h3>${type}</h3><p>هذه واجهة إدارة هذا النوع من المحتوى. يمكنك إضافة مورد جديد وتحديد المستوى والخدمة وحالة النشر.</p></div><div class="admin-actions"><button class="btn" onclick="newContent()">➕ إضافة ${type}</button><button class="btn secondary" onclick="adminContent()">رجوع إلى المحتوى</button></div>`);
 }
+function getRequests(){
+ try{return JSON.parse(localStorage.getItem('t20_requests')||'[]')}catch(e){return []}
+}
+function setRequests(list){localStorage.setItem('t20_requests',JSON.stringify(list));}
+function requestCenter(){
+ const list=getRequests();
+ const counts={"جديد":0,"قيد المعالجة":0,"تمت المعالجة":0,"مرفوض":0};
+ list.forEach(r=>{if(counts[r.status]!==undefined)counts[r.status]++;});
+ const rows=list.length?list.slice().reverse().map(r=>`<div class="request-item">
+   <div class="request-top"><div><div class="request-title">${escapeHtml(r.title)}</div><div class="request-meta">${escapeHtml(r.type)} • ${escapeHtml(r.person||'غير محدد')}</div></div><span class="request-status status-${r.status.replace(/\s/g,'-')}">${escapeHtml(r.status)}</span></div>
+   <div class="request-body">${escapeHtml(r.details||'')}</div>
+   <div class="request-actions"><button type="button" onclick="cycleRequestStatus('${r.id}')">🔄 تغيير الحالة</button><button type="button" onclick="deleteRequest('${r.id}')">🗑️ حذف</button></div>
+ </div>`).join(''):'<div class="request-empty">📥 لا توجد طلبات حاليًا.<br><small>يمكنك إنشاء طلب تجريبي لاختبار النظام.</small></div>';
+ show('📥 مركز الطلبات',`<div class="request-wrap">
+  <div class="section-intro"><div class="big-icon">📥</div><h3>مركز الطلبات</h3><p>مكان واحد لمتابعة طلبات التسجيل والدفع والتجديد وغيرها من الطلبات التي تحتاج إلى تدخل الأستاذة حياة.</p></div>
+  <div class="request-stats"><div><b>${counts['جديد']}</b><span>جديد</span></div><div><b>${counts['قيد المعالجة']}</b><span>قيد المعالجة</span></div><div><b>${counts['تمت المعالجة']}</b><span>تمت المعالجة</span></div><div><b>${counts['مرفوض']}</b><span>مرفوض</span></div></div>
+  <div class="notif-toolbar"><button class="btn" onclick="newRequest()">➕ إضافة طلب تجريبي</button><button class="btn secondary" onclick="adminDashboard()">العودة للوحة التحكم</button></div>
+  <h4 class="subhead">📋 الطلبات الحالية</h4>${rows}
+ </div>`);
+}
+function newRequest(){
+ show('➕ إضافة طلب',`<div class="form-stack">
+ <label>عنوان الطلب</label><input id="rTitle" class="field" placeholder="مثال: التسجيل في دروس الدعم">
+ <label>نوع الطلب</label><select id="rType" class="field"><option>📝 تسجيل</option><option>💳 دفع / تحقق من وصل</option><option>🔄 تجديد اشتراك</option><option>🎓 التسجيل في دورة</option><option>📩 طلب آخر</option></select>
+ <label>اسم صاحب الطلب</label><input id="rPerson" class="field" placeholder="الاسم واللقب">
+ <label>التفاصيل</label><textarea id="rDetails" class="field" rows="4" placeholder="تفاصيل الطلب..."></textarea>
+ <div class="admin-actions"><button class="btn" onclick="saveRequest()">💾 حفظ الطلب</button><button class="btn secondary" onclick="requestCenter()">رجوع</button></div>
+ </div>`);
+}
+function saveRequest(){
+ const title=(document.getElementById('rTitle')||{}).value?.trim();
+ if(!title){alert('يرجى إدخال عنوان الطلب');return;}
+ const list=getRequests();
+ list.push({id:'r_'+Date.now(),title,type:document.getElementById('rType').value,person:document.getElementById('rPerson').value.trim(),details:document.getElementById('rDetails').value.trim(),status:'جديد',createdAt:new Date().toISOString()});
+ setRequests(list);requestCenter();
+}
+function cycleRequestStatus(id){
+ const order=['جديد','قيد المعالجة','تمت المعالجة','مرفوض'];
+ const list=getRequests().map(r=>{if(r.id!==id)return r;const i=order.indexOf(r.status);return {...r,status:order[(i+1)%order.length]};});
+ setRequests(list);requestCenter();
+}
+function deleteRequest(id){setRequests(getRequests().filter(r=>r.id!==id));requestCenter();}
+
 function getNotifications(){
  try{return JSON.parse(localStorage.getItem('t20_notifications')||'[]')}catch(e){return []}
 }
