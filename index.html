@@ -198,6 +198,12 @@ body{background:radial-gradient(circle at 10% 10%,#f2dfac88,transparent 25%),lin
   .hero > .container{padding-top:660px!important;}
 }
 
+
+.admin-groups{display:flex;flex-direction:column;gap:14px;margin-top:14px}.admin-group{padding:10px 0}.admin-group-title{display:flex;align-items:center;gap:10px;margin:0 4px 9px}.admin-group-title>span{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:#e8f4ee;font-size:21px}.admin-group-title b{display:block;color:var(--deep);font-size:15px}.admin-group-title small{display:block;color:#81908b;font-size:11px;margin-top:2px}.admin-group .admin-grid{margin-top:0}.admin-note{line-height:1.8}
+
+/* V52 — home spaces are real buttons: one direct tap target per space */
+.t20-home-space-btn{display:block;width:100%;border:0;appearance:none;-webkit-appearance:none;font:inherit;text-align:right;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+.t20-home-space-btn h3,.t20-home-space-btn .enter,.t20-home-space-btn .space-icon{pointer-events:none;}
 </style><style id="v62-admin-scroll-fix">
 /* V62 — إصلاح شاشة فضاء الأستاذة حياة على الهاتف: السماح بالتمرير داخل لوحة الإدارة */
 .modal{
@@ -721,6 +727,37 @@ body.modal-open{overflow:hidden !important;}
 }
 
 </style>
+<style id="v56-admin-cards-visible">
+/* V56: ensure مركز التحدي cards render visibly on mobile and inside the modal */
+.admin-group-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;width:100%!important;min-height:1px!important;}
+.admin-group-grid .admin-card{display:grid!important;visibility:visible!important;opacity:1!important;position:relative!important;width:100%!important;min-height:76px!important;box-sizing:border-box!important;}
+.admin-group-grid .admin-card-text{display:block!important;min-width:0!important;visibility:visible!important;opacity:1!important;}
+.admin-group-grid .admin-card-icon,.admin-group-grid .admin-arrow{visibility:visible!important;opacity:1!important;}
+@media(max-width:430px){.admin-group-grid{grid-template-columns:1fr!important;gap:8px!important}.admin-group-grid .admin-card{min-height:72px!important;}}
+</style>
+
+<style id="v57-center-rebuild">
+.t20-center-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 2px 14px}
+.t20-center-head strong{display:block;color:var(--deep);font-size:18px}
+.t20-center-head p{margin:6px 0 0;color:#71817b;line-height:1.7;font-size:12px}
+.t20-today-entry,.t20-center-card{appearance:none;-webkit-appearance:none;width:100%;border:1px solid #d7e5df;background:linear-gradient(145deg,#fff,#f1f8f4);color:#073b35;border-radius:18px;box-sizing:border-box;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;text-align:right}
+.t20-today-entry{display:grid;grid-template-columns:44px 1fr 18px;align-items:center;gap:9px;padding:13px;margin:2px 0 18px;background:linear-gradient(145deg,#fff9e7,#f4f9f4);border-color:#d8bb64}
+.t20-entry-icon,.t20-center-card-icon{display:flex;align-items:center;justify-content:center;background:#e4f3ec;border-radius:13px}
+.t20-entry-icon{width:44px;height:44px;font-size:23px}
+.t20-today-entry b,.t20-center-card b{display:block;color:#073b35;font-size:14px}
+.t20-today-entry small,.t20-center-card small{display:block;color:#71817b;font-size:10.5px;line-height:1.45;margin-top:3px}
+.t20-center-group{margin:0 0 18px}
+.t20-center-group-title{display:flex;align-items:center;gap:10px;margin:0 3px 9px}
+.t20-center-group-title>span{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:#e8f4ee;font-size:21px}
+.t20-center-group-title b{display:block;color:var(--deep);font-size:15px}
+.t20-center-group-title small{display:block;color:#81908b;font-size:11px;margin-top:2px}
+.t20-center-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.t20-center-card{display:grid;grid-template-columns:42px 1fr 16px;align-items:center;gap:8px;min-height:76px;padding:10px}
+.t20-center-card-icon{width:42px;height:42px;font-size:22px}
+.t20-center-card-arrow{color:#c19b38;font-size:17px}
+.t20-today-entry:active,.t20-center-card:active{transform:scale(.985)}
+@media(max-width:430px){.t20-center-cards{grid-template-columns:1fr}.t20-center-card{min-height:72px}.t20-center-head strong{font-size:17px}}
+</style>
 </head>
 <body>
 <header class="hero">
@@ -757,10 +794,10 @@ body.modal-open{overflow:hidden !important;}
 <div class="container">
 <div class="space-title"><h2>الفضاءات</h2><p>اختر الفضاء المناسب لك</p></div>
 <div class="space-grid">
-<div class="space space1" onclick="admin()"><h3>🌿 فضاء الأستاذة حياة</h3><span class="enter">دخول ←</span><span class="space-icon">📚</span></div>
-<div class="space space2" onclick="teacher()"><h3>👩‍🏫 فضاء الأساتذة</h3><span class="enter">دخول ←</span><span class="space-icon">📚</span></div>
-<div class="space space3" onclick="parentLogin()"><h3>👨‍👩‍👧 فضاء الأولياء</h3><span class="enter">دخول ←</span><span class="space-icon">👪</span></div>
-<div class="space space4" onclick="student()"><h3>👨‍🎓 فضاء التلاميذ</h3><span class="enter">دخول ←</span><span class="space-icon">📖</span></div>
+<button class="space space1 t20-home-space-btn" type="button" onclick="if(typeof window.adminDashboard==='function'){window.adminDashboard();}"><h3>🌿 فضاء الأستاذة حياة</h3><span class="enter">دخول ←</span><span class="space-icon">📚</span></button>
+<button class="space space2 t20-home-space-btn" type="button" onclick="if(typeof window.teacher==='function'){window.teacher();}"><h3>👩‍🏫 فضاء الأساتذة</h3><span class="enter">دخول ←</span><span class="space-icon">📚</span></button>
+<button class="space space3 t20-home-space-btn" type="button" onclick="if(typeof window.parentLogin==='function'){window.parentLogin();}"><h3>👨‍👩‍👧 فضاء الأولياء</h3><span class="enter">دخول ←</span><span class="space-icon">👪</span></button>
+<button class="space space4 t20-home-space-btn" type="button" onclick="if(typeof window.student==='function'){window.student();}"><h3>👨‍🎓 فضاء التلاميذ</h3><span class="enter">دخول ←</span><span class="space-icon">📖</span></button>
 </div>
 </div>
 </section>
@@ -892,7 +929,7 @@ function studentLessonTypes(){
  ];
  const all=getContents().filter(x=>x.status==='منشور');
  let html='<div class="section-intro"><div class="big-icon">📖</div><h3>الدروس</h3><p>المحتوى التعليمي المنشور الذي تسمح به الأستاذة حياة، منظّم حسب نوعه.</p></div><div class="admin-grid">';
- types.forEach(t=>{const count=all.filter(x=>(x.type===t[1]||x.type===t[0]+' '+t[1]) && studentCanAccessContent(x)).length;html+='<button type="button" class="admin-mini" style="text-align:right;cursor:pointer" onclick="studentLessonType('+JSON.stringify(t[1])+')"><span style="font-size:28px">'+t[0]+'</span><b>'+t[1]+'</b><small>'+t[2]+'</small><em style="color:#1c7b64;font-style:normal;margin-top:4px">'+count+' محتوى منشور</em></button>';});
+ types.forEach(t=>{const count=all.filter(x=>(x.type===t[1]||x.type===t[0]+' '+t[1]) && studentCanAccessContent(x)).length;html+='<button type="button" class="admin-mini" style="text-align:right;cursor:pointer" onclick="studentLessonType('+J(t[1])+')"><span style="font-size:28px">'+t[0]+'</span><b>'+t[1]+'</b><small>'+t[2]+'</small><em style="color:#1c7b64;font-style:normal;margin-top:4px">'+count+' محتوى منشور</em></button>';});
  html+='</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentDashboard()">العودة لفضاء التلاميذ</button>';
  show('👨‍🎓 الدروس',html);
 }
@@ -947,11 +984,11 @@ function openStudentContent(id){
  const url=normalizeContentUrl(item.url);
  const viewer=url?getContentViewer(url,item.type,item.title):'<div class="request-empty">📭 لم يتم ربط رابط حقيقي بهذا المحتوى بعد.<br><small>أضيفي رابط الفيديو أو الملف من إدارة المحتوى ليتمكن التلميذ من فتحه هنا.</small></div>';
  const icon=({'🎥 الدروس المسجّلة':'🎥','📝 حلّ التمارين':'📝','📄 الوثائق':'📄','📁 الملفات':'📁','💻 حصص الدعم المسجّلة':'💻','🆓 الحصص المجانية':'🆓'}[item.type]||'📚');
- show('📚 '+escapeHtml(item.title),'<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.level||'')+' • '+escapeHtml(item.service||'')+'</p></div>'+viewer+'<button class="btn secondary" style="width:100%;margin-top:10px" onclick="studentLessonType('+JSON.stringify(item.type)+')">العودة</button>');
+ show('📚 '+escapeHtml(item.title),'<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.level||'')+' • '+escapeHtml(item.service||'')+'</p></div>'+viewer+'<button class="btn secondary" style="width:100%;margin-top:10px" onclick="studentLessonType('+J(item.type)+')">العودة</button>');
 }
 function studentLessonType(type){
  const all=getContents().filter(x=>x.status==='منشور' && (x.type===type || String(x.type||'').endsWith(type)) && studentCanAccessContent(x));
- const rows=all.length?all.slice().reverse().map(x=>'<div class="content-row"><div style="flex:1"><strong>'+escapeHtml(x.title)+'</strong><div style="color:#63766f;font-size:12px;margin-top:4px">'+escapeHtml(x.level)+' • '+escapeHtml(x.service)+'</div></div><button class="btn" style="padding:8px 11px" type="button" onclick="openStudentContent('+JSON.stringify(x.id)+')">فتح</button></div>').join(''):'<div class="request-empty">📭 لا يوجد محتوى منشور ومتاح لهذا القسم حاليًا.</div>';
+ const rows=all.length?all.slice().reverse().map(x=>'<div class="content-row"><div style="flex:1"><strong>'+escapeHtml(x.title)+'</strong><div style="color:#63766f;font-size:12px;margin-top:4px">'+escapeHtml(x.level)+' • '+escapeHtml(x.service)+'</div></div><button class="btn" style="padding:8px 11px" type="button" onclick="openStudentContent('+J(x.id)+')">فتح</button></div>').join(''):'<div class="request-empty">📭 لا يوجد محتوى منشور ومتاح لهذا القسم حاليًا.</div>';
  show('👨‍🎓 '+escapeHtml(type),'<div class="section-intro"><div class="big-icon">'+({'الدروس المسجّلة':'🎥','حلّ التمارين':'📝','الوثائق':'📄','الملفات':'📁','حصص الدعم المسجّلة':'💻','الحصص المجانية':'🆓'}[type]||'📚')+'</div><h3>'+escapeHtml(type)+'</h3><p>تظهر هنا الموارد المنشورة والمتاحة لمستواك فقط.</p></div><div class="content-list">'+rows+'</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonTypes()">العودة إلى أنواع الدروس</button>');
 }
 function studentModule(title){
@@ -1042,22 +1079,51 @@ function studentNotifications(){
  show('🔔 مركز التنبيهات',html);
 }
 
-function admin(){show('🌿 فضاء الأستاذة حياة','<p style="color:#63766f;line-height:1.8">الدخول مباشر إلى فضاء الأستاذة حياة، بدون كود.</p><button class="btn" style="width:100%;margin-top:8px" onclick="dashboard(\'admin\')">دخول الأستاذة حياة</button>')}
-function adminDashboard(){
- const cards=[
- ['📊','لوحة اليوم','الحصص والمهام والتنبيهات'],['👨‍🎓','التلاميذ','الملفات والمتابعة والنتائج'],['👨‍👩‍👧','الأولياء','التسجيلات والطلبات والمتابعة'],['👩‍🏫','الأساتذة','الحسابات والمحتوى والصلاحيات'],
- ['📚','المحتوى','الدروس والوثائق والملفات'],['🗓️','الحصص والرزنامة','الدعم والدورات والحصص الفردية'],['💳','الدفع','الاشتراكات والوصول والوصلات'],['📈','الإحصائيات','التفاعل والحضور والنتائج'],
- ['🔔','الإشعارات','تنبيهات ومواعيد النشر'],['📥','مركز الطلبات','طلبات التسجيل والدفع والتجديد والمتابعة'],['⚡','التحديات','الأسئلة والمسابقات والهدايا'],['🎥','بث تجريبي','اختبار الكاميرا والميكروفون قبل البث'],['🛠️','مركز الصيانة','الاختبار والنسخ وحالة المنصة'],['🔐','الحماية والصلاحيات','الدخول والعمليات الحساسة']
+function admin(){adminDashboard();}
+function _adminDashboard(){
+ const groups=[
+  {icon:'👥',title:'المجتمع',sub:'الأشخاص والحسابات المرتبطة بالتحدي',items:[
+   ['🎓','تلاميذ التحدي','الملفات والمتابعة والنتائج'],
+   ['👨‍👩‍👧','أولياء التحدي','الحسابات والربط والمتابعة'],
+   ['👩‍🏫','أسرة التحدي','حسابات الأساتذة والمحتوى والصلاحيات']
+  ]},
+  {icon:'📚',title:'التسيير اليومي',sub:'الموارد والحصص والاشتراكات والمتابعة',items:[
+   ['📚','مكتبة التحدي','الدروس والوثائق والملفات'],
+   ['📅','رزنامة التحدي','الدعم والدورات والحصص الفردية'],
+   ['💳','اشتراكات التحدي','الدفع والاشتراكات والوصول'],
+   ['📊','حصيلة التحدي','الحضور والنتائج والإحصائيات']
+  ]},
+  {icon:'📣',title:'التفاعل والمتابعة',sub:'كل ما يحتاج متابعة وتواصل',items:[
+   ['🔔','نبض التحدي','الإشعارات والتنبيهات'],
+   ['📝','طلبات التحدي','التسجيل والدفع والتجديد والمتابعة'],
+   ['⚡','تحديات الـ20','الأسئلة والمسابقات والهدايا']
+  ]},
+  {icon:'🛠️',title:'أدوات المنصة',sub:'الاختبار والصيانة والحماية',items:[
+   ['🎥','بث التحدي','اختبار الكاميرا والميكروفون قبل البث'],
+   ['🛠️','ورشة التحدي','الاختبار والنسخ وحالة المنصة'],
+   ['🔐','أمان التحدي','الدخول والعمليات الحساسة']
+  ]}
  ];
- let html='<div class="admin-head"><div><strong>مرحبًا أستاذة حياة 🌿</strong><p>هذه لوحة التحكم الرئيسية للمنصة. سنفعّل كل قسم تدريجيًا.</p></div><div class="admin-badge">🔐 الإدارة</div></div><div class="admin-grid">';
- cards.forEach((c,i)=>{const direct=c[1]==='الأولياء'?' onclick="window.openAdminParents();return false;"':'';html+='<button type="button" class="admin-card admin-module-card" data-admin-module="'+escapeHtml(c[1])+'"'+direct+'><span class="admin-card-icon">'+c[0]+'</span><span><b>'+c[1]+'</b><small>'+c[2]+'</small></span><span class="admin-arrow">←</span></button>';});
- html+='</div><div class="admin-note">🔓 <b>دخول الإدارة الكامل</b> — يمكنكِ من هنا فتح أي فضاء للاختبار دون إدخال كود، لأن الأستاذة حياة مسؤولة عن المنصة كاملة.</div>';
- show('🌿 فضاء الأستاذة حياة',html);
+ let html='<div class="t20-center-head"><div><strong>مرحبًا أستاذة حياة 🌿</strong><p>🏆 مركزك الدائم لإدارة المنصة — كل قسم في مكانه، بدون تكرار.</p></div><div class="admin-badge">🔐 الإدارة</div></div>';
+ html+='<button type="button" class="t20-today-entry" data-admin-module="مهام التحدي اليوم"><span class="t20-entry-icon">⚡</span><span><b>مهام التحدي اليوم</b><small>ما يجب أن تتذكريه وتنجزيه اليوم</small></span><span>←</span></button>';
+ groups.forEach(function(g){
+   html+='<section class="t20-center-group"><div class="t20-center-group-title"><span>'+g.icon+'</span><div><b>'+g.title+'</b><small>'+g.sub+'</small></div></div><div class="t20-center-cards">';
+   g.items.forEach(function(c){
+     html+='<button type="button" class="t20-center-card" data-admin-module="'+escapeHtml(c[1])+'">'+
+       '<span class="t20-center-card-icon">'+c[0]+'</span>'+
+       '<span class="t20-center-card-text"><b>'+escapeHtml(c[1])+'</b><small>'+escapeHtml(c[2])+'</small></span>'+
+       '<span class="t20-center-card-arrow">←</span></button>';
+   });
+   html+='</div></section>';
+ });
+ html+='<div class="admin-note">🔒 <b>مهم:</b> إعادة التنظيم هنا للواجهة فقط. بيانات التلاميذ، الأولياء، الربط بينهم، الأكواد والاشتراكات تبقى كما هي.</div>';
+ show('🏆 مركز التحدي',html);
 }
 function adminOpenSpace(role){
+ if(typeof window.t20CanonicalOpenSpace==='function'){ window.t20CanonicalOpenSpace(role); return; }
  if(role==='student'){ studentDashboard(); return; }
- if(role==='teacher'){ show('👩‍🏫 فضاء الأساتذة','<div style="text-align:center;padding:12px 4px"><div style="font-size:48px;margin-bottom:8px">🔓</div><h3 style="color:var(--deep);margin:0 0 8px">دخول الأستاذة حياة</h3><p style="color:#63766f;line-height:1.9;margin:0">تم فتح هذا الفضاء بصلاحية الإدارة الكاملة، دون طلب كود.</p><button class="btn" style="width:100%;margin-top:18px" onclick="closeM()">متابعة الاختبار</button><button class="btn" style="width:100%;margin-top:8px;background:#fff;color:var(--deep);border:1px solid #b9d7c8" onclick="adminDashboard()">العودة إلى لوحة التحكم</button></div>'); return; }
- if(role==='parent'){ show('👨‍👩‍👧 فضاء الأولياء','<div style="text-align:center;padding:12px 4px"><div style="font-size:48px;margin-bottom:8px">🔓</div><h3 style="color:var(--deep);margin:0 0 8px">دخول الأستاذة حياة</h3><p style="color:#63766f;line-height:1.9;margin:0">تم فتح هذا الفضاء بصلاحية الإدارة الكاملة، دون طلب كود.</p><button class="btn" style="width:100%;margin-top:18px" onclick="closeM()">متابعة الاختبار</button><button class="btn" style="width:100%;margin-top:8px;background:#fff;color:var(--deep);border:1px solid #b9d7c8" onclick="adminDashboard()">العودة إلى لوحة التحكم</button></div>'); return; }
+ if(role==='teacher'){ teacher(); return; }
+ if(role==='parent'){ parentLogin(); return; }
 }
 let testStream=null;
 async function testBroadcast(){
@@ -1087,29 +1153,26 @@ function adminModule(title){
 }
 function todayDashboard(){
  const now=new Date();
- const days=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
- const months=['يناير','فبراير','مارس','أبريل','ماي','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
- const dateLabel=days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
- show('📊 لوحة اليوم',`<div class="today-wrap">
- <div class="today-head"><div class="big-icon">📊</div><h3>لوحة اليوم</h3><p>${dateLabel}</p></div>
- <div class="today-stats">
- <div class="today-stat"><b>0</b><span>حصص اليوم</span></div>
- <div class="today-stat"><b>0</b><span>مهام مستعجلة</span></div>
- <div class="today-stat"><b>0</b><span>تنبيهات جديدة</span></div>
- <div class="today-stat"><b>0</b><span>دفعات تحتاج متابعة</span></div>
- </div>
- <h4 class="subhead">🗓️ برنامج اليوم</h4>
- <div class="today-card"><strong>لا توجد حصص مضافة لليوم</strong><small>عند إضافة حصة ستظهر هنا مع الوقت، النوع، والمستوى.</small></div>
- <h4 class="subhead">🔔 تنبيهات اليوم</h4>
- <div class="today-card"><strong>لا توجد تنبيهات جديدة</strong><small>ستظهر هنا التنبيهات التي تحتاج إلى انتباهك.</small></div>
- <h4 class="subhead">✅ مهامي</h4>
- <div class="today-card"><strong>لا توجد مهام معلقة</strong><small>يمكن لاحقًا ربط هذه القائمة بالأحداث والطلبات تلقائيًا.</small></div>
- <button class="btn secondary" style="width:100%" onclick="adminDashboard()">العودة إلى لوحة التحكم</button>
- </div>`);
+ const pad=n=>String(n).padStart(2,'0');
+ const today=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+ const dateLabel=now.toLocaleDateString('ar-DZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ const sch=R(DB.schedules).filter(x=>x.date===today).sort((a,b)=>String(a.time||'').localeCompare(String(b.time||'')));
+ const pay=R(DB.payments).filter(x=>x.status&&x.status!=='مدفوع');
+ const req=R('t20_requests').filter(x=>!x.status||x.status==='جديد');
+ const notes=R('t20_notifications').filter(x=>!x.read);
+ const contents=R('t20_contents').filter(x=>x.status==='جاهز للنشر');
+ const tasks=[];
+ sch.forEach(x=>tasks.push({icon:'📅',title:'حصة اليوم — '+(x.title||'حصة مبرمجة'),detail:(x.time||'')+' • '+(x.level||'') ,action:'realSchedules'}));
+ pay.slice(0,4).forEach(x=>tasks.push({icon:'💳',title:'دفعة تحتاج متابعة — '+(x.student||'تلميذ'),detail:(x.month||'')+' • '+(x.status||''),action:'realPayments'}));
+ req.slice(0,4).forEach(x=>tasks.push({icon:'📝',title:'طلب جديد يحتاج مراجعة',detail:x.title||x.type||x.student||'طلب جديد',action:'requestCenter'}));
+ contents.slice(0,4).forEach(x=>tasks.push({icon:'📚',title:'محتوى جاهز للنشر — '+(x.title||'محتوى'),detail:(x.level||'')+' • '+(x.type||x.category||''),action:'adminContent'}));
+ notes.slice(0,4).forEach(x=>tasks.push({icon:'🔔',title:x.title||'تنبيه جديد',detail:x.text||'',action:'notificationCenter'}));
+ const body=tasks.length?tasks.map(t=>'<button type="button" class="today-card today-task" onclick="'+t.action+'()"><span class="today-task-icon">'+t.icon+'</span><span class="today-task-main"><strong>'+escapeHtml(t.title)+'</strong><small>'+escapeHtml(t.detail)+'</small></span><span class="today-task-arrow">←</span></button>').join(''):'<div class="today-card today-empty"><strong>🌿 ما كاين حتى مهمة مستعجلة اليوم</strong><small>لوحة اليوم تبقى خفيفة: تعرض فقط الأشياء التي تحتاج أن تتذكريها أو تتابعيها اليوم.</small></div>';
+ show('⚡ مهام التحدي اليوم','<div class="today-wrap"><div class="today-head"><div class="big-icon">⚡</div><h3>مهام التحدي اليوم</h3><p>'+dateLabel+'</p></div><div class="today-reminder-intro">هذه ليست إدارة المنصة؛ هنا فقط ما يحتاج انتباهك اليوم.</div><div class="today-task-list">'+body+'</div><button class="btn secondary" style="width:100%;margin-top:4px" onclick="adminDashboard()">🏆 العودة إلى مركز التحدي</button></div>');
 }
 function adminContent(){
  const types=['🎥 الدروس المسجّلة','📝 حلّ التمارين','📄 الوثائق','📁 الملفات','💻 حصص الدعم المسجّلة','🆓 الحصص المجانية'];
- const cards=types.map(t=>'<button class="admin-mini" onclick="contentFilter('+JSON.stringify(t)+')"><span>'+t+'</span><small>إدارة هذا النوع</small></button>').join('');
+ const cards=types.map(t=>'<button class="admin-mini" onclick="contentFilter('+J(t)+')"><span>'+t+'</span><small>إدارة هذا النوع</small></button>').join('');
  show('📚 المحتوى',`<div class="content-admin"><div class="section-intro"><div class="big-icon">📚</div><h3>إدارة المحتوى</h3><p>إضافة وتنظيم ونشر الموارد التعليمية وربطها بالمستوى والخدمة المناسبة.</p></div><div class="admin-actions"><button class="btn" onclick="newContent()">➕ إضافة محتوى جديد</button><button class="btn secondary" onclick="adminDashboard()">العودة للوحة التحكم</button></div><h4 class="subhead">أنواع المحتوى</h4><div class="admin-grid">${cards}</div><div class="content-list"><h4 class="subhead">آخر المحتويات</h4><div class="content-row"><div><strong>لا توجد محتويات منشورة بعد</strong><small>ابدئي بإضافة أول مورد من زر «إضافة محتوى جديد».</small></div><span class="status">مسودة</span></div></div></div>`);
 }
 function newContent(){
@@ -1214,7 +1277,6 @@ function markAllNotificationsRead(){setNotifications(getNotifications().map(n=>(
 function deleteNotification(id){setNotifications(getNotifications().filter(n=>n.id!==id));notificationCenter();}
 function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function teacher(){show('👩‍🏫 فضاء الأساتذة','<label>اللغة</label><select id="teacherLang" class="field"><option>العربية</option><option>Français</option><option>English</option></select><label>المادة</label><select id="teacherSubject" class="field"><option>العلوم الطبيعية</option><option>الرياضيات</option><option>اللغة العربية</option><option>اللغة الفرنسية</option><option>اللغة الإنجليزية</option></select><label>كود الأستاذ</label><input id="teacherCode" class="field" placeholder="أدخل كود الأستاذ" autocomplete="off"><button class="btn" style="width:100%;margin-top:8px" onclick="loginTeacher()">دخول</button>')}
-function loginTeacher(){const code=document.getElementById('teacherCode').value.trim();if(!code){alert('يرجى إدخال كود الأستاذ');return;}if(typeof window.loginTeacher==='function' && window.loginTeacher!==loginTeacher){window.loginTeacher();return;}dashboard('teacher')}
 function parentLogin(){show('👨‍👩‍👧 فضاء الأولياء','<label>اسم الولي</label><input id="parentName" class="field" placeholder="الاسم واللقب"><label>كود الولي</label><input id="parentCode" class="field" placeholder="أدخل كود الولي" autocomplete="off"><button class="btn" style="width:100%;margin-top:8px" onclick="loginParent()">دخول</button>')}
 function loginParent(){const n=document.getElementById('parentName').value.trim(),c=document.getElementById('parentCode').value.trim();if(!n||!c){alert('يرجى إدخال اسم الولي والكود');return;}localStorage.setItem('t20_parent_name',n);localStorage.setItem('t20_parent_code',c);dashboard('parent')}
 function student(){show('👨‍🎓 فضاء التلاميذ','<label>اسم التلميذ</label><input id="studentName" class="field" placeholder="الاسم واللقب"><label>كود التلميذ</label><input id="studentCode" class="field" placeholder="أدخل كود التلميذ" autocomplete="off"><button class="btn" style="width:100%;margin-top:8px" onclick="loginStudent()">دخول</button>')}
@@ -1223,28 +1285,6 @@ function page(t){let x='<p style="color:#63766f;line-height:2">هذه صفحة �
 
 
 // V72 — موحّد التنقل: مستمع واحد فقط لتفادي تعارض النقرات على الهاتف.
-document.addEventListener('click',function(e){
-  const videoBtn=e.target.closest('.mini-links button[data-video]');
-  if(videoBtn){e.preventDefault();e.stopPropagation();video(videoBtn.getAttribute('data-video'));return;}
-  const adminSpace=e.target.closest('[data-admin-space]');
-  if(adminSpace){e.preventDefault();e.stopPropagation();adminOpenSpace(adminSpace.getAttribute('data-admin-space'));return;}
-  const adminMod=e.target.closest('[data-admin-module]');
-  if(adminMod){
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    const mod=adminMod.getAttribute('data-admin-module');
-    if(mod==='الأولياء' && typeof window.openAdminParents==='function'){
-      window.openAdminParents();
-    }else{
-      adminModule(mod);
-    }
-    return;
-  }
-  const studentMod=e.target.closest('[data-student-module]');
-  if(studentMod){e.preventDefault();e.stopPropagation();studentModule(studentMod.getAttribute('data-student-module'));return;}
-  const broadcast=e.target.closest('[data-test-broadcast]');
-  if(broadcast){e.preventDefault();e.stopPropagation();testBroadcast();return;}
-}, true);
 </script>
 
 <style id="test-mode-style">
@@ -1319,18 +1359,46 @@ document.addEventListener('click',function(e){
 const DB={students:'t20_students',parents:'t20_parents',teachers:'t20_teachers',payments:'t20_payments',schedules:'t20_schedules',challenges:'t20_challenges',attendance:'t20_attendance'};
 function R(k,d=[]){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}
 function W(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function J(v){return JSON.stringify(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function id(p){return p+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)}
 function esc(v){return escapeHtml(v)}
 function levels(){return ['السنة الأولى متوسط','السنة الثانية متوسط','السنة الثالثة متوسط','السنة الرابعة متوسط','السنة الأولى ثانوي']}
 function money(v){return Number(v||0).toLocaleString('fr-DZ')+' دج'}
+function supportLabel(mode,type){
+  var m=String(mode||'غير محدد'), t=String(type||'غير محدد');
+  var mm=m==='Zoom'?'💻 Zoom':m==='حضوري'?'🏫 حضوري':m;
+  var tt=t==='فردية'?'👤 فردية':t==='عادية'?'👥 جماعية':t;
+  return mm+' • '+tt;
+}
 function realWrap(title,sub,body){return '<div class="real-shell"><div class="real-head"><h3>'+title+'</h3><p>'+sub+'</p></div>'+body+'</div>'}
 function back(fn){var action=fn==='home'?'returnHome()':fn;var target=fn==='home'?'returnHome':fn;return '<button class="btn secondary real-back" type="button" data-t20-back-target="'+target+'" onclick="'+action+';return false;">← رجوع</button>'}
 function form(label,idv,placeholder,value){return '<label>'+label+'</label><input class="field" id="'+idv+'" placeholder="'+placeholder+'" value="'+esc(value||'')+'">'}
 
 window.adminModule=function(title){
  const map={
- 'لوحة اليوم':realToday,'التلاميذ':realStudents,'الأولياء':realParents,'الأساتذة':realTeachers,'المحتوى':adminContent,'الحصص والرزنامة':realSchedules,'الدفع':realPayments,'الإحصائيات':realStats,'الإشعارات':notificationCenter,'مركز الطلبات':requestCenter,'التحديات':realChallenges,'بث تجريبي':testBroadcast,'مركز الصيانة':realMaintenance,'الحماية والصلاحيات':realSecurity};
- (map[title]||realMaintenance)();
+ 'مهام التحدي اليوم':realToday,
+ 'تلاميذ التحدي':realStudents,
+ 'أولياء التحدي':realParents,
+ 'أسرة التحدي':realTeachers,
+ 'مكتبة التحدي':adminContent,
+ 'رزنامة التحدي':realSchedules,
+ 'اشتراكات التحدي':realPayments,
+ 'حصيلة التحدي':realStats,
+ 'نبض التحدي':notificationCenter,
+ 'طلبات التحدي':requestCenter,
+ 'تحديات الـ20':realChallenges,
+ 'بث التحدي':testBroadcast,
+ 'ورشة التحدي':realMaintenance,
+ 'أمان التحدي':realSecurity,
+ // backward-compatible internal labels
+ 'لوحة اليوم':realToday,'التلاميذ':realStudents,'الأولياء':realParents,'الأساتذة':realTeachers,
+ 'المحتوى':adminContent,'الحصص والرزنامة':realSchedules,'الدفع':realPayments,'الإحصائيات':realStats,
+ 'الإشعارات':notificationCenter,'مركز الطلبات':requestCenter,'التحديات':realChallenges,
+ 'بث تجريبي':testBroadcast,'مركز الصيانة':realMaintenance,'الحماية والصلاحيات':realSecurity
+ };
+ const fn=map[title];
+ if(typeof fn==='function'){fn();return;}
+ realMaintenance();
 };
 function realToday(){
  const s=R(DB.students), p=R(DB.parents), pay=R(DB.payments), sch=R(DB.schedules), c=R(DB.challenges);
@@ -1343,7 +1411,9 @@ function realToday(){
  const pendingPayments=pay.filter(x=>x.status&&x.status!=='مدفوع');
  const newRequests=requests.filter(x=>!x.status||x.status==='جديد');
  const unreadNotifications=notifications.filter(x=>!x.read);
- const published=contents.filter(x=>x.status==='منشور').slice().sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||''))).slice(0,5);
+ const publishedRaw=contents.filter(x=>x.status==='منشور').slice().sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+ const publishedSeen={};
+ const published=publishedRaw.filter(x=>{const k=String(x.title||'').trim().replace(/\s+/g,' ')+'|'+String(x.type||x.category||'').trim().replace(/\s+/g,' ')+'|'+String(x.service||x.cService||'').trim().replace(/\s+/g,' ')+'|'+String(x.level||'').trim().replace(/\s+/g,' ');if(publishedSeen[k])return false;publishedSeen[k]=true;return true;}).slice(0,5);
  const activeChallenges=c.filter(x=>x.status==='منشور');
  const todayAbsences=attendance.filter(x=>x.date===today && (x.status==='غائب'||x.status==='غياب'));
  const todayResults=results.filter(x=>x.date===today || (x.createdAt&&String(x.createdAt).slice(0,10)===today));
@@ -1372,36 +1442,167 @@ function realToday(){
    '<div class="today-mini-summary"><div class="real-kpi"><b>'+activeChallenges.length+'</b><span>تحديات نشطة</span></div><div class="real-kpi"><b>'+todayResults.length+'</b><span>نتائج جديدة اليوم</span></div></div>'+ 
    '<h4 class="subhead">🔔 آخر الإشعارات</h4>'+ 
    (latestNotif.length?'<div class="real-table">'+latestNotif.map(n=>'<div class="real-row"><strong>'+escA(n.title||'تنبيه')+'</strong><small>'+escA(n.message||n.body||'')+'</small></div>').join('')+'</div>':'<div class="real-empty">لا توجد تنبيهات جديدة.</div>')+
-   '<div class="real-toolbar">'+
-     '<button class="btn" onclick="realSchedules()">🗓️ إدارة الرزنامة</button>'+ 
-     '<button class="btn" onclick="adminContent()">📚 المحتوى</button>'+ 
-     '<button class="btn" onclick="requestCenter()">📝 الطلبات</button>'+ 
-     '<button class="btn" onclick="realPayments()">💳 الدفع</button>'+ 
-     '<button class="btn" onclick="notificationCenter()">🔔 الإشعارات</button>'+ 
-     '<button class="btn" onclick="realChallenges()">⚡ التحديات</button>'+ 
-   '</div>'+back('adminDashboard');
+   back('adminDashboard');
  show('📊 لوحة اليوم',realWrap('📊 لوحة اليوم','مركز القيادة اليومية المرتبط بأنظمة المنصة.',body));
 }
-function realStudents(){
- const list=R(DB.students); const rows=list.length?list.slice().reverse().map(x=>'<div class="real-row"><div class="real-row-top"><div><strong>'+esc(x.name)+'</strong><small>'+esc(x.level)+' • كود: '+esc(x.code)+'</small><small>'+esc(x.parent||'ولي غير محدد')+' • '+(x.active?'نشط':'موقوف')+'</small></div><span class="real-tag">'+money(x.subscription)+'/شهر</span></div><div class="real-actions"><button onclick="editStudent(\''+x.id+'\')">✏️ تعديل</button><button onclick="toggleStudent(\''+x.id+'\')">'+(x.active?'⏸️ توقيف':'▶️ تفعيل')+'</button><button class="real-danger" onclick="deleteStudent(\''+x.id+'\')">🗑️ حذف</button></div></div>').join(''):'<div class="real-empty">👨‍🎓 لا يوجد تلاميذ مسجلون بعد.</div>';
- show('👨‍🎓 التلاميذ',realWrap('👨‍🎓 إدارة التلاميذ','ملفات التلاميذ، المستوى، الولي، الاشتراك وحالة الحساب.', '<div class="real-toolbar"><button class="btn" onclick="newStudent()">➕ إضافة تلميذ</button><button class="btn secondary" onclick="exportT20Data()">📦 نسخة احتياطية</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')));
-}
-window.newStudent=function(){show('➕ إضافة تلميذ',realWrap('➕ ملف تلميذ','أنشئي حساب التلميذ محليًا على المنصة.', '<div class="real-form">'+form('اسم ولقب التلميذ','rsName','مثال: أحمد بن علي')+'<label>المستوى</label><select id="rsLevel" class="field">'+levels().map(x=>'<option>'+x+'</option>').join('')+'</select>'+form('كود التلميذ','rsCode','مثال: ST-2026-001')+form('اسم الولي','rsParent','الاسم واللقب')+'<label>الاشتراك الشهري</label><input id="rsSub" class="field" type="number" value="1000"> <button class="btn" onclick="saveStudent()">💾 حفظ</button></div>'))}
-window.saveStudent=function(){const x={id:id('stu'),name:document.getElementById('rsName').value.trim(),level:document.getElementById('rsLevel').value,code:document.getElementById('rsCode').value.trim(),parent:document.getElementById('rsParent').value.trim(),subscription:Number(document.getElementById('rsSub').value||0),active:true,createdAt:new Date().toISOString()};if(!x.name||!x.code){alert('أدخلي اسم التلميذ والكود');return}const a=R(DB.students);a.push(x);W(DB.students,a);realStudents()}
-window.editStudent=function(i){const x=R(DB.students).find(v=>v.id===i);if(!x)return;show('✏️ تعديل تلميذ',realWrap('✏️ تعديل الملف','تحديث بيانات الحساب.', '<div class="real-form">'+form('اسم ولقب التلميذ','esName','',x.name)+'<label>المستوى</label><select id="esLevel" class="field">'+levels().map(v=>'<option '+(v===x.level?'selected':'')+'>'+v+'</option>').join('')+'</select>'+form('كود التلميذ','esCode','',x.code)+form('اسم الولي','esParent','',x.parent)+'<label>الاشتراك الشهري</label><input id="esSub" class="field" type="number" value="'+x.subscription+'"><button class="btn" onclick="updateStudent(\''+i+'\')">💾 حفظ التعديل</button></div>'))}
-window.updateStudent=function(i){const a=R(DB.students);const x=a.find(v=>v.id===i);if(!x)return;x.name=document.getElementById('esName').value.trim();x.level=document.getElementById('esLevel').value;x.code=document.getElementById('esCode').value.trim();x.parent=document.getElementById('esParent').value.trim();x.subscription=Number(document.getElementById('esSub').value||0);W(DB.students,a);realStudents()}
-window.toggleStudent=function(i){const a=R(DB.students).map(x=>x.id===i?{...x,active:!x.active}:x);W(DB.students,a);realStudents()};window.deleteStudent=function(i){if(!confirm('حذف ملف التلميذ؟'))return;W(DB.students,R(DB.students).filter(x=>x.id!==i));realStudents()}
+/* ===== ADMIN: unified student/parent management ===== */
+window.t20ParentList=function(){return R(DB.parents).filter(function(p){return p&&p.id});};
+window.t20FindParent=function(id){return t20ParentList().find(function(p){return p.id===id})||null;};
+window.t20ParentLabel=function(st){var p=st&&st.parentId?t20FindParent(st.parentId):null;return p?p.name:(st&&st.parent)||'ولي غير محدد';};
+window.t20SyncParentChildren=function(){
+  var parents=R(DB.parents), students=R(DB.students);
+  parents.forEach(function(p){
+    var names=students.filter(function(st){return st.parentId===p.id}).map(function(st){return st.name});
+    p.children=names.join('، ');
+  });
+  W(DB.parents,parents);
+};
+window.t20NormalizeChildNames=function(value){
+  return String(value||'').replace(/[\n\r؛;]/g,'،').replace(/\s+و\s+/g,'،').split(/[،,]/).map(function(v){return v.trim()}).filter(Boolean);
+};
+window.t20ChildListedForParent=function(parent,studentName){
+  if(!parent||!studentName)return false;
+  var raw=String(parent.children||'').trim();
+  if(!raw)return false;
+  return t20NormalizeChildNames(raw).indexOf(String(studentName).trim())!==-1;
+};
+window.t20EnsureParentLinks=function(){
+  var parents=t20ParentList(), students=R(DB.students), changed=false;
+  students.forEach(function(st){
+    var linked=st.parentId?parents.find(function(p){return p.id===st.parentId})||null:null;
+    if(linked){if(st.parent!==linked.name){st.parent=linked.name;changed=true;}return;}
+    var byName=parents.filter(function(p){return p.name&&st.parent&&p.name===st.parent});
+    if(byName.length===1){st.parentId=byName[0].id;st.parent=byName[0].name;changed=true;return;}
+    var byChildren=parents.filter(function(p){return t20ChildListedForParent(p,st.name)});
+    if(byChildren.length===1){st.parentId=byChildren[0].id;st.parent=byChildren[0].name;changed=true;return;}
+  });
+  if(changed)W(DB.students,students);
+  return students;
+};
+window.t20ParentOptions=function(selectedId){
+  var parents=t20ParentList();
+  return '<option value="">— بدون ولي —</option>'+parents.map(function(p){return '<option value="'+esc(p.id)+'" '+(p.id===selectedId?'selected':'')+'>'+esc(p.name)+' • '+esc(p.code||'بدون كود')+'</option>';}).join('');
+};
+window.t20ParentStudentPicker=function(parentId){
+  var students=R(DB.students), owner=t20FindParent(parentId), html='<div class="parent-child-picker" style="margin-top:12px"><label style="display:block;font-weight:800;margin-bottom:8px">👨‍👩‍👧 الأبناء المرتبطون بهذا الولي</label>';
+  if(!students.length)return html+'<div class="real-empty">لا يوجد تلاميذ لإسنادهم حاليًا.</div></div>';
+  html+=students.map(function(st){
+    var checked=st.parentId===parentId;
+    if(!checked && !st.parentId && owner){
+      var legacySame=!!(st.parent&&st.parent===owner.name);
+      var listed=t20ChildListedForParent(owner,st.name);
+      checked=legacySame||listed;
+    }
+    return '<label style="display:flex;align-items:center;gap:8px;padding:9px 10px;margin:5px 0;background:#f7fbf8;border:1px solid #dcebe2;border-radius:12px;cursor:pointer"><input type="checkbox" class="t20-parent-child" value="'+esc(st.id)+'" '+(checked?'checked':'')+' onchange="t20ParentPickerChanged()"><span><b>'+esc(st.name)+'</b><small style="display:block;color:#71827c">'+esc(st.level||'')+' • '+esc(st.code||'')+'</small></span></label>';
+  }).join('')+'</div>';
+  return html;
+};
 
-window.newParent=function(){show('➕ إضافة ولي',realWrap('➕ حساب ولي','بيانات الدخول والمتابعة.', '<div class="real-form">'+form('اسم الولي','rpName','الاسم واللقب')+form('كود الولي','rpCode','PAR-2026-001')+form('رقم الهاتف','rpPhone','اختياري')+form('أسماء الأبناء','rpChildren','اختياري — الربط الحقيقي يتم عبر اختيار الولي في ملف التلميذ')+'<button class="btn" onclick="saveParent()">💾 حفظ</button></div>'))};
-window.saveParent=function(){const x={id:id('par'),name:document.getElementById('rpName').value.trim(),code:document.getElementById('rpCode').value.trim(),phone:document.getElementById('rpPhone').value.trim(),children:document.getElementById('rpChildren').value.trim()};if(!x.name||!x.code){alert('أدخلي الاسم والكود');return}const a=R(DB.parents);if(a.some(function(p){return p.code===x.code})){alert('كود الولي مستعمل من قبل.');return}a.push(x);W(DB.parents,a);realParents()};
-window.editParent=function(i){const x=R(DB.parents).find(function(v){return v.id===i});if(!x)return;show('✏️ تعديل ولي',realWrap('✏️ تعديل ملف الولي','تحديث بيانات حساب الولي.', '<div class="real-form">'+form('اسم الولي','epName','الاسم واللقب',x.name)+form('كود الولي','epCode','PAR-2026-001',x.code)+form('رقم الهاتف','epPhone','اختياري',x.phone)+form('أسماء الأبناء','epChildren','اختياري',x.children)+'<button class="btn" onclick="updateParent(\''+i+'\')">💾 حفظ التعديل</button></div>'))};
-window.updateParent=function(i){const a=R(DB.parents),x=a.find(function(v){return v.id===i});if(!x)return;const name=document.getElementById('epName').value.trim(),code=document.getElementById('epCode').value.trim();if(!name||!code){alert('أدخلي اسم الولي والكود');return}if(a.some(function(p){return p.id!==i&&p.code===code})){alert('كود الولي مستعمل من قبل.');return}x.name=name;x.code=code;x.phone=document.getElementById('epPhone').value.trim();x.children=document.getElementById('epChildren').value.trim();R(DB.students).forEach(function(st){if(st.parentId===i)st.parent=x.name});W(DB.parents,a);W(DB.students,R(DB.students));realParents()};
-window.deleteParent=function(i){if(!confirm('حذف حساب الولي؟ سيتم فصل أبنائه عن هذا الولي دون حذف حساباتهم.'))return;var a=R(DB.parents);W(DB.parents,a.filter(function(x){return x.id!==i}));var students=R(DB.students).map(function(st){if(st.parentId===i){st.parentId='';st.parent=''}return st});W(DB.students,students);realParents()};
+window.newStudent=function(){
+  t20EnsureParentLinks();
+  show('➕ إضافة تلميذ',realWrap('➕ ملف تلميذ','اختاري الولي من الحسابات المسجلة؛ يمكن للولي الواحد متابعة عدة أبناء في مستويات مختلفة.','<div class="real-form">'+form('اسم ولقب التلميذ','rsName','مثال: أحمد بن علي')+'<label>المستوى</label><select id="rsLevel" class="field">'+levels().map(function(x){return '<option>'+x+'</option>';}).join('')+'</select>'+form('كود التلميذ','rsCode','مثال: ST-2026-001')+'<label>الولي المرتبط</label><select id="rsParentId" class="field">'+t20ParentOptions('')+'</select><label>طريقة الحضور</label><select id="rsMode" class="field"><option value="Zoom">💻 Zoom</option><option value="حضوري">🏫 حضوري</option></select><label>نوع الحصة</label><select id="rsType" class="field"><option value="عادية">👥 عادية / جماعية</option><option value="فردية">👤 فردية</option></select><label>الاشتراك الشهري</label><input id="rsSub" class="field" type="number" value="1000"><button class="btn" onclick="saveStudent()">💾 حفظ</button></div>'));
+};
+window.saveStudent=function(){
+  var pid=document.getElementById('rsParentId')?.value||'', parent=t20FindParent(pid), x={id:id('stu'),name:document.getElementById('rsName').value.trim(),level:document.getElementById('rsLevel').value,code:document.getElementById('rsCode').value.trim(),parentId:pid,parent:parent?parent.name:'',supportMode:document.getElementById('rsMode').value,supportType:document.getElementById('rsType').value,service:'دروس الدعم',subscription:Number(document.getElementById('rsSub').value||0),active:true,createdAt:new Date().toISOString()};
+  if(!x.name||!x.code){alert('أدخلي اسم التلميذ والكود');return;}
+  if(pid&&!parent){alert('الولي المحدد غير موجود. اختاري الولي من جديد.');return;}
+  var a=R(DB.students);a.push(x);W(DB.students,a);t20SyncParentChildren();realStudents();
+};
+window.editStudent=function(i){
+  var x=R(DB.students).find(function(v){return v.id===i});
+  if(!x){alert('ملف التلميذ غير موجود.');return;}
+  var selected=x.parentId||'', matches=t20ParentList().filter(function(p){return p.name===x.parent});
+  if(!selected&&matches.length===1)selected=matches[0].id;
+  show('✏️ تعديل تلميذ',realWrap('✏️ تعديل الملف','تعديل بيانات التلميذ وربطه بولي محدد.','<div class="real-form">'+form('اسم ولقب التلميذ','esName','',x.name)+'<label>المستوى</label><select id="esLevel" class="field">'+levels().map(function(v){return '<option '+(v===x.level?'selected':'')+'>'+v+'</option>';}).join('')+'</select>'+form('كود التلميذ','esCode','',x.code)+'<label>الولي المرتبط</label><select id="esParentId" class="field">'+t20ParentOptions(selected)+'</select><small style="display:block;color:#63766f;margin-top:5px">يمكن ربط نفس الولي بعدة أبناء، حتى مع اختلاف المستوى.</small><label>طريقة الحضور</label><select id="esMode" class="field"><option value="Zoom" '+(x.supportMode==='Zoom'?'selected':'')+'>💻 Zoom</option><option value="حضوري" '+(x.supportMode==='حضوري'?'selected':'')+'>🏫 حضوري</option></select><label>نوع الحصة</label><select id="esType" class="field"><option value="عادية" '+(x.supportType==='عادية'?'selected':'')+'>👥 عادية / جماعية</option><option value="فردية" '+(x.supportType==='فردية'?'selected':'')+'>👤 فردية</option></select><label>الاشتراك الشهري</label><input id="esSub" class="field" type="number" value="'+Number(x.subscription||0)+'"><button class="btn" onclick="updateStudent('+J(i)+')">💾 حفظ التعديل</button></div>'));
+};
+window.updateStudent=function(i){
+  var a=R(DB.students),x=a.find(function(v){return v.id===i});
+  if(!x){alert('ملف التلميذ غير موجود.');return;}
+  var pid=document.getElementById('esParentId')?.value||'', parent=t20FindParent(pid), name=document.getElementById('esName').value.trim(), code=document.getElementById('esCode').value.trim();
+  if(!name||!code){alert('أدخلي اسم التلميذ والكود');return;}
+  if(pid&&!parent){alert('الولي المحدد غير موجود. اختاري الولي من جديد.');return;}
+  x.name=name;x.level=document.getElementById('esLevel').value;x.code=code;x.parentId=pid;x.parent=parent?parent.name:'';x.supportMode=document.getElementById('esMode').value;x.supportType=document.getElementById('esType').value;x.service='دروس الدعم';x.subscription=Number(document.getElementById('esSub').value||0);
+  W(DB.students,a);t20SyncParentChildren();realStudents();
+};
+window.toggleStudent=function(i){W(DB.students,R(DB.students).map(function(x){return x.id===i?{...x,active:!x.active}:x}));realStudents();};
+window.deleteStudent=function(i){if(!confirm('حذف ملف التلميذ؟'))return;W(DB.students,R(DB.students).filter(function(x){return x.id!==i}));t20SyncParentChildren();realStudents();};
+window.realStudents=function(){
+  t20EnsureParentLinks();
+  var list=R(DB.students);
+  var rows=list.length?list.slice().reverse().map(function(x){var pn=t20ParentLabel(x),linked=!!x.parentId&&!!t20FindParent(x.parentId);return '<div class="real-row"><div class="real-row-top"><div><strong>'+esc(x.name)+'</strong><small>'+esc(x.level)+' • كود: '+esc(x.code)+'</small><small>👨‍👩‍👧 '+esc(pn)+' '+(linked?'• 🔗 مرتبط':'• ⚠️ غير مرتبط')+' • '+(x.active?'نشط':'موقوف')+'</small><small>'+esc(supportLabel(x.supportMode||'غير محدد',x.supportType||'غير محدد'))+'</small></div><span class="real-tag">'+money(x.subscription)+'/شهر</span></div><div class="real-actions"><button type="button" onclick="editStudent('+J(x.id)+')">✏️ تعديل</button><button type="button" onclick="toggleStudent('+J(x.id)+')">'+(x.active?'⏸️ توقيف':'▶️ تفعيل')+'</button><button type="button" class="real-danger" onclick="deleteStudent('+J(x.id)+')">🗑️ حذف</button></div></div>';}).join(''):'<div class="real-empty">👨‍🎓 لا يوجد تلاميذ مسجلون بعد.</div>';
+  show('👨‍🎓 التلاميذ',realWrap('👨‍🎓 إدارة التلاميذ','كل تلميذ مرتبط بولي عبر معرّف ثابت؛ ويمكن للولي الواحد متابعة عدة أبناء في مستويات مختلفة.','<div class="real-toolbar"><button class="btn" onclick="newStudent()">➕ إضافة تلميذ</button><button class="btn secondary" onclick="exportT20Data()">📦 نسخة احتياطية</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')));
+};
 
-function realParents(){try{if(typeof t20EnsureParentLinks==='function')t20EnsureParentLinks();}catch(err){console.error('realParents link migration error:',err);}const list=R(DB.parents),students=R(DB.students);const rows=list.length?list.slice().reverse().map(function(x){const kids=students.filter(function(st){return st.parentId===x.id}).length;return '<div class="real-row"><strong>'+esc(x.name)+'</strong><small>كود: '+esc(x.code)+' • '+esc(x.phone||'بدون رقم')+'</small><small>👨‍👩‍👧 الأبناء المرتبطون: '+kids+(x.children?' • '+esc(x.children):'')+'</small><div class="real-actions"><button onclick="editParent(\''+x.id+'\')">✏️ تعديل</button><button onclick="deleteParent(\''+x.id+'\')" class="real-danger">🗑️ حذف</button></div></div>';}).join(''):'<div class="real-empty">👨‍👩‍👧 لا يوجد أولياء بعد.</div>';show('👨‍👩‍👧 الأولياء',realWrap('👨‍👩‍👧 فضاء الأولياء — الإدارة','إدارة حسابات الأولياء وربطهم بالتلاميذ.','<div class="real-toolbar"><button class="btn" onclick="newParent()">➕ إضافة ولي</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')))}
-window.realParents=realParents;window.openAdminParents=function(){try{window.realParents();}catch(err){console.error('openAdminParents error:',err);show('👨‍👩‍👧 الأولياء',realWrap('👨‍👩‍👧 فضاء الأولياء — الإدارة','حدث خطأ أثناء فتح القسم.','<div class="real-empty">تعذر فتح إدارة الأولياء. يرجى إعادة المحاولة.</div>'+back('adminDashboard')));}};
-function realTeachers(){const list=R(DB.teachers);const rows=list.length?list.map(x=>'<div class="real-row"><strong>'+esc(x.name)+'</strong><small>'+esc(x.subject)+' • '+esc(x.code)+'</small><small>الصلاحية: '+esc(x.role)+'</small><div class="real-actions"><button class="real-danger" onclick="deleteTeacher(\''+x.id+'\')">🗑️ حذف</button></div></div>').join(''):'<div class="real-empty">👩‍🏫 لا يوجد أساتذة مضافون بعد.</div>';show('👩‍🏫 الأساتذة',realWrap('👩‍🏫 إدارة الأساتذة','حسابات الأساتذة والصلاحيات. لا يمكن للأستاذ التواصل مع الأولياء داخل المنصة.', '<div class="real-toolbar"><button class="btn" onclick="newTeacher()">➕ إضافة أستاذ</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')))}
-window.newTeacher=function(){show('➕ إضافة أستاذ',realWrap('➕ حساب أستاذ','إنشاء حساب بصلاحية محددة.', '<div class="real-form">'+form('اسم الأستاذ','rtName','الاسم واللقب')+form('كود الأستاذ','rtCode','TCH-2026-001')+form('المادة','rtSubject','العلوم الطبيعية')+'<label>الصلاحية</label><select id="rtRole" class="field"><option>أستاذ محتوى</option><option>أستاذ مساهم</option></select><button class="btn" onclick="saveTeacher()">💾 حفظ</button></div>'))};window.saveTeacher=function(){const x={id:id('tch'),name:document.getElementById('rtName').value.trim(),code:document.getElementById('rtCode').value.trim(),subject:document.getElementById('rtSubject').value.trim(),role:document.getElementById('rtRole').value};if(!x.name||!x.code){alert('أدخلي الاسم والكود');return}const a=R(DB.teachers);a.push(x);W(DB.teachers,a);realTeachers()};window.deleteTeacher=function(i){W(DB.teachers,R(DB.teachers).filter(x=>x.id!==i));realTeachers()}
+window.newParent=function(){show('➕ إضافة ولي',realWrap('➕ حساب ولي','بيانات الدخول والمتابعة. بعد الحفظ يمكنكِ ربط الأبناء من زر التعديل.','<div class="real-form">'+form('اسم الولي','rpName','الاسم واللقب')+form('كود الولي','rpCode','PAR-2026-001')+form('رقم الهاتف','rpPhone','اختياري')+'<button class="btn" onclick="saveParent()">💾 حفظ</button></div>'))};
+window.saveParent=function(){
+  var x={id:id('par'),name:document.getElementById('rpName').value.trim(),code:document.getElementById('rpCode').value.trim(),phone:document.getElementById('rpPhone').value.trim(),children:''};
+  if(!x.name||!x.code){alert('أدخلي الاسم والكود');return;}
+  var a=R(DB.parents);if(a.some(function(p){return p.code===x.code})){alert('كود الولي مستعمل من قبل.');return;}
+  a.push(x);W(DB.parents,a);editParent(x.id);
+};
+window.t20RefreshParentEditChildren=function(){
+  var field=document.getElementById('epChildren');
+  if(!field)return;
+  var selected=Array.from(document.querySelectorAll('.t20-parent-child:checked')).map(function(el){return el.value});
+  var students=R(DB.students);
+  field.value=students.filter(function(st){return selected.indexOf(st.id)!==-1}).map(function(st){return st.name}).join('، ');
+};
+window.t20ParentPickerChanged=function(){t20RefreshParentEditChildren();};
+window.editParent=function(i){
+  var x=R(DB.parents).find(function(v){return v.id===i});
+  if(!x){alert('ملف الولي غير موجود.');return;}
+  var linkedNames=R(DB.students).filter(function(st){return st.parentId===i}).map(function(st){return st.name}).join('، ');
+  var initialNames=linkedNames||x.children||'';
+  show('✏️ تعديل ولي',realWrap('✏️ تعديل ملف الولي','اختاري الأبناء الحقيقيين لهذا الولي. يمكن اختيار أكثر من تلميذ مهما اختلف مستواه.','<div class="real-form">'+form('اسم الولي','epName','الاسم واللقب',x.name)+form('كود الولي','epCode','PAR-2026-001',x.code)+form('رقم الهاتف','epPhone','اختياري',x.phone)+'<label>أسماء الأبناء المرتبطين</label><input id="epChildren" class="field" value="'+esc(initialNames)+'" readonly><small style="display:block;color:#63766f;margin-top:5px">تتحدث القائمة مباشرة حسب الاختيارات أدناه، ثم تُحفظ العلاقة عند الضغط على الحفظ.</small>'+t20ParentStudentPicker(i)+'<button type="button" class="btn" onclick="updateParent('+J(i)+')">💾 حفظ التعديل والربط</button></div>'));
+  t20RefreshParentEditChildren();
+};
+window.updateParent=function(i){
+  try{
+    var a=R(DB.parents), x=a.find(function(v){return v.id===i});
+    if(!x){alert('ملف الولي غير موجود.');return false;}
+    var nameEl=document.getElementById('epName'), codeEl=document.getElementById('epCode'), phoneEl=document.getElementById('epPhone');
+    var name=nameEl?String(nameEl.value||'').trim():'', code=codeEl?String(codeEl.value||'').trim():'';
+    if(!name||!code){alert('أدخلي اسم الولي والكود');return false;}
+    if(a.some(function(p){return p.id!==i&&String(p.code||'').trim()===code})){alert('كود الولي مستعمل من قبل.');return false;}
+    var selected=Array.from(document.querySelectorAll('.t20-parent-child:checked')).map(function(el){return String(el.value||'');}).filter(Boolean);
+    var students=R(DB.students);
+    x.name=name; x.code=code; x.phone=phoneEl?String(phoneEl.value||'').trim():'';
+    students.forEach(function(st){
+      if(selected.indexOf(String(st.id))!==-1){st.parentId=i;st.parent=x.name;}
+      else if(String(st.parentId||'')===String(i)){st.parentId='';st.parent='';}
+    });
+    x.children=students.filter(function(st){return String(st.parentId||'')===String(i)}).map(function(st){return st.name;}).join('، ');
+    W(DB.parents,a);
+    W(DB.students,students);
+    var savedParent=R(DB.parents).find(function(p){return p.id===i});
+    var savedStudents=R(DB.students).filter(function(st){return String(st.parentId||'')===String(i)});
+    if(!savedParent || savedStudents.length!==selected.length){throw new Error('فشل التحقق من حفظ ربط الأبناء');}
+    realParents();
+    return false;
+  }catch(err){
+    console.error('updateParent save error:',err);
+    alert('حدث خطأ أثناء حفظ تعديل الولي والربط. البيانات الأصلية لم تُحذف.');
+    return false;
+  }
+};
+window.deleteParent=function(i){
+  if(!confirm('حذف حساب الولي؟ سيتم فصل أبنائه عن هذا الولي دون حذف حساباتهم.'))return;
+  var a=R(DB.parents).filter(function(x){return x.id!==i}),students=R(DB.students).map(function(st){if(st.parentId===i){st.parentId='';st.parent='';}return st});
+  W(DB.parents,a);W(DB.students,students);t20SyncParentChildren();realParents();
+};
+window.realParents=function(){
+  t20EnsureParentLinks();
+  var list=R(DB.parents),students=R(DB.students);
+  var rows=list.length?list.slice().reverse().map(function(x){var kids=students.filter(function(st){return st.parentId===x.id}),names=kids.map(function(st){return st.name}).join('، ');return '<div class="real-row"><strong>'+esc(x.name)+'</strong><small>كود: '+esc(x.code)+' • '+esc(x.phone||'بدون رقم')+'</small><small>👨‍👩‍👧 الأبناء المرتبطون: '+kids.length+(names?' • '+esc(names):'')+'</small><div class="real-actions"><button type="button" class="t20-parent-edit-btn" data-parent-edit="'+esc(x.id)+'" onclick="window.editParent('+J(x.id)+');return false;">✏️ تعديل</button><button type="button" onclick="deleteParent('+J(x.id)+')" class="real-danger">🗑️ حذف</button></div></div>';}).join(''):'<div class="real-empty">👨‍👩‍👧 لا يوجد أولياء بعد.</div>';
+  show('👨‍👩‍👧 الأولياء',realWrap('👨‍👩‍👧 فضاء الأولياء — الإدارة','إدارة حسابات الأولياء وربطهم بالتلاميذ.','<div class="real-toolbar"><button class="btn" onclick="newParent()">➕ إضافة ولي</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')));
+};
+window.openAdminParents=function(){try{window.realParents();}catch(err){console.error('openAdminParents error:',err);show('👨‍👩‍👧 الأولياء',realWrap('👨‍👩‍👧 فضاء الأولياء — الإدارة','حدث خطأ أثناء فتح القسم.','<div class="real-empty">تعذر فتح إدارة الأولياء. يرجى إعادة المحاولة.</div>'+back('adminDashboard')));}};
+// مسار نقر واحد احتياطي لزر تعديل الولي، بعد المسار المباشر.
+function realTeachers(){const list=R(DB.teachers);const rows=list.length?list.map(x=>'<div class="real-row"><strong>'+esc(x.name)+'</strong><small>'+esc(x.subject)+' • '+esc(x.code)+'</small><small>الصلاحية: '+esc(x.role)+'</small><div class="real-actions"><button type="button" onclick="editTeacher('+J(x.id)+');return false;">✏️ تعديل</button><button type="button" class="real-danger" onclick="deleteTeacher('+J(x.id)+');return false;">🗑️ حذف</button></div></div>').join(''):'<div class="real-empty">👩‍🏫 لا يوجد أساتذة مضافون بعد.</div>';show('👩‍🏫 الأساتذة',realWrap('👩‍🏫 إدارة الأساتذة','حسابات الأساتذة والصلاحيات. لا يمكن للأستاذ التواصل مع الأولياء داخل المنصة.', '<div class="real-toolbar"><button class="btn" onclick="newTeacher()">➕ إضافة أستاذ</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')))}
+window.newTeacher=function(){show('➕ إضافة أستاذ',realWrap('➕ حساب أستاذ','إنشاء حساب بصلاحية محددة.', '<div class="real-form">'+form('اسم الأستاذ','rtName','الاسم واللقب')+form('كود الأستاذ','rtCode','TCH-2026-001')+form('المادة','rtSubject','العلوم الطبيعية')+'<label>الصلاحية</label><select id="rtRole" class="field"><option>أستاذ محتوى</option><option>أستاذ مساهم</option></select><button class="btn" onclick="saveTeacher()">💾 حفظ</button></div>'))};
+window.editTeacher=function(i){const x=R(DB.teachers).find(function(t){return t.id===i});if(!x){alert('الأستاذ غير موجود');return}show('✏️ تعديل الأستاذ',realWrap('✏️ تعديل حساب الأستاذ','يمكنك تعديل بيانات الأستاذ دون إنشاء حساب جديد.','<div class="real-form">'+form('اسم الأستاذ','rtName','الاسم واللقب',x.name)+form('كود الأستاذ','rtCode','TCH-2026-001',x.code)+form('المادة','rtSubject','العلوم الطبيعية',x.subject)+'<label>الصلاحية</label><select id="rtRole" class="field"><option'+(x.role==='أستاذ محتوى'?' selected':'')+'>أستاذ محتوى</option><option'+(x.role==='أستاذ مساهم'?' selected':'')+'>أستاذ مساهم</option></select><button class="btn" onclick="updateTeacher('+J(x.id)+')">💾 حفظ التعديل</button><button type="button" class="btn" style="margin-top:8px;background:#fff;color:var(--deep);border:1px solid #dbe8e2" onclick="realTeachers()">↩️ إلغاء</button></div>'))};
+window.updateTeacher=function(i){const a=R(DB.teachers);const n=document.getElementById('rtName')?.value.trim()||'',c=document.getElementById('rtCode')?.value.trim()||'',sub=document.getElementById('rtSubject')?.value.trim()||'',role=document.getElementById('rtRole')?.value||'';if(!n||!c){alert('أدخلي الاسم والكود');return}const idx=a.findIndex(function(t){return t.id===i});if(idx<0){alert('الأستاذ غير موجود');return}a[idx]={...a[idx],name:n,code:c,subject:sub,role:role};W(DB.teachers,a);realTeachers()};
+window.saveTeacher=function(){const x={id:id('tch'),name:document.getElementById('rtName').value.trim(),code:document.getElementById('rtCode').value.trim(),subject:document.getElementById('rtSubject').value.trim(),role:document.getElementById('rtRole').value};if(!x.name||!x.code){alert('أدخلي الاسم والكود');return}const a=R(DB.teachers);a.push(x);W(DB.teachers,a);realTeachers()};window.deleteTeacher=function(i){W(DB.teachers,R(DB.teachers).filter(x=>x.id!==i));realTeachers()}
 
 function realPayments(){const list=R(DB.payments),students=R(DB.students);const rows=list.length?list.slice().reverse().map(x=>'<div class="real-row"><div class="real-row-top"><div><strong>'+esc(x.student)+'</strong><small>'+esc(x.month)+' • '+money(x.amount)+'</small><small>الوصل: '+esc(x.receipt||'بدون رقم')+' • '+esc(x.date)+'</small></div><span class="real-tag">'+esc(x.status)+'</span></div><div class="real-actions"><button onclick="cyclePayment(\''+x.id+'\')">🔄 الحالة</button><button class="real-danger" onclick="deletePayment(\''+x.id+'\')">🗑️ حذف</button></div></div>').join(''):'<div class="real-empty">💳 لا توجد مدفوعات مسجلة.</div>';show('💳 الدفع',realWrap('💳 متابعة الدفع','الاشتراكات، الوصلات وحالة الوصول إلى حصص الدعم.', '<div class="real-toolbar"><button class="btn" onclick="newPayment()">➕ تسجيل دفع</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')))}
 window.newPayment=function(){const opts=R(DB.students).map(x=>'<option>'+esc(x.name)+'</option>').join('');show('➕ تسجيل دفع',realWrap('➕ وصل دفع','سجّلي الدفع وربطيه بالتلميذ.', '<div class="real-form"><label>التلميذ</label><select id="payStudent" class="field">'+opts+'</select>'+form('الشهر','payMonth','مثال: أكتوبر 2026')+'<label>المبلغ</label><input id="payAmount" class="field" type="number" value="1000">'+form('رقم الوصل','payReceipt','مثال: R-001')+'<label>الحالة</label><select id="payStatus" class="field"><option>مدفوع</option><option>قيد التحقق</option><option>غير مدفوع</option></select><button class="btn" onclick="savePayment()">💾 حفظ</button></div>'))};window.savePayment=function(){const x={id:id('pay'),student:document.getElementById('payStudent')?.value||'غير محدد',month:document.getElementById('payMonth').value.trim(),amount:Number(document.getElementById('payAmount').value||0),receipt:document.getElementById('payReceipt').value.trim(),status:document.getElementById('payStatus').value,date:new Date().toISOString().slice(0,10)};const a=R(DB.payments);a.push(x);W(DB.payments,a);realPayments()};window.cyclePayment=function(i){const o=['مدفوع','قيد التحقق','غير مدفوع'];const a=R(DB.payments).map(x=>x.id===i?{...x,status:o[(o.indexOf(x.status)+1)%o.length]}:x);W(DB.payments,a);realPayments()};window.deletePayment=function(i){W(DB.payments,R(DB.payments).filter(x=>x.id!==i));realPayments()}
@@ -1422,15 +1623,15 @@ window.importT20Data=function(e){const f=e.target.files?.[0];if(!f)return;const 
 window.teacher=function(){show('👩‍🏫 فضاء الأساتذة',realWrap('👩‍🏫 دخول الأستاذ','الأستاذ داخل المنصة لا يتواصل مع الأولياء، وتحدد صلاحياته من الإدارة.', '<div class="real-form">'+form('كود الأستاذ','realTeacherCode','أدخل كود الأستاذ')+'<button class="btn" onclick="loginTeacher()">دخول</button></div>'))};
 window.parentLogin=function(){show('👨‍👩‍👧 فضاء الأولياء',realWrap('👨‍👩‍👧 دخول الولي','تابعي وضعية أبنائك وطلباتك من فضائك.', '<div class="real-form">'+form('اسم الولي','realParentName','الاسم واللقب')+form('كود الولي','realParentCode','كود الولي')+'<button class="btn" onclick="loginParent()">دخول</button></div>'))};
 window.loginParent=function(){const n=document.getElementById('realParentName')?.value.trim(),c=document.getElementById('realParentCode')?.value.trim();if(!n||!c){alert('أدخلي الاسم والكود');return}localStorage.setItem('t20_parent_name',n);localStorage.setItem('t20_parent_code',c);parentDashboard()};
-function parentDashboard(){const n=localStorage.getItem('t20_parent_name')||'ولي الأمر';const kids=R(DB.students).filter(x=>x.parent===n);show('👨‍👩‍👧 فضاء الأولياء',realWrap('👨‍👩‍👧 مرحبًا '+esc(n),'هذا الفضاء مخصص لمتابعة الأبناء والطلبات.', '<div class="real-kpis"><div class="real-kpi"><b>'+kids.length+'</b><span>الأبناء</span></div><div class="real-kpi"><b>'+R(DB.payments).filter(x=>kids.some(k=>k.name===x.student)&&x.status==='مدفوع').length+'</b><span>دفعات مؤكدة</span></div></div><div class="real-table">'+(kids.length?kids.map(k=>'<div class="real-row"><strong>'+esc(k.name)+'</strong><small>'+esc(k.level)+' • الاشتراك '+money(k.subscription)+'</small></div>').join(''):'<div class="real-empty">لم يتم ربط تلميذ بهذا الولي بعد.</div>')+'</div><div class="real-toolbar"><button class="btn" onclick="newRequest()">📥 إرسال طلب</button></div>'))}
+function parentDashboard(){t20EnsureParentLinks();var pid=localStorage.getItem('t20_parent_id')||'',n=localStorage.getItem('t20_parent_name')||'ولي الأمر',p=pid?t20FindParent(pid):R(DB.parents).find(function(x){return x.name===n&&x.code===localStorage.getItem('t20_parent_code')});if(p){pid=p.id;n=p.name;localStorage.setItem('t20_parent_id',p.id);localStorage.setItem('t20_parent_name',p.name);localStorage.setItem('t20_parent_code',p.code||'');}var kids=pid?R(DB.students).filter(function(x){return x.parentId===pid}):R(DB.students).filter(function(x){return x.parent===n});show('👨‍👩‍👧 فضاء الأولياء',realWrap('👨‍👩‍👧 مرحبًا '+esc(n),'هذا الفضاء مخصص لمتابعة الأبناء والطلبات.', '<div class="real-kpis"><div class="real-kpi"><b>'+kids.length+'</b><span>الأبناء</span></div><div class="real-kpi"><b>'+R(DB.payments).filter(function(x){return kids.some(function(k){return k.name===x.student})&&x.status==='مدفوع'}).length+'</b><span>دفعات مؤكدة</span></div></div><div class="real-table">'+(kids.length?kids.map(function(k){return '<div class="real-row"><strong>'+esc(k.name)+'</strong><small>'+esc(k.level)+' • الاشتراك '+money(k.subscription)+'</small></div>'}).join(''):'<div class="real-empty">لم يتم ربط تلميذ بهذا الولي بعد.</div>')+'</div><div class="real-toolbar"><button class="btn" onclick="newRequest()">📥 إرسال طلب</button></div>'))}
 window.student=function(){show('👨‍🎓 فضاء التلاميذ',realWrap('👨‍🎓 دخول التلميذ','بعد الدخول يظهر المحتوى المرتبط بالمستوى.', '<div class="real-form">'+form('اسم التلميذ','realStudentName','الاسم واللقب')+form('كود التلميذ','realStudentCode','كود التلميذ')+'<label>المستوى</label><select id="realStudentLevel" class="field">'+levels().map(x=>'<option>'+x+'</option>').join('')+'</select><button class="btn" onclick="loginStudent()">دخول</button></div>'))};
 window.loginStudent=function(){var nEl=document.getElementById('realStudentName')||document.getElementById('studentName');var cEl=document.getElementById('realStudentCode')||document.getElementById('studentCode');var lEl=document.getElementById('realStudentLevel');var n=nEl?.value.trim(),c=cEl?.value.trim(),l=lEl?.value || localStorage.getItem('t20_student_level') || 'السنة الثالثة متوسط';if(!n||!c){alert('أدخلي اسم التلميذ والكود');return;}var list=[];try{list=JSON.parse(localStorage.getItem('t20_students')||'[]')}catch(e){}if(list.length){var found=list.find(function(x){return x.code===c&&x.name===n&&x.active!==false});if(!found){alert('كود التلميذ أو الاسم غير صحيح.');return;}l=found.level;}localStorage.setItem('t20_student_name',n);localStorage.setItem('t20_student_code',c);localStorage.setItem('t20_student_level',l);sessionStorage.removeItem('t20_test_mode');if(typeof studentDashboard==='function')studentDashboard();};
 /* Real teacher/parent login also validates stored accounts when they exist. */
-window.loginTeacher=function(){var el=document.getElementById('realTeacherCode')||document.getElementById('teacherCode');var c=el?.value.trim();if(!c){alert('أدخلي كود الأستاذ');return;}var list=[];try{list=JSON.parse(localStorage.getItem('t20_teachers')||'[]')}catch(e){}if(list.length&&!list.some(function(x){return x.code===c&&x.active!==false})){alert('كود الأستاذ غير صحيح.');return;}show('👩‍🏫 فضاء الأساتذة',realWrap('👩‍🏫 مرحبًا بالأستاذ','صلاحياتك ومحتواك وجدولك تُدار من الإدارة.','<div class="real-empty">تم الدخول بنجاح إلى فضاء الأستاذ المحلي.</div>'+back('home')))};
-window.loginParent=function(){var n=document.getElementById('realParentName')?.value.trim(),c=document.getElementById('realParentCode')?.value.trim();if(!n||!c){alert('أدخلي اسم الولي والكود');return;}var list=[];try{list=JSON.parse(localStorage.getItem('t20_parents')||'[]')}catch(e){}if(list.length&&!list.some(function(x){return x.code===c&&x.name===n})){alert('بيانات الولي غير صحيحة.');return;}localStorage.setItem('t20_parent_name',n);localStorage.setItem('t20_parent_code',c);if(typeof parentDashboard==='function')parentDashboard();};
+window.loginTeacher=function(){var el=document.getElementById('realTeacherCode')||document.getElementById('teacherCode');var c=el?.value.trim();if(!c){alert('أدخلي كود الأستاذ');return;}var list=[];try{list=JSON.parse(localStorage.getItem('t20_teachers')||'[]')}catch(e){}if(list.length&&!list.some(function(x){return x.code===c&&x.active!==false})){alert('كود الأستاذ غير صحيح.');return;}sessionStorage.removeItem('t20_test_mode');show('👩‍🏫 فضاء الأساتذة',realWrap('👩‍🏫 مرحبًا بالأستاذ','صلاحياتك ومحتواك وجدولك تُدار من الإدارة.','<div class="real-empty">تم الدخول بنجاح إلى فضاء الأستاذ المحلي.</div>'+back('home')))};
+window.loginParent=function(){var n=document.getElementById('realParentName')?.value.trim(),c=document.getElementById('realParentCode')?.value.trim();if(!n||!c){alert('أدخلي الاسم والكود');return;}t20EnsureParentLinks();var list=R(DB.parents),found=list.find(function(x){return x.code===c&&x.name===n});if(list.length&&!found){alert('بيانات الولي غير صحيحة.');return;}if(found){localStorage.setItem('t20_parent_id',found.id);localStorage.setItem('t20_parent_name',found.name);localStorage.setItem('t20_parent_code',found.code||'');}else{localStorage.setItem('t20_parent_name',n);localStorage.setItem('t20_parent_code',c);localStorage.removeItem('t20_parent_id');}if(typeof parentDashboard==='function')parentDashboard();};
 /* Add a visible exit button to simulated student dashboard. */
-var _adminDashboard=window.adminDashboard;
-window.adminDashboard=function(){if(sessionStorage.getItem('t20_test_mode'))sessionStorage.removeItem('t20_test_mode');if(typeof _adminDashboard==='function')_adminDashboard();};
+var _adminDashboard=window._adminDashboard || window.adminDashboard;
+window.adminDashboard=function(){try{if(sessionStorage.getItem('t20_test_mode'))sessionStorage.removeItem('t20_test_mode');if(typeof _adminDashboard==='function'){_adminDashboard();return;}console.error('T20: admin dashboard implementation missing');}catch(err){console.error('T20 admin dashboard error:',err);}};
 })();
 </script>
 
@@ -1471,12 +1672,6 @@ window.adminDashboard=function(){if(sessionStorage.getItem('t20_test_mode'))sess
   window.V84Sim.close=function(){var o=document.getElementById('v84-sim-overlay');if(o){o.style.display='none';o.setAttribute('aria-hidden','true');}};
   var overlay=document.getElementById('v84-sim-overlay');
   if(overlay){overlay.style.display='none';overlay.setAttribute('aria-hidden','true');}
-  // Admin quick-access opens the actual spaces, not the obsolete test overlay.
-  window.adminOpenSpace=function(role){
-    if(role==='student'){sessionStorage.setItem('t20_test_mode','student');localStorage.setItem('t20_student_name','تلميذ تجريبي');localStorage.setItem('t20_student_code','TEST-STUDENT');localStorage.setItem('t20_student_level','السنة الثالثة متوسط');studentDashboard();return;}
-    if(role==='parent'){sessionStorage.setItem('t20_test_mode','parent');localStorage.setItem('t20_parent_name','ولي أمر تجريبي');localStorage.setItem('t20_parent_code','TEST-PARENT');if(typeof parentDashboard==='function')parentDashboard();return;}
-    if(role==='teacher'){sessionStorage.setItem('t20_test_mode','teacher');show('👩‍🏫 فضاء الأساتذة',realWrap('👩‍🏫 أستاذ تجريبي','محاكاة محلية من صلاحيات الإدارة.','<div class="real-empty">تم فتح فضاء الأستاذ بنجاح.</div>'+back('adminDashboard')));}
-  };
   // Any visible "رجوع" generated by the real-space helper should close the modal when going home.
   window.back = function(fn){ var action = fn==='home' ? 'returnHome()' : (fn ? fn+'()' : 'backM()'); var label = fn==='adminDashboard' ? 'العودة إلى لوحة التحكم' : 'رجوع'; var target = fn==='home' ? 'returnHome' : (fn || 'backM'); return '<button class="btn secondary real-back" type="button" data-t20-back-target="'+target+'" onclick="'+action+';return false;">← '+label+'</button>'; };
 })();
@@ -1497,28 +1692,11 @@ window.adminDashboard=function(){if(sessionStorage.getItem('t20_test_mode'))sess
       return false;
     }
   };
-  document.addEventListener('click',function(ev){
-    const el=ev.target.closest && ev.target.closest('[data-t20-nav],[onclick]');
-    if(!el)return;
-    const txt=(el.textContent||'').trim();
-    if(!txt)return;
-    /* keep existing handlers; navigation state is recorded by explicit hooks below */
-  },true);
   window.addEventListener('load',function(){
     document.querySelectorAll('.back-bottom,[data-back-bottom],.bottom-back,.back-btn-bottom').forEach(function(b){
       b.onclick=function(e){e.preventDefault();e.stopPropagation();window.T20Back.back();return false;};
     });
   });
-})();
-</script>
-<script>
-(function(){
-  document.addEventListener('click',function(e){
-    const b=e.target.closest && e.target.closest('.back-bottom,[data-back-bottom],.bottom-back,.back-btn-bottom');
-    if(!b)return;
-    e.preventDefault(); e.stopImmediatePropagation();
-    if(window.T20Back) window.T20Back.back();
-  },true);
 })();
 </script>
 
@@ -1540,13 +1718,6 @@ window.adminDashboard=function(){if(sessionStorage.getItem('t20_test_mode'))sess
     }catch(e){}
     return false;
   };
-  document.addEventListener('click',function(e){
-    var b=e.target.closest && e.target.closest('.real-back,.back-bottom,[data-back-bottom],.bottom-back,.back-btn-bottom');
-    if(!b) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    window.T20BottomBack(b);
-  },true);
   // Keep every generated real lower-back button consistent, even when
   // its HTML was produced by an older module.
   function normalize(){
@@ -1639,34 +1810,6 @@ window.adminDashboard=function(){if(sessionStorage.getItem('t20_test_mode'))sess
     show('🏫 دروس الدعم',html);
   };
 
-  /* Parent-child relation: one stable parentId, with safe migration from legacy name links. */
-  window.t20ParentList=function(){return R(DB.parents).filter(function(p){return p&&p.id});};
-  window.t20FindParent=function(id){return t20ParentList().find(function(p){return p.id===id})||null;};
-  window.t20ParentLabel=function(st){var p=st&&st.parentId?t20FindParent(st.parentId):null;return p?p.name:(st&&st.parent)||'ولي غير محدد';};
-  window.t20EnsureParentLinks=function(){
-    var parents=t20ParentList(), students=R(DB.students), changed=false;
-    students.forEach(function(st){
-      if(st.parentId && parents.some(function(p){return p.id===st.parentId})){var linked=parents.find(function(p){return p.id===st.parentId});if(st.parent!==linked.name){st.parent=linked.name;changed=true;}return;}
-      var candidates=parents.filter(function(p){var sameName=st.parent&&p.name===st.parent;var listed=p.children&&String(p.children).split(/[،,]/).map(function(v){return v.trim()}).includes(st.name);return sameName||listed;});
-      if(candidates.length===1){st.parentId=candidates[0].id;st.parent=candidates[0].name;changed=true;}
-    });
-    if(changed)W(DB.students,students);return students;
-  };
-  window.t20ParentOptions=function(selectedId){var parents=t20ParentList();return '<option value="">— بدون ولي —</option>'+parents.map(function(p){return '<option value="'+esc(p.id)+'" '+(p.id===selectedId?'selected':'')+'>'+esc(p.name)+' • '+esc(p.code||'بدون كود')+'</option>';}).join('');};
-  t20EnsureParentLinks();
-
-  /* Admin: student profile with support mode/type and a real parentId link. */
-  window.newStudent=function(){
-    t20EnsureParentLinks();
-    show('➕ إضافة تلميذ',realWrap('➕ ملف تلميذ','اختاري الولي من الحسابات المسجلة؛ الربط يتم بمعرّف ثابت حتى لو كان الأبناء في مستويات مختلفة.','<div class="real-form">'+form('اسم ولقب التلميذ','rsName','مثال: أحمد بن علي')+'<label>المستوى</label><select id="rsLevel" class="field">'+levels().map(function(x){return '<option>'+x+'</option>';}).join('')+'</select>'+form('كود التلميذ','rsCode','مثال: ST-2026-001')+'<label>الولي المرتبط</label><select id="rsParentId" class="field">'+t20ParentOptions('')+'</select><small style="display:block;color:#63766f;margin-top:5px">يمكن لنفس الولي أن يكون مرتبطًا بأكثر من تلميذ وفي مستويات مختلفة.</small><label>طريقة الحضور</label><select id="rsMode" class="field"><option value="Zoom">💻 Zoom</option><option value="حضوري">🏫 حضوري</option></select><label>نوع الحصة</label><select id="rsType" class="field"><option value="عادية">👥 عادية / جماعية</option><option value="فردية">👤 فردية</option></select><label>الاشتراك الشهري</label><input id="rsSub" class="field" type="number" value="1000"><button class="btn" onclick="saveStudent()">💾 حفظ</button></div>'));
-  };
-  window.saveStudent=function(){var pid=document.getElementById('rsParentId')?.value||'',parent=t20FindParent(pid),x={id:id('stu'),name:document.getElementById('rsName').value.trim(),level:document.getElementById('rsLevel').value,code:document.getElementById('rsCode').value.trim(),parentId:pid,parent:parent?parent.name:'',supportMode:document.getElementById('rsMode').value,supportType:document.getElementById('rsType').value,service:'دروس الدعم',subscription:Number(document.getElementById('rsSub').value||0),active:true,createdAt:new Date().toISOString()};if(!x.name||!x.code){alert('أدخلي اسم التلميذ والكود');return}if(pid&&!parent){alert('الولي المحدد غير موجود. اختاري الولي من جديد.');return}var a=R(DB.students);a.push(x);W(DB.students,a);realStudents();};
-  window.editStudent=function(i){t20EnsureParentLinks();var x=R(DB.students).find(function(v){return v.id===i});if(!x)return;var selected=x.parentId||'',m=t20ParentList().filter(function(p){return p.name===x.parent});if(!selected&&m.length===1)selected=m[0].id;show('✏️ تعديل تلميذ',realWrap('✏️ تعديل الملف','الولي مرتبط بمعرّف ثابت، وليس بالاسم فقط.','<div class="real-form">'+form('اسم ولقب التلميذ','esName','',x.name)+'<label>المستوى</label><select id="esLevel" class="field">'+levels().map(function(v){return '<option '+(v===x.level?'selected':'')+'>'+v+'</option>';}).join('')+'</select>'+form('كود التلميذ','esCode','',x.code)+'<label>الولي المرتبط</label><select id="esParentId" class="field">'+t20ParentOptions(selected)+'</select><small style="display:block;color:#63766f;margin-top:5px">يمكن ربط نفس الولي بعدة أبناء، حتى مع اختلاف المستوى.</small><label>طريقة الحضور</label><select id="esMode" class="field"><option value="Zoom" '+(x.supportMode==='Zoom'?'selected':'')+'>💻 Zoom</option><option value="حضوري" '+(x.supportMode==='حضوري'?'selected':'')+'>🏫 حضوري</option></select><label>نوع الحصة</label><select id="esType" class="field"><option value="عادية" '+(x.supportType==='عادية'?'selected':'')+'>👥 عادية / جماعية</option><option value="فردية" '+(x.supportType==='فردية'?'selected':'')+'>👤 فردية</option></select><label>الاشتراك الشهري</label><input id="esSub" class="field" type="number" value="'+Number(x.subscription||0)+'"><button class="btn" onclick="updateStudent(\''+i+'\')">💾 حفظ التعديل</button></div>'))};
-  window.updateStudent=function(i){var a=R(DB.students),x=a.find(function(v){return v.id===i});if(!x)return;var pid=document.getElementById('esParentId')?.value||'',parent=t20FindParent(pid);x.name=document.getElementById('esName').value.trim();x.level=document.getElementById('esLevel').value;x.code=document.getElementById('esCode').value.trim();x.parentId=pid;x.parent=parent?parent.name:'';x.supportMode=document.getElementById('esMode').value;x.supportType=document.getElementById('esType').value;x.service='دروس الدعم';x.subscription=Number(document.getElementById('esSub').value||0);if(!x.name||!x.code){alert('أدخلي اسم التلميذ والكود');return}if(pid&&!parent){alert('الولي المحدد غير موجود. اختاري الولي من جديد.');return}W(DB.students,a);realStudents();};
-  window.toggleStudent=function(i){W(DB.students,R(DB.students).map(function(x){return x.id===i?{...x,active:!x.active}:x}));realStudents();};
-  window.deleteStudent=function(i){if(!confirm('حذف ملف التلميذ؟'))return;W(DB.students,R(DB.students).filter(function(x){return x.id!==i}));realStudents();};
-  window.realStudents=function(){t20EnsureParentLinks();var list=R(DB.students);var rows=list.length?list.slice().reverse().map(function(x){var pn=t20ParentLabel(x),linked=!!x.parentId&&!!t20FindParent(x.parentId);return '<div class="real-row"><div class="real-row-top"><div><strong>'+esc(x.name)+'</strong><small>'+esc(x.level)+' • كود: '+esc(x.code)+'</small><small>👨‍👩‍👧 '+esc(pn)+' '+(linked?'• 🔗 مرتبط':'• ⚠️ غير مرتبط')+' • '+(x.active?'نشط':'موقوف')+'</small><small>'+esc(supportLabel(x.supportMode||'غير محدد',x.supportType||'غير محدد'))+'</small></div><span class="real-tag">'+money(x.subscription)+'/شهر</span></div><div class="real-actions"><button onclick="editStudent('+JSON.stringify(x.id)+')">✏️ تعديل</button><button onclick="toggleStudent('+JSON.stringify(x.id)+')">'+(x.active?'⏸️ توقيف':'▶️ تفعيل')+'</button><button class="real-danger" onclick="deleteStudent('+JSON.stringify(x.id)+')">🗑️ حذف</button></div></div>';}).join(''):'<div class="real-empty">👨‍🎓 لا يوجد تلاميذ مسجلون بعد.</div>';show('👨‍🎓 التلاميذ',realWrap('👨‍🎓 إدارة التلاميذ','كل تلميذ مرتبط بولي عبر معرّف ثابت؛ ويمكن للولي الواحد متابعة عدة أبناء في مستويات مختلفة.','<div class="real-toolbar"><button class="btn" onclick="newStudent()">➕ إضافة تلميذ</button><button class="btn secondary" onclick="exportT20Data()">📦 نسخة احتياطية</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')));};
-
   /* Admin schedules: full support session model. */
   window.newSchedule=function(){
     const students=R(DB.students); const opts=students.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+' — '+esc(x.level)+'</option>').join('');
@@ -1690,10 +1833,16 @@ window.adminDashboard=function(){if(sessionStorage.getItem('t20_test_mode'))sess
   window.realPayments=function(){const list=R(DB.payments);const rows=list.length?list.slice().reverse().map(x=>'<div class="real-row"><div class="real-row-top"><div><strong>'+esc(x.student)+'</strong><small>'+esc(x.month)+' • '+money(x.amount)+'</small><small>'+esc(x.service||'دروس الدعم')+' • '+esc(supportLabel(x.supportMode||'غير محدد',x.supportType||'غير محدد'))+'</small><small>الحصص: '+Number(x.lessonsUsed||0)+' / '+Number(x.lessonsTotal||4)+' • الوصل: '+esc(x.receipt||'بدون رقم')+'</small></div><span class="real-tag">'+esc(x.status)+'</span></div><div class="real-actions"><button onclick="cyclePayment(\''+x.id+'\')">🔄 الحالة</button><button class="real-danger" onclick="deletePayment(\''+x.id+'\')">🗑️ حذف</button></div></div>').join(''):'<div class="real-empty">💳 لا توجد مدفوعات مسجلة.</div>';show('💳 الدفع',realWrap('💳 متابعة الدفع','الدفع مرتبط بالخدمة وطريقة الحضور ونوع الحصة وعدد الحصص.', '<div class="real-toolbar"><button class="btn" onclick="newPayment()">➕ تسجيل دفع</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')))};
 
   /* Parent view: show child's support classification and latest schedule. */
-  window.parentDashboard=function(){const n=localStorage.getItem('t20_parent_name')||'ولي الأمر';const kids=R(DB.students).filter(x=>x.parent===n);const rows=kids.length?kids.map(k=>{const sch=R(DB.schedules).filter(x=>scheduleMatchesStudent(x,k)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))[0];return '<div class="real-row"><strong>'+esc(k.name)+'</strong><small>'+esc(k.level)+' • '+esc(supportLabel(k.supportMode||'غير محدد',k.supportType||'غير محدد'))+'</small>'+(sch?'<small>أقرب حصة: '+esc(sch.date)+' • '+esc(sch.time)+' • '+esc(sch.title)+'</small>':'<small>لا توجد حصة مبرمجة حاليًا.</small>')+'</div>'}).join(''):'<div class="real-empty">لم يتم ربط تلميذ بهذا الولي بعد.</div>';show('👨‍👩‍👧 فضاء الأولياء',realWrap('👨‍👩‍👧 مرحبًا '+esc(n),'متابعة الأبناء مع طريقة الحضور ونوع الحصة والرزنامة.', '<div class="real-table">'+rows+'</div><div class="real-toolbar"><button class="btn" onclick="newRequest()">📥 إرسال طلب</button></div>'))};
+  window.parentDashboard=function(){
+    var n=localStorage.getItem('t20_parent_name')||'ولي الأمر', c=localStorage.getItem('t20_parent_code')||'', parent=R(DB.parents).find(function(p){return p.name===n&&(!c||p.code===c)});
+    if(parent&&typeof t20EnsureParentLinks==='function')t20EnsureParentLinks();
+    var kids=parent?R(DB.students).filter(function(x){return x.parentId===parent.id}):R(DB.students).filter(function(x){return x.parent===n});
+    var rows=kids.length?kids.map(function(k){var sch=R(DB.schedules).filter(function(x){return scheduleMatchesStudent(x,k)}).sort(function(a,b){return (a.date+a.time).localeCompare(b.date+b.time)})[0];return '<div class="real-row"><strong>'+esc(k.name)+'</strong><small>'+esc(k.level)+' • '+esc(supportLabel(k.supportMode||'غير محدد',k.supportType||'غير محدد'))+'</small>'+(sch?'<small>أقرب حصة: '+esc(sch.date)+' • '+esc(sch.time)+' • '+esc(sch.title)+'</small>':'<small>لا توجد حصة مبرمجة حاليًا.</small>')+'</div>'}).join(''):'<div class="real-empty">لم يتم ربط تلميذ بهذا الولي بعد.</div>';
+    show('👨‍👩‍👧 فضاء الأولياء',realWrap('👨‍👩‍👧 مرحبًا '+esc(n),'متابعة الأبناء مع طريقة الحضور ونوع الحصة والرزنامة.','<div class="real-table">'+rows+'</div><div class="real-toolbar"><button class="btn" onclick="newRequest()">📥 إرسال طلب</button></div>'));
+  };
 
   /* Today dashboard uses the same support labels. */
-  window.realToday=function(){const s=R(DB.students),p=R(DB.parents),pay=R(DB.payments),sch=R(DB.schedules),c=R(DB.challenges);const today=new Date().toISOString().slice(0,10);const todaySch=sch.filter(x=>x.date===today);const body='<div class="real-kpis"><button type="button" class="real-kpi real-kpi-click" onclick="realStudents()" aria-label="فتح إدارة التلاميذ"><b>'+s.length+'</b><span>التلاميذ</span></button><button type="button" class="real-kpi real-kpi-click" onclick="realParents()" aria-label="فتح إدارة الأولياء"><b>'+p.length+'</b><span>الأولياء</span></button><div class="real-kpi"><b>'+pay.filter(x=>x.status==='مدفوع').length+'</b><span>مدفوعات مؤكدة</span></div><div class="real-kpi"><b>'+c.filter(x=>x.status==='منشور').length+'</b><span>تحديات منشورة</span></div></div><h4 class="subhead">📅 برنامج اليوم</h4>'+(todaySch.length?'<div class="real-table">'+todaySch.map(x=>'<div class="real-row"><strong>'+esc(x.title)+'</strong><small>'+esc(x.level)+' • '+esc(x.time)+'</small><small>'+esc(supportLabel(x.supportMode||'غير محدد',x.supportType||'غير محدد'))+(x.supportType==='فردية'?' • 👤 '+esc(x.studentName||''):'')+'</small></div>').join('')+'</div>':'<div class="real-empty">لا توجد حصص مبرمجة اليوم.</div>')+'<div class="real-toolbar"><button class="btn" onclick="realSchedules()">🗓️ إدارة الرزنامة</button><button class="btn" onclick="realStudents()">👨‍🎓 التلاميذ</button><button class="btn" onclick="realPayments()">💳 الدفع</button></div>'+back('adminDashboard');show('📊 لوحة اليوم',realWrap('📊 لوحة اليوم','ملخص حي للبيانات، مع نوع كل حصة.',body));};
+  window.realToday=function(){const s=R(DB.students),p=R(DB.parents),pay=R(DB.payments),sch=R(DB.schedules),c=R(DB.challenges);const today=new Date().toISOString().slice(0,10);const todaySch=sch.filter(x=>x.date===today);const body='<div class="real-kpis"><button type="button" class="real-kpi real-kpi-click" onclick="realStudents()" aria-label="فتح إدارة التلاميذ"><b>'+s.length+'</b><span>التلاميذ</span></button><button type="button" class="real-kpi real-kpi-click" onclick="realParents()" aria-label="فتح إدارة الأولياء"><b>'+p.length+'</b><span>الأولياء</span></button><div class="real-kpi"><b>'+pay.filter(x=>x.status==='مدفوع').length+'</b><span>مدفوعات مؤكدة</span></div><div class="real-kpi"><b>'+c.filter(x=>x.status==='منشور').length+'</b><span>تحديات منشورة</span></div></div><h4 class="subhead">📅 برنامج اليوم</h4>'+(todaySch.length?'<div class="real-table">'+todaySch.map(x=>'<div class="real-row"><strong>'+esc(x.title)+'</strong><small>'+esc(x.level)+' • '+esc(x.time)+'</small><small>'+esc(supportLabel(x.supportMode||'غير محدد',x.supportType||'غير محدد'))+(x.supportType==='فردية'?' • 👤 '+esc(x.studentName||''):'')+'</small></div>').join('')+'</div>':'<div class="real-empty">لا توجد حصص مبرمجة اليوم.</div>')+'<div class="real-toolbar">'+back('adminDashboard')+'</div>';show('📊 لوحة اليوم',realWrap('📊 لوحة اليوم','ملخص حي للبيانات، مع نوع كل حصة.',body));};
 })();
 </script>
 
@@ -1735,14 +1884,14 @@ window.adminDashboard=function(){if(sessionStorage.getItem('t20_test_mode'))sess
     const sc=R(DB.schedules).find(x=>x.id===scheduleId);
     if(!sc){alert('الحصة غير موجودة.');return;}
     const sts=findStudentsForSchedule(sc);
-    const rows=sts.length?sts.map(st=>{const r=attendanceRecord(sc,st);return `<div class="real-row"><div><strong>${esc(st.name)}</strong><small>${esc(st.level)} • ${esc(supportLabel(sc.supportMode,sc.supportType))}</small><small>الحالة: ${esc(r?.status||'لم يُسجّل بعد')}</small></div><div class="real-actions"><button onclick="markSupportAttendance(${JSON.stringify(scheduleId)},${JSON.stringify(st.id)},'حاضر')">✅ حاضر</button><button onclick="markSupportAttendance(${JSON.stringify(scheduleId)},${JSON.stringify(st.id)},'غائب')">❌ غائب</button></div></div>`}).join(''):'<div class="real-empty">لا يوجد تلاميذ مطابقون لهذه الحصة.</div>';
+    const rows=sts.length?sts.map(st=>{const r=attendanceRecord(sc,st);return `<div class="real-row"><div><strong>${esc(st.name)}</strong><small>${esc(st.level)} • ${esc(supportLabel(sc.supportMode,sc.supportType))}</small><small>الحالة: ${esc(r?.status||'لم يُسجّل بعد')}</small></div><div class="real-actions"><button onclick="markSupportAttendance(${J(scheduleId)},${J(st.id)},'حاضر')">✅ حاضر</button><button onclick="markSupportAttendance(${J(scheduleId)},${J(st.id)},'غائب')">❌ غائب</button></div></div>`}).join(''):'<div class="real-empty">لا يوجد تلاميذ مطابقون لهذه الحصة.</div>';
     show('🟢 الحضور',realWrap('🟢 حضور حصة الدعم',esc(sc.title)+' • '+esc(sc.date)+' • '+esc(sc.time)+' • '+supportLabel(sc.supportMode,sc.supportType),'<div class="real-table">'+rows+'</div>'+back('realSchedules')));
   };
   window.markSupportAttendance=function(scheduleId,studentId,status){const sc=R(DB.schedules).find(x=>x.id===scheduleId),st=R(DB.students).find(x=>x.id===studentId);if(!sc||!st)return;saveAttendance(sc,st,status);realAttendance(scheduleId)};
   /* Add attendance buttons to the support schedule list without changing the visual identity. */
   const oldRS=window.realSchedules;
   window.realSchedules=function(){
-    const list=R(DB.schedules);const rows=list.length?list.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(x=>`<div class="real-row"><div class="real-row-top"><div><strong>${esc(x.title)}</strong><small>${esc(x.date)} • ${esc(x.time)} • ${esc(x.level)}</small><small>${esc(x.service||'دروس الدعم')} • ${esc(x.groupName||'')}</small></div><span class="real-tag">${esc(supportLabel(x.supportMode||'غير محدد',x.supportType||'غير محدد'))}</span></div><small style="display:block;margin-top:6px">${x.supportType==='فردية'?'👤 '+esc(x.studentName||'تلميذ غير محدد'):'👥 حصة جماعية'}${x.supportMode==='Zoom'?' • 💻 Zoom':' • 🏫 حضوري'}</small><div class="real-actions"><button onclick="realAttendance(${JSON.stringify(x.id)})">🟢 الحضور</button><button class="real-danger" onclick="deleteSchedule(${JSON.stringify(x.id)})">🗑️ حذف</button></div></div>`).join(''):'<div class="real-empty">🗓️ لا توجد حصص مبرمجة.</div>';
+    const list=R(DB.schedules);const rows=list.length?list.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(x=>`<div class="real-row"><div class="real-row-top"><div><strong>${esc(x.title)}</strong><small>${esc(x.date)} • ${esc(x.time)} • ${esc(x.level)}</small><small>${esc(x.service||'دروس الدعم')} • ${esc(x.groupName||'')}</small></div><span class="real-tag">${esc(supportLabel(x.supportMode||'غير محدد',x.supportType||'غير محدد'))}</span></div><small style="display:block;margin-top:6px">${x.supportType==='فردية'?'👤 '+esc(x.studentName||'تلميذ غير محدد'):'👥 حصة جماعية'}${x.supportMode==='Zoom'?' • 💻 Zoom':' • 🏫 حضوري'}</small><div class="real-actions"><button onclick="realAttendance(${J(x.id)})">🟢 الحضور</button><button class="real-danger" onclick="deleteSchedule(${J(x.id)})">🗑️ حذف</button></div></div>`).join(''):'<div class="real-empty">🗓️ لا توجد حصص مبرمجة.</div>';
     show('🗓️ الحصص والرزنامة',realWrap('🗓️ الحصص والرزنامة','دروس الدعم: Zoom/حضوري × عادية/فردية، مع الحضور المرتبط بكل حصة.','<div class="real-toolbar"><button class="btn" onclick="newSchedule()">➕ إضافة حصة</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')));
   };
 })();
@@ -1765,7 +1914,6 @@ window.t20ParentChildren=function(){var a=R('t20_students',[]),items=a.map(funct
 window.t20ParentPayments=function(){var a=R('t20_payments',[]),items=a.map(function(x){return '<div style="padding:11px;border-bottom:1px solid #e5eee9"><b>'+E(x.studentName||x.student||'')+'</b><br>'+E(x.month||'')+' — '+E(x.amount||'')+' دج — '+E(x.status||'')+'</div>'});show('💳 الدفع والإيصالات',L('💳 الدفع والإيصالات',items,'t20ParentSimulation()'))};
 window.t20AdminSimulation=function(){show('🌿 محاكاة الأستاذة حياة',S('🌿 فضاء الأستاذة حياة','محاكاة محلية.','<div style="padding:12px">التلاميذ: <b>'+R('t20_students',[]).length+'</b><br>الأولياء: <b>'+R('t20_parents',[]).length+'</b><br>الأساتذة: <b>'+R('t20_teachers',[]).length+'</b><br>الحصص: <b>'+R('t20_schedules',[]).length+'</b></div>'+B('← خروج من المحاكاة','t20ExitSimulation()')))};
 window.t20ExitSimulation=function(){sessionStorage.removeItem('t20_test_mode');if(typeof adminDashboard==='function'){adminDashboard()}else if(typeof closeM==='function'){closeM()}};
-window.loginTeacher=function(){var c=document.getElementById('realTeacherCode')?.value.trim();if(!c){alert('أدخلي كود الأستاذ');return}var a=R('t20_teachers',[]);if(a.length&&!a.some(function(x){return x.code===c&&x.active!==false})){alert('كود الأستاذ غير صحيح.');return}TahadiTest.start('teacher')};
 })();
 </script>
 
@@ -1784,7 +1932,7 @@ window.loginTeacher=function(){var c=document.getElementById('realTeacherCode')?
  function activeKid(){const p=cur(), kids=parentKids();let id=localStorage.getItem('t20_parent_kid');if(!kids.some(k=>k.id===id)) id=kids[0]?.id||'';localStorage.setItem('t20_parent_kid',id);return kids.find(k=>k.id===id)||kids[0]||null}
  function parentPaymentMatch(x,k){return !!k&&((x.studentId&&k.id&&x.studentId===k.id)||(!x.studentId&&x.student===k.name));}
  function shell(title,sub,body){return '<div class="parent98"><div class="real-shell"><div class="real-head"><h3>'+title+'</h3><p>'+sub+'</p></div>'+body+'</div></div>'}
- function nav(tab){const tabs=[['home','🏠 الرئيسية'],['children','👨‍👩‍👧 الأبناء'],['payment','💳 الدفع'],['attendance','🟢 الحضور'],['schedule','🗓️ الرزنامة'],['results','📊 النتائج'],['notifications','🔔 الإشعارات'],['report','📋 التقرير']];return '<div class="pnav">'+tabs.map(x=>'<button class="'+(x[0]===tab?'active':'')+'" onclick="parent98Tab('+JSON.stringify(x[0])+')">'+x[1]+'</button>').join('')+'</div>'}
+ function nav(tab){const tabs=[['home','🏠 الرئيسية'],['children','👨‍👩‍👧 الأبناء'],['payment','💳 الدفع'],['attendance','🟢 الحضور'],['schedule','🗓️ الرزنامة'],['results','📊 النتائج'],['notifications','🔔 الإشعارات'],['report','📋 التقرير']];return '<div class="pnav">'+tabs.map(x=>'<button class="'+(x[0]===tab?'active':'')+'" onclick="parent98Tab('+J(x[0])+')">'+x[1]+'</button>').join('')+'</div>'}
  function kidPicker(){const kids=parentKids();if(!kids.length)return '';return '<label>اختاري الابن</label><select class="field" onchange="parent98SelectKid(this.value)">'+kids.map(k=>'<option value="'+escP(k.id)+'" '+(activeKid()?.id===k.id?'selected':'')+'>'+escP(k.name)+' — '+escP(k.level)+'</option>').join('')+'</select>'}
  window.parent98SelectKid=function(id){localStorage.setItem('t20_parent_kid',id);parent98Tab('home')};
  window.parent98Tab=function(tab){
@@ -1804,7 +1952,8 @@ window.loginTeacher=function(){var c=document.getElementById('realTeacherCode')?
  window.parent98Logout=function(){localStorage.removeItem(PKEY);localStorage.removeItem('t20_parent_kid');if(typeof home==='function')home();else if(typeof closeM==='function')closeM()};
  window.parentDashboard=function(){const p=cur();if(!p){show('👨‍👩‍👧 فضاء الأولياء',shell('👨‍👩‍👧 تسجيل الدخول','أدخلي كود الولي للدخول إلى الحساب.','<div class="real-form">'+form('كود الولي','p98LoginCode','مثال: PAR-2026-001')+'<button class="btn" onclick="parent98Login()">دخول</button></div>'));return}parent98Tab('home')};
  window.parent98Login=function(){const c=document.getElementById('p98LoginCode')?.value.trim();const a=get('t20_parents',[]);const p=a.find(x=>x.code===c&&x.active!==false);if(!p){alert('كود الولي غير صحيح أو الحساب غير مفعل.');return}localStorage.setItem(PKEY,JSON.stringify(p));parent98Tab('home')};
- const oldParentLogin=window.parentLogin;window.parentLogin=function(){show('👨‍👩‍👧 فضاء الأولياء',shell('👨‍👩‍👧 دخول الولي','الدخول إلى متابعة الأبناء والدفع والحضور والنتائج.','<div class="real-form">'+form('كود الولي','p98LoginCode','أدخل كود الولي')+'<button class="btn" onclick="parent98Login()">🔐 دخول</button><button class="btn secondary" onclick="t20ParentSimulation()">🧪 تجربة الفضاء</button></div>'))};
+ // parentLogin is kept from the canonical real-platform implementation; do not override it here.
+
  // Replace simulation with a realistic read-only parent preview using current data.
  window.t20ParentSimulation=function(){const a=get('t20_parents',[]),p=a[0];if(p){localStorage.setItem(PKEY,JSON.stringify(p));parent98Tab('home')}else{show('👨‍👩‍👧 محاكاة ولي الأمر',shell('👨‍👩‍👧 فضاء الأولياء','لا يوجد حساب ولي تجريبي حاليًا. أضيفي وليًا من لوحة الأستاذة حياة ثم أعيدي الاختبار.','<div class="empty">لا توجد حسابات أولياء في البيانات المحلية.</div><button class="btn" onclick="t20ExitSimulation()">← رجوع</button>'))}};
  window.t20ExitSimulation=function(){localStorage.removeItem(PKEY);localStorage.removeItem('t20_parent_kid');sessionStorage.removeItem('t20_test_mode');if(typeof adminDashboard==='function')adminDashboard();else if(typeof home==='function')home()};
@@ -1928,12 +2077,6 @@ window.loginTeacher=function(){var c=document.getElementById('realTeacherCode')?
      }
    };
  }
- // الوصول من بطاقات الفضاءات والإدارة يبقى مباشرًا ومستقرًا.
- window.adminOpenSpace=function(role){
-   if(role==='parent'){v99ParentSimulation();return;}
-   if(role==='student'){v99StudentSimulation();return;}
-   if(role==='teacher'){sessionStorage.setItem('t20_test_mode','teacher');show('👩‍🏫 محاكاة الأستاذ','<div class="v99-test-card"><h3>👩‍🏫 أستاذ تجريبي</h3><p>تم فتح المحاكاة بنجاح.</p><button class="btn secondary" onclick="v99ExitSimulation()">← خروج</button></div>');return;}
- };
 })();
 </script>
 
@@ -1998,7 +2141,7 @@ window.studentTodayDashboard=function(){
  var h='<div class="student-today"><div class="today-head"><div class="today-head-row"><div><h3>📅 لوحة اليوم</h3><p>كل جديدك وبرنامجك الدراسي في مكان واحد.</p></div><span style="font-size:34px">🗓️</span></div><div class="today-date">'+new Date().toLocaleDateString('ar-DZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'</div></div><div class="today-summary"><div class="today-stat"><strong>'+total+'</strong><small>جديدك وأنشطتك</small></div><div class="today-stat"><strong>'+live+'</strong><small>حصص مباشرة</small></div><div class="today-stat"><strong>'+ch.length+'</strong><small>تحديات</small></div></div>';
  if(!total)h+='<div class="today-empty">🌿 <b>ما كاين حتى جديد حاليًا.</b><br>أي حصة أو درس أو ملف أو تمرين أو تحدٍّ أو إعلان موجّه لمستواك سيظهر هنا تلقائيًا.</div>';
  if(sch.length){h+='<div class="today-section-title"><b>📚 برنامج اليوم</b></div><div class="today-board-list">';sch.forEach(function(x){var a=x.link?"window.open("+JSON.stringify(x.link)+",'_blank')":"studentSupportDashboard()";h+='<div class="today-board-card"><div><span class="today-board-badge">📅 حصة اليوم</span><h4>'+E(x.title)+'</h4><p>'+E(x.level||st.level)+' • '+E(x.time||'')+'<br>'+E(x.supportMode||'')+' • '+E(x.supportType||'')+'</p></div><button class="btn" type="button" onclick="'+a+'">'+(x.link?'دخول الحصة':'التفاصيل')+' ←</button></div>'});h+='</div>'}
- if(cont.length){h+='<div class="today-section-title"><b>🆕 المحتوى المتاح لك</b></div><div class="today-board-list">';cont.slice(0,12).forEach(function(x){h+='<div class="today-board-card"><div><span class="today-board-badge">🆕 '+E(x.type||'محتوى')+'</span><h4>'+E(x.title)+'</h4><p>'+E(x.level||st.level||'')+' • '+E(x.service||'')+'</p></div><button class="btn" type="button" onclick="openStudentContent('+JSON.stringify(x.id)+')">فتح ←</button></div>'});h+='</div>'}
+ if(cont.length){h+='<div class="today-section-title"><b>🆕 المحتوى المتاح لك</b></div><div class="today-board-list">';cont.slice(0,12).forEach(function(x){h+='<div class="today-board-card"><div><span class="today-board-badge">🆕 '+E(x.type||'محتوى')+'</span><h4>'+E(x.title)+'</h4><p>'+E(x.level||st.level||'')+' • '+E(x.service||'')+'</p></div><button class="btn" type="button" onclick="openStudentContent('+J(x.id)+')">فتح ←</button></div>'});h+='</div>'}
  if(ch.length){h+='<div class="today-section-title"><b>⚡ التحديات المتاحة</b></div><div class="today-board-list">';ch.slice(0,10).forEach(function(x){h+='<div class="today-board-card"><div><span class="today-board-badge">⚡ تحدي</span><h4>'+E(x.title||'تحدي')+'</h4><p>'+E(x.question||'تحدٍّ جديد متاح لك.')+'</p></div><span class="today-points">+'+Number(x.points||20)+' نقطة</span></div>'});h+='</div>'}
  if(nt.length){h+='<div class="today-section-title"><b>🔔 آخر الإعلانات</b></div><div class="today-board-list">';nt.slice(0,8).forEach(function(x){h+='<div class="today-board-card"><div><span class="today-board-badge">🔔 إعلان</span><h4>'+E(x.title||'إعلان')+'</h4><p>'+E(x.body||'')+'</p></div></div>'});h+='</div>'}
  h+='<div class="today-note">💡 <b>كل ما هو منشور وموجّه لمستواك يظهر هنا</b>، دون الحاجة للبحث بين الأقسام.</div><button class="btn secondary" style="width:100%;margin-top:2px" onclick="studentDashboard()">← العودة إلى الرئيسية</button></div>';
@@ -2086,16 +2229,16 @@ window.openStudentContent=async function(id){
    if(rec&&rec.blob){
     var blobUrl=URL.createObjectURL(rec.blob), lower=(rec.type||'').toLowerCase(), isPdf=lower.indexOf('pdf')!==-1||item.type==='📄 الوثائق'||item.type==='📁 الملفات';
     var viewer=isPdf?'<div class="content-viewer"><div class="viewer-label">📄 معاينة الملف</div><iframe src="'+blobUrl+'" title="'+esc(item.title)+'" style="width:100%;height:520px;border:1px solid #d6e5de;border-radius:18px;background:#fff"></iframe><a class="btn" href="'+blobUrl+'" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none;margin-top:10px">📥 فتح الملف في نافذة مستقلة</a></div>':'<div class="content-viewer"><div class="viewer-label">📎 الملف المرفق</div><div class="t20-file-meta">'+esc(rec.name)+'<br>الحجم: '+fmtSize(rec.size)+'</div><a class="btn" href="'+blobUrl+'" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none;margin-top:10px">📥 فتح الملف</a></div>';
-    show('📚 '+esc(item.title),'<div class="section-intro"><div class="big-icon">📎</div><h3>'+esc(item.title)+'</h3><p>'+esc(item.level||'')+' • '+esc(item.service||'')+'</p></div>'+viewer+'<button class="btn secondary" style="width:100%;margin-top:10px" onclick="studentLessonType('+JSON.stringify(item.type)+')">العودة</button>');
+    show('📚 '+esc(item.title),'<div class="section-intro"><div class="big-icon">📎</div><h3>'+esc(item.title)+'</h3><p>'+esc(item.level||'')+' • '+esc(item.service||'')+'</p></div>'+viewer+'<button class="btn secondary" style="width:100%;margin-top:10px" onclick="studentLessonType('+J(item.type)+')">العودة</button>');
     return;
    }
   }catch(e){}
  }
  if(item.url){
   var url=typeof normalizeContentUrl==='function'?normalizeContentUrl(item.url):item.url;
-  if(url){var viewer2=typeof getContentViewer==='function'?getContentViewer(url,item.type,item.title):'<a class="btn" href="'+esc(url)+'" target="_blank">فتح المحتوى</a>';show('📚 '+esc(item.title),'<div class="section-intro"><div class="big-icon">🔗</div><h3>'+esc(item.title)+'</h3><p>'+esc(item.level||'')+' • '+esc(item.service||'')+'</p></div>'+viewer2+'<button class="btn secondary" style="width:100%;margin-top:10px" onclick="studentLessonType('+JSON.stringify(item.type)+')">العودة</button>');return;}
+  if(url){var viewer2=typeof getContentViewer==='function'?getContentViewer(url,item.type,item.title):'<a class="btn" href="'+esc(url)+'" target="_blank">فتح المحتوى</a>';show('📚 '+esc(item.title),'<div class="section-intro"><div class="big-icon">🔗</div><h3>'+esc(item.title)+'</h3><p>'+esc(item.level||'')+' • '+esc(item.service||'')+'</p></div>'+viewer2+'<button class="btn secondary" style="width:100%;margin-top:10px" onclick="studentLessonType('+J(item.type)+')">العودة</button>');return;}
  }
- show('📭 المحتوى','<div class="request-empty">لم يتم العثور على الملف المرفق أو الرابط.</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonType('+JSON.stringify(item.type)+')">العودة</button>');
+ show('📭 المحتوى','<div class="request-empty">لم يتم العثور على الملف المرفق أو الرابط.</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonType('+J(item.type)+')">العودة</button>');
 };
 })();
 </script>
@@ -2127,14 +2270,6 @@ window.t20ChooseSimulationLevel=setSimStudent;
 window.t20OpenStudentSimulation=chooseLevel;
 // إصلاح أزرار اختيار المستوى داخل المحاكاة: ربط مباشر عبر event delegation
 // حتى تعمل الأزرار أيضًا عندما تُنشأ داخل نافذة show() بشكل ديناميكي.
-document.addEventListener('click',function(e){
-  var btn=e.target.closest && e.target.closest('.t20-sim-level-btn');
-  if(!btn)return;
-  e.preventDefault();
-  e.stopImmediatePropagation();
-  var level=btn.getAttribute('data-t20-sim-level');
-  if(level) setSimStudent(level);
-},true);
 window.t20ExitSimulation=function(){
   var raw=sessionStorage.getItem('t20_sim_previous_student');
   try{
@@ -2154,11 +2289,6 @@ var oldTahadiStart=window.TahadiTest.start;
 window.TahadiTest.start=function(role){
   if(role==='student'){chooseLevel();return;}
   if(typeof oldTahadiStart==='function')return oldTahadiStart(role);
-};
-var oldAdminOpenSpace=window.adminOpenSpace;
-window.adminOpenSpace=function(role){
-  if(role==='student'){chooseLevel();return;}
-  if(typeof oldAdminOpenSpace==='function')return oldAdminOpenSpace(role);
 };
 })();
 </script>
@@ -2203,24 +2333,7 @@ window.adminOpenSpace=function(role){
     show('👨‍🎓 '+escapeHtml(wanted),'<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+escapeHtml(wanted)+'</h3><p>تظهر هنا الموارد المنشورة والمتاحة لمستواك فقط.</p></div><div class="content-list">'+rows+'</div><button type="button" class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonTypes()">العودة إلى أنواع الدروس</button>');
   };
 
-  document.addEventListener('click',function(e){
-    var typeBtn=e.target.closest&&e.target.closest('.t20-student-lesson-type');
-    if(typeBtn){
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      var type=typeBtn.getAttribute('data-student-lesson-type');
-      if(type) window.studentLessonType(type);
-      return;
-    }
-    var contentBtn=e.target.closest&&e.target.closest('.t20-student-content-open');
-    if(contentBtn){
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      var id=contentBtn.getAttribute('data-student-content-id');
-      if(id && typeof window.openStudentContent==='function') window.openStudentContent(id);
-    }
-  },true);
-})();
+  })();
 </script>
 
 <script id="t20-today-admin-kpi-navigation-fix">
@@ -2241,14 +2354,6 @@ window.adminOpenSpace=function(role){
     }
     return false;
   }
-  document.addEventListener('click',function(e){
-    var el=e.target.closest && e.target.closest('[data-t20-today-target]');
-    if(!el)return;
-    var target=el.getAttribute('data-t20-today-target');
-    if(!openTodayTarget(target))return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-  },true);
   var oldRealToday=window.realToday;
   if(typeof oldRealToday==='function'){
     window.realToday=function(){
@@ -2278,23 +2383,7 @@ window.adminOpenSpace=function(role){
     var title=(el.getAttribute('title')||'').trim();
     return /^←\s*(رجوع|الرجوع|عودة|العودة)/.test(txt) || /^🔙/.test(txt) || /^(رجوع|الرجوع|عودة|العودة)$/.test(aria) || /^(رجوع|الرجوع|عودة|العودة)$/.test(title);
   }
-  document.addEventListener('click',function(e){
-    var el=e.target.closest && e.target.closest('button,a,[role="button"]');
-    if(!isBackControl(el)) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    var target=el.getAttribute('data-t20-back-target');
-    if(target){
-      if(target==='returnHome' && typeof window.returnHome==='function'){ window.returnHome(); return false; }
-      if(typeof window[target]==='function'){ window[target](); return false; }
-    }
-    if(typeof window.backM==='function' && document.getElementById('modal')?.classList.contains('on')){ window.backM(); return false; }
-    if(window.T20Back && typeof window.T20Back.back==='function'){ window.T20Back.back(); return false; }
-    if(window.history && window.history.length>1){ window.history.back(); return false; }
-    if(typeof window.home==='function'){ window.home(); return false; }
-    return false;
-  },true);
-})();
+  })();
 </script>
 <script id="t20-final-parent-entry-fix-v17">
 (function(){
@@ -2317,13 +2406,307 @@ window.adminOpenSpace=function(role){
   };
   // Directly normalize the parent quick-access button so it cannot be blocked
   // by an older click handler.
+  })();
+</script>
+<script id="t20-unified-click-router-v30">
+(function(){
+  'use strict';
+  // V30: one capture listener only. It replaces the previous competing click listeners.
+  function closest(el,sel){return el&&el.closest?el.closest(sel):null;}
+  function goBack(el){
+    var target=el&&el.getAttribute?el.getAttribute('data-t20-back-target'):null;
+    try{
+      if(target){
+        if(target==='returnHome'&&typeof window.returnHome==='function'){window.returnHome();return true;}
+        if(typeof window[target]==='function'){window[target]();return true;}
+      }
+      if(window.T20Back&&typeof window.T20Back.back==='function'){window.T20Back.back();return true;}
+      if(typeof window.backM==='function'&&document.getElementById('modal')?.classList.contains('on')){window.backM();return true;}
+      if(typeof window.home==='function'){window.home();return true;}
+    }catch(err){console.error('V30 back error',err)}
+    return false;
+  }
+  function isBack(el){
+    if(!el||!(el.matches&&el.matches('button,a,[role="button"]')))return false;
+    if(el.classList.contains('close'))return false;
+    var txt=(el.textContent||'').replace(/\s+/g,' ').trim();
+    var aria=(el.getAttribute('aria-label')||'').trim();
+    var title=(el.getAttribute('title')||'').trim();
+    return /^←\s*(رجوع|الرجوع|عودة|العودة)/.test(txt)||/^🔙/.test(txt)||/^(رجوع|الرجوع|عودة|العودة)$/.test(aria)||/^(رجوع|الرجوع|عودة|العودة)$/.test(title);
+  }
   document.addEventListener('click',function(e){
-    var b=e.target.closest && e.target.closest('[data-admin-space="parent"]');
-    if(!b)return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    window.adminOpenSpace('parent');
+    var el=e.target&&e.target.closest?e.target.closest('button,a,[role="button"]'):null;
+    if(!el)return;
+
+    // Explicit navigation/back controls have highest priority.
+    if(isBack(el)){
+      e.preventDefault();e.stopImmediatePropagation();goBack(el);return;
+    }
+
+    var parentEdit=closest(e.target,'.t20-parent-edit-btn');
+    if(parentEdit){
+      e.preventDefault();e.stopImmediatePropagation();
+      var pid=parentEdit.getAttribute('data-parent-edit');
+      if(pid&&typeof window.editParent==='function')window.editParent(pid);
+      return;
+    }
+
+    var sim=closest(e.target,'.t20-sim-level-btn');
+    if(sim){
+      e.preventDefault();e.stopImmediatePropagation();
+      var level=sim.getAttribute('data-t20-sim-level');
+      if(level&&typeof window.t20ChooseSimulationLevel==='function')window.t20ChooseSimulationLevel(level);
+      else if(level&&typeof window.setSimStudent==='function')window.setSimStudent(level);
+      return;
+    }
+
+    var lesson=closest(e.target,'.t20-student-lesson-type');
+    if(lesson){
+      e.preventDefault();e.stopImmediatePropagation();
+      var type=lesson.getAttribute('data-student-lesson-type');
+      if(type&&typeof window.studentLessonType==='function')window.studentLessonType(type);
+      return;
+    }
+    var content=closest(e.target,'.t20-student-content-open');
+    if(content){
+      e.preventDefault();e.stopImmediatePropagation();
+      var cid=content.getAttribute('data-student-content-id');
+      if(cid&&typeof window.openStudentContent==='function')window.openStudentContent(cid);
+      return;
+    }
+
+    var today=closest(e.target,'[data-t20-today-target]');
+    if(today){
+      e.preventDefault();e.stopImmediatePropagation();
+      var target=today.getAttribute('data-t20-today-target');
+      try{
+        if(target==='students'&&typeof window.realStudents==='function'){window.realStudents();return;}
+        if(target==='parents'&&typeof window.realParents==='function'){window.realParents();return;}
+      }catch(err){console.error('V30 KPI error',err)}
+      return;
+    }
+
+    var video=closest(e.target,'.mini-links button[data-video]');
+    if(video){
+      e.preventDefault();e.stopImmediatePropagation();
+      if(typeof window.video==='function')window.video(video.getAttribute('data-video'));
+      return;
+    }
+
+    var adminSpace=closest(e.target,'[data-admin-space]');
+    if(adminSpace){
+      e.preventDefault();e.stopImmediatePropagation();
+      var role=adminSpace.getAttribute('data-admin-space');
+      if(typeof window.adminOpenSpace==='function')window.adminOpenSpace(role);
+      return;
+    }
+
+    var adminMod=closest(e.target,'[data-admin-module]');
+    if(adminMod){
+      e.preventDefault();e.stopImmediatePropagation();
+      var mod=adminMod.getAttribute('data-admin-module');
+      if(mod==='الأولياء'&&typeof window.openAdminParents==='function')window.openAdminParents();
+      else if(typeof window.adminModule==='function')window.adminModule(mod);
+      return;
+    }
+
+    var studentMod=closest(e.target,'[data-student-module]');
+    if(studentMod){
+      e.preventDefault();e.stopImmediatePropagation();
+      var sm=studentMod.getAttribute('data-student-module');
+      if(typeof window.studentModule==='function')window.studentModule(sm);
+      return;
+    }
+
+    var broadcast=closest(e.target,'[data-test-broadcast]');
+    if(broadcast){
+      e.preventDefault();e.stopImmediatePropagation();
+      if(typeof window.testBroadcast==='function')window.testBroadcast();
+      return;
+    }
   },true);
+})();
+</script>
+\n<script id="t20-home-entry-clean-v50">
+(function(){
+  'use strict';
+  window.t20HomeEntry=function(role){
+    try{
+      if(role==='admin'){ if(typeof window.adminDashboard==='function'){ window.adminDashboard(); return true; } }
+      if(role==='teacher'){ if(typeof window.teacher==='function'){ window.teacher(); return true; } }
+      if(role==='student'){ if(typeof window.student==='function'){ window.student(); return true; } }
+      if(role==='parent'){
+        if(typeof window.parentLogin==='function'){
+          try{ window.parentLogin(); return true; }
+          catch(err){
+            console.error('T20 parentLogin error:',err);
+            if(typeof window.show==='function'){
+              window.show('👨‍👩‍👧 فضاء الأولياء','<div class="real-form"><label>كود الولي</label><input id="t20HomeParentCode" class="field" placeholder="أدخل كود الولي" autocomplete="off"><button class="btn" type="button" onclick="if(typeof parent98Login===\'function\'){document.getElementById(\'p98LoginCode\').value=document.getElementById(\'t20HomeParentCode\').value;parent98Login();}">🔐 دخول</button><button class="btn secondary" type="button" onclick="if(typeof t20ParentSimulation===\'function\')t20ParentSimulation();">🧪 تجربة الفضاء</button></div>');
+              return true;
+            }
+          }
+        }
+      }
+    }catch(err){ console.error('T20 canonical home entry error:',role,err); }
+    return false;
+  };
+})();
+</script>\n
+<script id="t20-canonical-space-audit-v58">
+(function(){
+  'use strict';
+  function safe(v){return typeof escapeHtml==='function'?escapeHtml(v):String(v==null?'':v).replace(/[&<>"']/g,function(m){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])});}
+  function arr(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}
+  function showError(title,err){
+    console.error('T20 canonical space error',title,err);
+    if(typeof window.show==='function')window.show('⚠️ تعذر فتح الفضاء','<div class="real-empty" style="color:#9b3d3d;line-height:2">حدث خطأ في مسار الدخول.<br><small>'+safe(err&&err.message||err)+'</small></div><button class="btn secondary" style="width:100%;margin-top:10px" onclick="home()">العودة للرئيسية</button>');
+  }
+  function open(role){
+    try{
+      if(role==='admin'){ if(typeof window.adminDashboard==='function'){window.adminDashboard();return;} throw new Error('مركز التحدي غير متاح'); }
+      if(role==='teacher'){ if(typeof window.teacher==='function'){window.teacher();return;} throw new Error('فضاء الأساتذة غير متاح'); }
+      if(role==='parent'){
+        // Canonical parent entry: one login path, then the existing parent data/dashboard.
+        window.parentLogin=function(){
+          window.show('👨‍👩‍👧 فضاء الأولياء',
+            '<div class="real-form">'+
+            '<label>اسم الولي</label><input id="realParentName" class="field" placeholder="الاسم واللقب">'+
+            '<label>كود الولي</label><input id="realParentCode" class="field" placeholder="PAR-2026-001" autocomplete="off">'+
+            '<button class="btn" type="button" onclick="window.t20CanonicalParentLogin()">دخول</button>'+
+            '<p style="color:#71817b;font-size:12px;line-height:1.7;margin-top:10px">يتم التحقق من الحساب الموجود في بيانات المنصة، ولا يتم إنشاء حساب جديد من صفحة الدخول.</p>'+
+            '</div>');
+        };
+        window.t20CanonicalParentLogin=function(){
+          var n=(document.getElementById('realParentName')?.value||'').trim();
+          var c=(document.getElementById('realParentCode')?.value||'').trim();
+          if(!n||!c){alert('أدخلي اسم الولي والكود.');return;}
+          var a=arr('t20_parents');
+          var p=a.find(function(x){return String(x.name||'').trim()===n && String(x.code||'').trim()===c && x.active!==false;});
+          if(!p){alert('بيانات الولي غير صحيحة أو الحساب غير مفعل.');return;}
+          localStorage.setItem('t20_parent_current',JSON.stringify(p));
+          localStorage.setItem('t20_parent_id',p.id||'');
+          localStorage.setItem('t20_parent_name',p.name||n);
+          localStorage.setItem('t20_parent_code',p.code||c);
+          localStorage.removeItem('t20_parent_kid');
+          if(typeof window.parent98Tab==='function'){window.parent98Tab('home');return;}
+          if(typeof window.parentDashboard==='function'){window.parentDashboard();return;}
+          throw new Error('واجهة فضاء الأولياء غير متاحة');
+        };
+        window.parentLogin(); return;
+      }
+      if(role==='student'){ if(typeof window.student==='function'){window.student();return;} throw new Error('فضاء التلاميذ غير متاح'); }
+    }catch(err){showError(role,err)}
+  }
+  window.t20CanonicalOpenSpace=open;
+  window.t20CanonicalAudit={
+    keys:{students:'t20_students',parents:'t20_parents',teachers:'t20_teachers',payments:'t20_payments',schedules:'t20_schedules',contents:'t20_contents'},
+    check:function(){
+      return {admin:typeof window.adminDashboard==='function',teacher:typeof window.teacher==='function',parent:typeof window.parentLogin==='function',student:typeof window.student==='function'};
+    }
+  };
+  // One canonical home route. Existing legacy handlers delegate to this function.
+  window.t20HomeEntry=open;
+  var oldHomeButtons=function(){
+    document.querySelectorAll('.t20-home-space-btn').forEach(function(btn){
+      var role=btn.classList.contains('space1')?'admin':btn.classList.contains('space2')?'teacher':btn.classList.contains('space3')?'parent':btn.classList.contains('space4')?'student':null;
+      if(!role)return;
+      btn.setAttribute('data-t20-canonical-space',role);
+    });
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',oldHomeButtons);else oldHomeButtons();
+  // Override the final adminOpenSpace so quick-access routes cannot point to the wrong space.
+  window.adminOpenSpace=function(role){open(role)};
+})();
+</script>
+
+
+<style id="t20-space-routing-v59-css">
+/* V59 — isolated, independent routing for the four home spaces */
+.t20-home-space-btn{cursor:pointer!important;}
+</style>
+<script id="t20-space-routing-v59-js">
+(function(){
+  'use strict';
+  function replaceButton(btn, role){
+    if(!btn || btn.dataset.v59Bound==='1') return;
+    var clone=btn.cloneNode(true);
+    clone.dataset.v59Bound='1';
+    clone.removeAttribute('onclick');
+    clone.addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation();
+      try{ openRole(role); }catch(err){
+        console.error('V59 space error:',role,err);
+        if(typeof window.show==='function') window.show('⚠️ تعذر فتح الفضاء','<div class="real-empty" style="color:#9b3d3d;line-height:2">حدث خطأ في مسار الدخول.<br><small>'+String(err&&err.message||err)+'</small></div>');
+      }
+      return false;
+    },false);
+    btn.replaceWith(clone);
+  }
+  function openRole(role){
+    if(role==='admin'){
+      sessionStorage.removeItem('t20_test_mode');
+      if(typeof window._adminDashboard==='function'){window._adminDashboard();return;}
+      if(typeof window.adminDashboard==='function'){window.adminDashboard();return;}
+      throw new Error('مركز التحدي غير متاح');
+    }
+    if(role==='teacher'){
+      if(typeof window.teacher==='function'){window.teacher();return;}
+      throw new Error('فضاء الأساتذة غير متاح');
+    }
+    if(role==='parent'){
+      window.t20FinalParentEntry(); return;
+    }
+    if(role==='student'){
+      if(typeof window.student==='function'){window.student();return;}
+      throw new Error('فضاء التلاميذ غير متاح');
+    }
+  }
+  window.t20FinalParentEntry=function(){
+    if(typeof window.show!=='function') throw new Error('واجهة العرض غير متاحة');
+    window.show('👨‍👩‍👧 فضاء الأولياء',
+      '<div class="real-shell" dir="rtl">'+
+      '<div class="real-head"><h3>👨‍👩‍👧 دخول الولي</h3><p>تابعي وضعية أبنائك من فضائك الخاص.</p></div>'+
+      '<div class="real-form">'+
+      '<label>اسم الولي</label><input id="v59ParentName" class="field" placeholder="الاسم واللقب" autocomplete="off">'+
+      '<label>كود الولي</label><input id="v59ParentCode" class="field" placeholder="PAR-2026-001" autocomplete="off">'+
+      '<button class="btn" type="button" onclick="t20FinalParentLogin()">🔐 دخول</button>'+
+      '</div></div>');
+  };
+  window.t20FinalParentLogin=function(){
+    var n=(document.getElementById('v59ParentName')?.value||'').trim();
+    var c=(document.getElementById('v59ParentCode')?.value||'').trim();
+    if(!n||!c){alert('أدخلي اسم الولي والكود.');return;}
+    var list=[];
+    try{list=JSON.parse(localStorage.getItem('t20_parents')||'[]')}catch(e){list=[]}
+    var found=list.find(function(x){return String(x.name||'').trim()===n && String(x.code||'').trim()===c && x.active!==false;});
+    if(!found){alert('اسم الولي أو الكود غير صحيح.');return;}
+    localStorage.setItem('t20_parent_current',JSON.stringify(found));
+    localStorage.setItem('t20_parent_id',found.id||'');
+    localStorage.setItem('t20_parent_name',found.name||n);
+    localStorage.setItem('t20_parent_code',found.code||c);
+    localStorage.removeItem('t20_parent_kid');
+    if(typeof window.parent98Tab==='function'){window.parent98Tab('home');return;}
+    if(typeof window.parentDashboard==='function'){window.parentDashboard();return;}
+    throw new Error('واجهة فضاء الأولياء غير متاحة');
+  };
+  function bind(){
+    var map={space1:'admin',space2:'teacher',space3:'parent',space4:'student'};
+    document.querySelectorAll('.t20-home-space-btn').forEach(function(btn){
+      var role=null;
+      Object.keys(map).some(function(c){if(btn.classList.contains(c)){role=map[c];return true;}return false;});
+      if(role) replaceButton(btn,role);
+    });
+    window.t20V59SpaceAudit=function(){
+      return {
+        admin:typeof window._adminDashboard==='function'||typeof window.adminDashboard==='function',
+        teacher:typeof window.teacher==='function',
+        parent:typeof window.t20FinalParentEntry==='function',
+        student:typeof window.student==='function',
+        data:{students:localStorage.getItem('t20_students')!==null,parents:localStorage.getItem('t20_parents')!==null,teachers:localStorage.getItem('t20_teachers')!==null}
+      };
+    };
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
 })();
 </script>
 </body>
