@@ -837,7 +837,13 @@ function backM(){
   }else{closeM();}
 }
 function closeM(){
-  modal.classList.remove('on');document.body.classList.remove('modal-open');modalHistory=[];if(modalBack)modalBack.style.display='none';
+  if(modalHistory.length){
+    const prev=modalHistory.pop();
+    show(prev.t,prev.c,true);
+    requestAnimationFrame(()=>{modal.scrollTop=prev.modalScroll||0;const box=modal.querySelector('.box');if(box)box.scrollTop=prev.boxScroll||0;});
+    return;
+  }
+  modal.classList.remove('on');document.body.classList.remove('modal-open');if(modalBack)modalBack.style.display='none';
   requestAnimationFrame(()=>window.scrollTo({top:pageScrollBeforeModal||0,left:0,behavior:'auto'}));
 }
 function home(){window.scrollTo({top:0,behavior:'smooth'})}
@@ -2268,6 +2274,14 @@ function chooseLevel(){
 }
 window.t20ChooseSimulationLevel=setSimStudent;
 window.t20OpenStudentSimulation=chooseLevel;
+// سياق رجوع خاص عند فتح محاكاة التلميذ من فضاء الأولياء.
+window.t20OpenStudentSimulationFromParent=function(){
+  sessionStorage.setItem('t20_parent_return','1');
+  chooseLevel();
+};
+// Expose the level chooser because the final navigation layer calls it through window.
+window.chooseLevel=chooseLevel;
+window.setSimStudent=setSimStudent;
 // إصلاح أزرار اختيار المستوى داخل المحاكاة: ربط مباشر عبر event delegation
 // حتى تعمل الأزرار أيضًا عندما تُنشأ داخل نافذة show() بشكل ديناميكي.
 window.t20ExitSimulation=function(){
@@ -2281,6 +2295,14 @@ window.t20ExitSimulation=function(){
   sessionStorage.removeItem('t20_sim_previous_student');
   sessionStorage.removeItem('t20_v99_sim');
   sessionStorage.removeItem('t20_test_mode');
+  /* إذا دخلنا لمحاكاة التلميذ من فضاء ولي الأمر، فالرجوع يعيدنا إلى فضاء الأولياء فقط. */
+  var parentContext=false;
+  try{ parentContext=!!localStorage.getItem('t20_parent_current') || sessionStorage.getItem('t20_parent_return')==='1'; }catch(e){}
+  if(parentContext && typeof window.parent98Tab==='function'){
+    sessionStorage.removeItem('t20_parent_return');
+    window.parent98Tab('home');
+    return;
+  }
   if(typeof closeM==='function')closeM(); else if(typeof home==='function')home();
 };
 window.v99StudentSimulation=function(){chooseLevel();};
@@ -2707,6 +2729,213 @@ window.TahadiTest.start=function(role){
     };
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
+})();
+</script>
+
+<script id="t20-parent-simulation-final-fix">
+(function(){
+  'use strict';
+  function esc(v){return typeof window.escapeHtml==='function'?window.escapeHtml(v):String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+  function showSim(title,body){
+    sessionStorage.setItem('t20_test_mode','parent');
+    sessionStorage.setItem('t20_v99_sim','parent');
+    window.show(title,'<div class="v99-test-wrap">'+body+'</div>');
+  }
+  function homeSim(){
+    showSim('👨‍👩‍👧 محاكاة ولي الأمر',
+      '<div class="v99-test-card"><h3>👨‍👩‍👧 ولي الأمر التجريبي</h3><p>هذه محاكاة مستقلة لا تغيّر بيانات الأولياء الحقيقية.</p><p><b>الابن:</b> تلميذ تجريبي<br><b>المستوى:</b> السنة الثالثة متوسط</p></div>'+
+      '<div class="v99-test-grid">'+
+        '<button class="v99-test-btn primary" type="button" onclick="window.t20ParentSimFinalPage(\'review\')">📚 مراجعة المحاكاة</button>'+
+        '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimFinalPage(\'attendance\')">✅ الحضور</button>'+
+        '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimFinalPage(\'results\')">📊 النتائج</button>'+
+        '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimFinalPage(\'payment\')">💳 الدفع والإيصالات</button>'+
+      '</div>'+
+      '<button class="btn secondary" style="width:100%;margin-top:10px" type="button" onclick="window.t20ParentSimulationExit()">← خروج من المحاكاة</button>');
+  }
+  window.t20ParentSimFinalPage=function(page){
+    var content='';
+    if(page==='review') content='<div class="v99-test-card"><h3>📚 مراجعة المحاكاة</h3><p>هذه صفحة المراجعة داخل محاكاة ولي الأمر.</p><p>الابن التجريبي: <b>تلميذ تجريبي</b></p><p>المستوى: <b>السنة الثالثة متوسط</b></p><p>الدروس المتبقية: <b>3 من 4</b></p></div>';
+    if(page==='attendance') content='<div class="v99-test-card"><h3>✅ الحضور</h3><p>الحصة 1: حاضر</p><p>الحصة 2: حاضر</p><p>الحصة 3: قادمة</p></div>';
+    if(page==='results') content='<div class="v99-test-card"><h3>📊 النتائج</h3><p>التحديات المنجزة: 2</p><p>آخر نتيجة: <b>16/20</b></p></div>';
+    if(page==='payment') content='<div class="v99-test-card"><h3>💳 الدفع والإيصالات</h3><p>الاشتراك: <b>1600 دج</b></p><p>الحالة: <b>مدفوع</b></p><p>الحصص المستعملة: 1 / 4</p></div>';
+    showSim('👨‍👩‍👧 محاكاة ولي الأمر',content+'<button class="btn secondary" style="width:100%;margin-top:10px" type="button" onclick="window.t20ParentSimulationFinal()">← رجوع للمحاكاة</button>');
+  };
+  window.t20ParentSimulationFinal=homeSim;
+  window.t20ParentSimulationExit=function(){
+    sessionStorage.removeItem('t20_v99_sim');
+    sessionStorage.removeItem('t20_test_mode');
+    if(typeof window.closeM==='function')window.closeM();
+  };
+  window.v99ParentSimulation=homeSim;
+  window.t20ParentSimulation=homeSim;
+  window.TahadiTest=window.TahadiTest||{};
+  window.TahadiTest.start=function(role){
+    if(role==='parent'){homeSim();return;}
+    if(role==='student' && typeof window.chooseLevel==='function'){window.chooseLevel();return;}
+    if(role==='teacher' && typeof window.show==='function'){
+      window.show('👩‍🏫 محاكاة الأستاذ','<div class="v99-test-card"><h3>👩‍🏫 أستاذ تجريبي</h3><p>تم فتح محاكاة فضاء الأستاذ.</p></div>');
+    }
+  };
+})();
+</script>
+
+
+<script id="t20-parent-child-LOCKED-route-v1">
+(function(){
+  'use strict';
+  var CTX='t20_parent_child_locked_context';
+  var SAVED='t20_parent_child_locked_saved_student';
+  function hasParent(){try{return !!localStorage.getItem('t20_parent_current')}catch(e){return false}}
+  function read(k,d){try{var x=sessionStorage.getItem(k);return x?JSON.parse(x):d}catch(e){return d}}
+  function write(k,v){try{sessionStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  function saveStudent(){
+    write(SAVED,{name:localStorage.getItem('t20_student_name'),code:localStorage.getItem('t20_student_code'),level:localStorage.getItem('t20_student_level')});
+  }
+  function clearContext(){
+    try{sessionStorage.removeItem(CTX);sessionStorage.removeItem(SAVED);sessionStorage.removeItem('t20_parent_return');sessionStorage.removeItem('t20_v99_sim');sessionStorage.removeItem('t20_test_mode');sessionStorage.removeItem('t20_sim_previous_student')}catch(e){}
+  }
+  function restoreStudent(){
+    var old=read(SAVED,null);
+    if(!old)return;
+    ['name','code','level'].forEach(function(k){
+      var key='t20_student_'+k;
+      if(old[k]===null||old[k]===undefined)localStorage.removeItem(key);else localStorage.setItem(key,old[k]);
+    });
+  }
+  function returnToParent(){
+    restoreStudent();
+    clearContext();
+    if(typeof window.parent98Tab==='function'){window.parent98Tab('home');return;}
+    if(typeof window.parentDashboard==='function'){window.parentDashboard();return;}
+    if(typeof window.closeM==='function')window.closeM();
+  }
+  function openChild(id){
+    if(!hasParent())return false;
+    var kids=[];
+    try{kids=JSON.parse(localStorage.getItem('t20_students')||'[]')}catch(e){}
+    var k=kids.find(function(x){return String(x.id||'')===String(id||'')});
+    if(!k)return false;
+    saveStudent();
+    write(CTX,{parentId:(function(){try{var p=JSON.parse(localStorage.getItem('t20_parent_current')||'null');return p&&p.id||''}catch(e){return ''}})(),kidId:k.id||id});
+    localStorage.setItem('t20_parent_kid',k.id||id||'');
+    sessionStorage.setItem('t20_test_mode','student');
+    sessionStorage.setItem('t20_v99_sim','student');
+    localStorage.setItem('t20_student_name',k.name||'');
+    localStorage.setItem('t20_student_code',k.code||'');
+    localStorage.setItem('t20_student_level',k.level||'السنة الثالثة متوسط');
+    if(typeof window.studentDashboard==='function'){window.studentDashboard();return true;}
+    return false;
+  }
+  function active(){try{return !!sessionStorage.getItem(CTX)&&hasParent()}catch(e){return false}}
+  window.t20ParentChildLockedOpen=openChild;
+  window.t20ParentChildLockedReturn=returnToParent;
+  // Capture only the real parent's "متابعة هذا الابن" buttons.
+  document.addEventListener('click',function(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest('.parent98 .pchild button'):null;
+    if(!b||!hasParent())return;
+    var txt=(b.textContent||'').replace(/\s+/g,' ').trim();
+    if(txt.indexOf('متابعة هذا الابن')<0 && txt.indexOf('متابعة التلميذ')<0)return;
+    var oc=b.getAttribute('onclick')||'';
+    var m=oc.match(/parent98SelectKid\(\s*(?:&quot;|["'])([^"'&]+)(?:&quot;|["'])\s*\)/);
+    if(!m)m=oc.match(/parent98SelectKid\(\s*['"]([^'"]+)['"]\s*\)/);
+    var id=m&&m[1];
+    if(!id)return;
+    ev.preventDefault();ev.stopImmediatePropagation();
+    openChild(id);
+  },true);
+  // The student-space back action is redirected only while this locked context exists.
+  window.studentExit=function(){
+    if(active()){returnToParent();return;}
+    try{if(typeof window.closeM==='function')window.closeM()}catch(e){}
+    if(typeof window.returnHome==='function')window.returnHome();
+  };
+  window.t20ExitSimulation=function(){
+    if(active()){returnToParent();return;}
+    if(typeof window.closeM==='function')window.closeM();
+  };
+})();
+</script>
+<!-- T20 FINAL PARENT SIMULATION NAVIGATION FIX -->
+<script id="t20-final-parent-simulation-nav-fix">
+(function(){
+  'use strict';
+  var SIM='t20_parent_sim_active';
+  function esc(v){return typeof window.escapeHtml==='function'?window.escapeHtml(v):String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+  function mark(){sessionStorage.setItem(SIM,'1');sessionStorage.setItem('t20_test_mode','parent');sessionStorage.setItem('t20_v99_sim','parent')}
+  function render(title,body){
+    mark();
+    window.show(title,'<div class="v99-test-wrap">'+body+'</div>');
+  }
+  function home(){
+    render('👨‍👩‍👧 محاكاة ولي الأمر',
+      '<div class="v99-test-card"><h3>👨‍👩‍👧 ولي الأمر التجريبي</h3><p>هذه محاكاة مستقلة لا تغيّر بيانات الأولياء الحقيقية.</p><p><b>الابن:</b> تلميذ تجريبي<br><b>المستوى:</b> السنة الثالثة متوسط</p></div>'+
+      '<div class="v99-test-grid">'+
+      '<button class="v99-test-btn primary" type="button" onclick="window.t20ParentSimNav(\'review\')">📚 مراجعة المحاكاة</button>'+ 
+      '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimNav(\'attendance\')">✅ الحضور</button>'+ 
+      '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimNav(\'results\')">📊 النتائج</button>'+ 
+      '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimNav(\'payment\')">💳 الدفع والإيصالات</button>'+ 
+      '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimNav(\'child\')">👦 متابعة التلميذ</button>'+ 
+      '</div>'+ 
+      '<button class="btn secondary" style="width:100%;margin-top:10px" type="button" onclick="window.t20ParentSimulationExit()">← خروج من المحاكاة</button>');
+  }
+  function page(view){
+    var title='👨‍👩‍👧 محاكاة ولي الأمر', content='';
+    if(view==='review') content='<div class="v99-test-card"><h3>📚 مراجعة المحاكاة</h3><p>هذه صفحة المراجعة داخل محاكاة ولي الأمر.</p><p>الابن التجريبي: <b>تلميذ تجريبي</b></p><p>المستوى: <b>السنة الثالثة متوسط</b></p><p>الدروس المتبقية: <b>3 من 4</b></p></div>';
+    if(view==='child') content='<div class="v99-test-card"><h3>👦 متابعة التلميذ</h3><p><b>التلميذ:</b> تلميذ تجريبي</p><p><b>المستوى:</b> السنة الثالثة متوسط</p><p><b>الحضور:</b> 2 حاضر • 1 قادم</p><p><b>النتيجة الأخيرة:</b> 16/20</p></div>';
+    if(view==='attendance') content='<div class="v99-test-card"><h3>✅ الحضور</h3><p>الحصة 1: حاضر</p><p>الحصة 2: حاضر</p><p>الحصة 3: قادمة</p></div>';
+    if(view==='results') content='<div class="v99-test-card"><h3>📊 النتائج</h3><p>التحديات المنجزة: 2</p><p>آخر نتيجة: <b>16/20</b></p></div>';
+    if(view==='payment') content='<div class="v99-test-card"><h3>💳 الدفع والإيصالات</h3><p>الاشتراك: <b>1600 دج</b></p><p>الحالة: <b>مدفوع</b></p><p>الحصص المستعملة: 1 / 4</p></div>';
+    render(title,content+'<button class="btn secondary" style="width:100%;margin-top:10px" type="button" onclick="window.t20ParentSimNav(\'home\')">← رجوع إلى المحاكاة</button>');
+  }
+  window.t20ParentSimNav=function(view){ if(view==='home'){home();return;} page(view); };
+  window.t20ParentSimulationFinal=home;
+  window.t20ParentSimFinalPage=function(view){window.t20ParentSimNav(view)};
+  window.v99ParentSimPage=function(view){window.t20ParentSimNav(view==='home'?'home':view)};
+  window.v99ParentSimulation=home;
+  window.t20ParentSimulation=home;
+  window.t20ParentSimulationExit=function(){
+    sessionStorage.removeItem(SIM);
+    sessionStorage.removeItem('t20_v99_sim');
+    sessionStorage.removeItem('t20_test_mode');
+    if(typeof window.closeM==='function') window.closeM();
+  };
+  window.TahadiTest=window.TahadiTest||{};
+  var oldStart=window.TahadiTest.start;
+  window.TahadiTest.start=function(role){
+    if(role==='parent'){home();return;}
+    if(role==='student' && typeof window.chooseLevel==='function'){window.chooseLevel();return;}
+    if(typeof oldStart==='function') return oldStart.apply(this,arguments);
+  };
+})();
+</script>
+
+<!-- V2: hide modal back controls; keep top × close -->
+<style id="t20-modal-no-back-v2">
+#modal button:not(.close)[data-t20-back-target],
+#modal button:not(.close).real-back,
+#modal button:not(.close)[onclick*="backM"],
+#modal button:not(.close)[onclick*="رجوع"],
+#modal button:not(.close)[onclick*="عودة"]{display:none!important;}
+</style>
+<script id="t20-modal-no-back-v2-js">
+(function(){
+  'use strict';
+  function hideBackButtons(){
+    var modal=document.getElementById('modal');
+    if(!modal) return;
+    modal.querySelectorAll('button:not(.close),a,[role="button"]').forEach(function(el){
+      if(el.classList && el.classList.contains('close')) return;
+      var txt=(el.textContent||'').replace(/\s+/g,' ').trim();
+      var aria=(el.getAttribute('aria-label')||'').trim();
+      var title=(el.getAttribute('title')||'').trim();
+      if(/^←\s*(رجوع|الرجوع|عودة|العودة)/.test(txt) || /^🔙/.test(txt) || /^(رجوع|الرجوع|عودة|العودة)$/.test(aria) || /^(رجوع|الرجوع|عودة|العودة)$/.test(title)){
+        el.style.display='none';
+      }
+    });
+  }
+  document.addEventListener('DOMContentLoaded',hideBackButtons);
+  var modal=document.getElementById('modal');
+  if(modal){new MutationObserver(hideBackButtons).observe(modal,{childList:true,subtree:true});}
 })();
 </script>
 </body>
