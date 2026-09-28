@@ -2961,5 +2961,93 @@ window.TahadiTest.start=function(role){
   if(modal){new MutationObserver(hideBackButtons).observe(modal,{childList:true,subtree:true});}
 })();
 </script>
+
+<!-- T20 V100 — DATA SAFETY LAYER
+     This layer intentionally does NOT replace the existing platform logic.
+     It adds: origin/device warning, a one-click full backup, restore, and a
+     cloud-ready configuration placeholder. No secret key is embedded.
+-->
+<style id="t20-v100-safety-css">
+#t20V100Safety{position:fixed;left:12px;bottom:12px;z-index:2147483000;font-family:Arial,sans-serif}
+#t20V100Safety .t20v100-mini{background:#fff;border:1px solid #cfe3d9;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.12);padding:8px 10px;color:#245b4e;font-size:12px;display:flex;gap:6px;align-items:center}
+#t20V100Safety button{border:1px solid #c8ddd4;background:#f7fbf9;border-radius:9px;padding:6px 9px;color:#245b4e;cursor:pointer;font-weight:700}
+#t20V100Safety .t20v100-status{max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+<div id="t20V100Safety" aria-label="حماية بيانات منصة التحدي">
+  <div class="t20v100-mini">
+    <span class="t20v100-status" id="t20V100Status">🟢 حماية البيانات</span>
+    <button type="button" onclick="window.t20V100Backup()">💾 نسخة</button>
+    <button type="button" onclick="window.t20V100Restore()">📥 استرجاع</button>
+    <input id="t20V100RestoreInput" type="file" accept="application/json,.json" style="display:none" onchange="window.t20V100RestoreFile(this)">
+  </div>
+</div>
+<script id="t20-v100-safety-js">
+(function(){
+'use strict';
+var KEYS=[
+ 't20_students','t20_parents','t20_teachers','t20_payments','t20_schedules',
+ 't20_challenges','t20_attendance','t20_contents','t20_requests','t20_notifications',
+ 't20_results','t20_settings'
+];
+var META_KEY='t20_v100_meta';
+var CONFIG_KEY='t20_cloud_config';
+function read(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
+function stamp(){return new Date().toISOString()}
+function setStatus(t){var el=document.getElementById('t20V100Status');if(el)el.textContent=t}
+function collect(){
+ var stores={}; KEYS.forEach(function(k){var v=read(k);if(v!==null)stores[k]=v;});
+ return {format:'T20-V100-BACKUP',version:'V100',exportedAt:stamp(),origin:location.origin,stores:stores};
+}
+window.t20V100Backup=function(){
+ try{
+  var data=collect();
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='tahadi20-V100-backup-'+stamp().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  localStorage.setItem(META_KEY,JSON.stringify({lastBackup:stamp(),origin:location.origin}));
+  setStatus('🟢 نسخة محفوظة');
+ }catch(e){setStatus('🔴 تعذر إنشاء النسخة');console.error(e)}
+};
+window.t20V100Restore=function(){var i=document.getElementById('t20V100RestoreInput');if(i)i.click()}
+window.t20V100RestoreFile=function(input){
+ var f=input&&input.files&&input.files[0];if(!f)return;
+ var r=new FileReader();r.onload=function(){
+  try{
+   var d=JSON.parse(r.result);
+   if(!d||d.format!=='T20-V100-BACKUP'||!d.stores)throw new Error('صيغة النسخة غير صحيحة');
+   if(!confirm('سيتم استبدال البيانات المحلية الموجودة بالبيانات الموجودة في النسخة. هل تريدين المتابعة؟')){input.value='';return}
+   Object.keys(d.stores).forEach(function(k){if(KEYS.indexOf(k)!==-1)localStorage.setItem(k,JSON.stringify(d.stores[k]))});
+   localStorage.setItem(META_KEY,JSON.stringify({lastRestore:stamp(),source:d.exportedAt||'',origin:location.origin}));
+   setStatus('🟢 تم الاسترجاع');
+   setTimeout(function(){location.reload()},400);
+  }catch(e){alert('ملف النسخة غير صالح أو لا ينتمي لمنصة التحدي V100.');console.error(e)}
+  input.value='';
+ };r.readAsText(f);
+};
+window.t20V100CloudConfig=function(){
+ try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{"url":"","publishableKey":""}')}catch(e){return {url:'',publishableKey:''}}
+};
+window.t20V100SetCloudConfig=function(url,key){
+ if(typeof url!=='string'||typeof key!=='string')return false;
+ localStorage.setItem(CONFIG_KEY,JSON.stringify({url:url.trim(),publishableKey:key.trim()}));
+ return true;
+};
+function init(){
+ var meta=read(META_KEY)||{};
+ var cloud=window.t20V100CloudConfig();
+ if(!cloud.url||!cloud.publishableKey){
+   setStatus(meta.lastBackup?'🟢 البيانات محلية • آخر نسخة محفوظة':'🟡 البيانات محلية');
+ }
+ var old=location.origin;
+ var previous=meta.origin;
+ if(previous&&previous!==old){
+   setStatus('🟠 نطاق جديد • استوردي النسخة الاحتياطية');
+ }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
 </body>
 </html>
