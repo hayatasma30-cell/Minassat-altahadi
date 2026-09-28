@@ -2962,55 +2962,6 @@ window.TahadiTest.start=function(role){
 })();
 </script>
 
-<!-- T20 V101 — OPTIONAL CLOUD BRIDGE
-     Keeps V100 platform UI/logic intact. Cloud sync is explicit and requires
-     Supabase Auth; no secret/service-role key is stored in this HTML. -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style id="t20-v101-cloud-css">
-#t20V101Cloud{position:fixed;right:12px;bottom:58px;z-index:2147483001;font-family:Arial,sans-serif}
-#t20V101Cloud .t20v101-box{background:#fff;border:1px solid #cfe3d9;border-radius:15px;box-shadow:0 8px 28px rgba(0,0,0,.12);padding:10px;color:#245b4e;width:min(330px,calc(100vw - 24px));display:none}
-#t20V101Cloud button{border:1px solid #c8ddd4;background:#f7fbf9;border-radius:9px;padding:8px 10px;color:#245b4e;cursor:pointer;font-weight:700;margin:3px}
-#t20V101Cloud input{width:100%;box-sizing:border-box;border:1px solid #d7e5df;border-radius:9px;padding:8px;margin:4px 0;font-size:13px}
-#t20V101Cloud .cloud-title{font-weight:900;margin-bottom:6px}.cloud-status{font-size:12px;line-height:1.6;color:#63766f}
-</style>
-<div id="t20V101Cloud">
-  <button type="button" onclick="t20V101Toggle()">☁️ التخزين السحابي</button>
-  <div class="t20v101-box" id="t20V101Box">
-    <div class="cloud-title">☁️ ربط بيانات منصة التحدي</div>
-    <div class="cloud-status" id="t20V101Status">غير مربوط</div>
-    <input id="t20V101Url" placeholder="Supabase Project URL" autocomplete="off">
-    <input id="t20V101Key" placeholder="Publishable / anon key" autocomplete="off">
-    <input id="t20V101Email" type="email" placeholder="بريد حساب الإدارة في Supabase">
-    <input id="t20V101Password" type="password" placeholder="كلمة مرور حساب الإدارة">
-    <div>
-      <button type="button" onclick="t20V101SaveConfig()">حفظ الربط</button>
-      <button type="button" onclick="t20V101Login()">دخول</button>
-      <button type="button" onclick="t20V101Upload()">⬆️ رفع البيانات</button>
-      <button type="button" onclick="t20V101Download()">⬇️ جلب البيانات</button>
-      <button type="button" onclick="t20V101Logout()">خروج</button>
-    </div>
-    <div class="cloud-status">الرفع والجلب يدويان حتى لا تتغير بيانات V100 تلقائيًا دون علمك.</div>
-  </div>
-</div>
-<script id="t20-v101-cloud-js">
-(function(){
-'use strict';
-var CFG='t20_v101_cloud_config';
-var KEYS=['t20_students','t20_parents','t20_teachers','t20_payments','t20_schedules','t20_challenges','t20_attendance','t20_contents','t20_requests','t20_notifications','t20_results','t20_settings'];
-function cfg(){try{return JSON.parse(localStorage.getItem(CFG)||'{}')}catch(e){return {}}}
-function status(t){var e=document.getElementById('t20V101Status');if(e)e.textContent=t}
-function read(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
-function collect(){var o={};KEYS.forEach(function(k){var v=read(k);if(v!==null)o[k]=v});return o}
-function client(){var c=cfg();if(!c.url||!c.key)throw new Error('أدخلي رابط Supabase والمفتاح العام أولًا.');if(!window.supabase||!window.supabase.createClient)throw new Error('تعذر تحميل مكتبة Supabase.');return window.supabase.createClient(c.url,c.key)}
-window.t20V101Toggle=function(){var b=document.getElementById('t20V101Box');if(b)b.style.display=b.style.display==='block'?'none':'block';var c=cfg();['Url','Key','Email'].forEach(function(x){var e=document.getElementById('t20V101'+x);if(e)e.value=c[x.toLowerCase()]||''})};
-window.t20V101SaveConfig=function(){var url=(document.getElementById('t20V101Url')||{}).value||'',key=(document.getElementById('t20V101Key')||{}).value||'',email=(document.getElementById('t20V101Email')||{}).value||'';if(!url||!key){alert('أدخلي رابط Supabase والمفتاح العام.');return}localStorage.setItem(CFG,JSON.stringify({url:url.trim(),key:key.trim(),email:email.trim()}));status('🟢 تم حفظ إعدادات الربط محليًا');};
-window.t20V101Login=async function(){try{t20V101SaveConfig();var c=client(),email=(document.getElementById('t20V101Email')||{}).value||'',password=(document.getElementById('t20V101Password')||{}).value||'';if(!email||!password)throw new Error('أدخلي بريد وكلمة مرور حساب الإدارة.');var r=await c.auth.signInWithPassword({email:email.trim(),password:password});if(r.error)throw r.error;status('🟢 تم تسجيل الدخول إلى التخزين السحابي');}catch(e){status('🔴 '+(e.message||e));alert('تعذر تسجيل الدخول: '+(e.message||e))}};
-window.t20V101Upload=async function(){try{var c=client(),s=await c.auth.getSession();if(!s.data.session)throw new Error('سجلي الدخول أولًا.');var uid=s.data.session.user.id,data=collect(),rows=Object.keys(data).map(function(k){return {owner_id:uid,store_key:k,payload:data[k],updated_at:new Date().toISOString()}});var r=await c.from('t20_store').upsert(rows,{onConflict:'owner_id,store_key'});if(r.error)throw r.error;status('🟢 تم رفع '+rows.length+' أقسام من البيانات');alert('تم رفع بيانات المنصة إلى السحابة بنجاح.');}catch(e){status('🔴 '+(e.message||e));alert('تعذر رفع البيانات: '+(e.message||e))}};
-window.t20V101Download=async function(){try{var c=client(),s=await c.auth.getSession();if(!s.data.session)throw new Error('سجلي الدخول أولًا.');if(!confirm('سيتم استبدال البيانات المحلية بالنسخة الموجودة في السحابة. هل تريدين المتابعة؟'))return;var uid=s.data.session.user.id,r=await c.from('t20_store').select('store_key,payload').eq('owner_id',uid);if(r.error)throw r.error;if(!r.data||!r.data.length)throw new Error('لا توجد بيانات في السحابة لهذا الحساب.');r.data.forEach(function(x){if(KEYS.indexOf(x.store_key)!==-1)localStorage.setItem(x.store_key,JSON.stringify(x.payload))});status('🟢 تم جلب البيانات من السحابة');alert('تم جلب البيانات بنجاح. ستُعاد المنصة تحميلها الآن.');setTimeout(function(){location.reload()},300);}catch(e){status('🔴 '+(e.message||e));alert('تعذر جلب البيانات: '+(e.message||e))}};
-window.t20V101Logout=async function(){try{var c=client();await c.auth.signOut();status('🟡 تم تسجيل الخروج');}catch(e){status('🔴 '+(e.message||e))}};
-})();
-</script>
-
 <!-- T20 V100 — DATA SAFETY LAYER
      This layer intentionally does NOT replace the existing platform logic.
      It adds: origin/device warning, a one-click full backup, restore, and a
@@ -3095,6 +3046,400 @@ function init(){
  }
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+
+<!-- V100 GITHUB DEMO DATA: one-time seed; never overwrites existing data -->
+<script id="t20-v100-github-demo-seed">
+(function(){
+  'use strict';
+  try{
+    if(localStorage.getItem('t20_v100_demo_seed_done')==='1') return;
+
+    function read(k,d){ try { return JSON.parse(localStorage.getItem(k)||JSON.stringify(d)); } catch(e){ return d; } }
+    function write(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+    function uid(prefix,i){ return prefix+'_DEMO_'+String(i).padStart(2,'0'); }
+
+    /* IMPORTANT: these are temporary DEMO records only.
+       They are placeholders because the exact 8 student / 5 parent records
+       from the previous browser localStorage are not contained in the HTML file. */
+    var students = read('t20_students',[]);
+    var parents  = read('t20_parents',[]);
+
+    if(!Array.isArray(students) || students.length===0){
+      students = [];
+      for(var i=1;i<=8;i++){
+        var pid = uid('PAR', ((i-1)%5)+1);
+        students.push({
+          id:uid('STU',i),
+          name:'تلميذ تجريبي '+String(i).padStart(2,'0'),
+          level:['السنة الأولى متوسط','السنة الثانية متوسط','السنة الثالثة متوسط','السنة الرابعة متوسط','السنة الأولى ثانوي'][(i-1)%5],
+          code:'STU-DEMO-'+String(i).padStart(2,'0'),
+          parentId:pid,
+          parent:'ولي تجريبي '+String(((i-1)%5)+1).padStart(2,'0'),
+          subscription: i%2 ? 1000 : 1600,
+          active:true,
+          supportMode:'Zoom',
+          supportType:'عادية'
+        });
+      }
+      write('t20_students',students);
+    }
+
+    if(!Array.isArray(parents) || parents.length===0){
+      parents = [];
+      for(var j=1;j<=5;j++){
+        parents.push({
+          id:uid('PAR',j),
+          name:'ولي تجريبي '+String(j).padStart(2,'0'),
+          code:'PAR-DEMO-'+String(j).padStart(2,'0'),
+          children:students.filter(function(s){return s.parentId===uid('PAR',j)}).map(function(s){return s.name}).join('، '),
+          active:true
+        });
+      }
+      write('t20_parents',parents);
+    }
+
+    var payments = read('t20_payments',[]);
+    if(!Array.isArray(payments) || payments.length===0){
+      payments=[{
+        id:'PAY_DEMO_01',
+        studentId:students[0] && students[0].id,
+        student:students[0] && students[0].name,
+        service:'دروس الدعم',
+        month:'تجريبي',
+        amount:1600,
+        status:'قيد المتابعة',
+        lessonsTotal:4,
+        lessonsUsed:0,
+        date:new Date().toISOString().slice(0,10)
+      }];
+      write('t20_payments',payments);
+    }
+
+    var requests = read('t20_requests',[]);
+    if(!Array.isArray(requests) || requests.length===0){
+      write('t20_requests',[{
+        id:'REQ_DEMO_01',
+        type:'تسجيل',
+        student:students[0] && students[0].name,
+        status:'جديدة',
+        createdAt:new Date().toISOString()
+      }]);
+    }
+
+    var notifications = read('t20_notifications',[]);
+    if(!Array.isArray(notifications) || notifications.length===0){
+      write('t20_notifications',[{
+        id:'NOTIF_DEMO_01',
+        title:'تنبيه تجريبي',
+        message:'هذه بيانات تجريبية مؤقتة لاختبار نسخة GitHub.',
+        createdAt:new Date().toISOString()
+      }]);
+    }
+
+    localStorage.setItem('t20_v100_demo_seed_done','1');
+
+    /* Refresh dashboard after the seed has been written. */
+    setTimeout(function(){
+      try{
+        if(typeof window.adminDashboard==='function') window.adminDashboard();
+      }catch(e){}
+    },80);
+  }catch(e){
+    console.error('V100 demo seed error:',e);
+  }
+})();
+</script>
+
+<!-- T20 V100 CLOUD BRIDGE — additive fix; existing platform logic remains untouched -->
+<style id="t20-v100-cloud-bridge-css">
+#t20V100CloudBtn{border:1px solid #b9d7c8;background:#f7fbf9;border-radius:9px;padding:6px 9px;color:#245b4e;cursor:pointer;font-weight:700}
+.t20-cloud-note{background:#f7fbf9;border:1px solid #d8e8e1;border-radius:16px;padding:12px;color:#536b62;font-size:12px;line-height:1.8;margin-top:10px}
+.t20-cloud-ok{background:#e9f8ef;border-color:#bfe2ca;color:#17633f}
+.t20-cloud-warn{background:#fff7df;border-color:#e7d39a;color:#765f1b}
+.t20-cloud-err{background:#fdecec;border-color:#efc2c2;color:#8b3434}
+.t20-cloud-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.t20-cloud-actions .btn{width:100%}
+.t20-cloud-small{font-size:11px;color:#71817b;line-height:1.7}
+@media(max-width:520px){.t20-cloud-actions{grid-template-columns:1fr}}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script id="t20-v100-cloud-bridge-js">
+(function(){
+'use strict';
+
+var CONFIG_KEY='t20_cloud_config';
+var SESSION_KEY='t20_v100_cloud_session';
+var CLOUD_TABLE='t20_cloud_data';
+var STORE_KEYS=[
+ 't20_students','t20_parents','t20_teachers','t20_payments','t20_schedules',
+ 't20_challenges','t20_attendance','t20_contents','t20_requests','t20_notifications',
+ 't20_results','t20_settings'
+];
+
+function cfg(){
+ try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{"url":"","publishableKey":""}')}
+ catch(e){return {url:'',publishableKey:''}}
+}
+function saveCfg(url,key){
+ localStorage.setItem(CONFIG_KEY,JSON.stringify({
+   url:String(url||'').trim().replace(/\/+$/,''),
+   publishableKey:String(key||'').trim()
+ }));
+}
+function session(){
+ try{return JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null')}
+ catch(e){return null}
+}
+function saveSession(x){sessionStorage.setItem(SESSION_KEY,JSON.stringify(x||null))}
+function read(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}
+function collect(){
+ var stores={};
+ STORE_KEYS.forEach(function(k){
+   var v=read(k,null);
+   if(v!==null)stores[k]=v;
+ });
+ return {
+   format:'T20-V100-CLOUD',
+   version:'V100',
+   exportedAt:new Date().toISOString(),
+   stores:stores
+ };
+}
+function esc(x){
+ return String(x==null?'':x).replace(/[&<>"']/g,function(c){
+   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+ });
+}
+function msg(t,kind){
+ var el=document.getElementById('t20CloudMsg');
+ if(el){el.className='t20-cloud-note '+(kind||'');el.innerHTML=t}
+}
+function setCloudStatus(t){
+ var el=document.getElementById('t20V100Status');
+ if(el)el.textContent=t;
+}
+function sqlSetup(){
+ return `create table if not exists public.t20_cloud_data (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  payload jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.t20_cloud_data enable row level security;
+
+drop policy if exists "t20_cloud_select_own" on public.t20_cloud_data;
+drop policy if exists "t20_cloud_insert_own" on public.t20_cloud_data;
+drop policy if exists "t20_cloud_update_own" on public.t20_cloud_data;
+
+create policy "t20_cloud_select_own"
+on public.t20_cloud_data for select
+to authenticated
+using (auth.uid() = user_id);
+
+create policy "t20_cloud_insert_own"
+on public.t20_cloud_data for insert
+to authenticated
+with check (auth.uid() = user_id);
+
+create policy "t20_cloud_update_own"
+on public.t20_cloud_data for update
+to authenticated
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);`;
+}
+function showSetup(){
+ var sql=sqlSetup().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+ show('🛠️ إعداد السحابة مرة واحدة',
+  '<div class="t20-cloud-note">'+
+  '<b>هذه الخطوة لا تمسح أي بيانات.</b><br>'+
+  'في Supabase افتحي <b>SQL Editor</b>، الصقي الكود التالي ثم اضغطي Run. بعد ذلك ارجعي للمنصة وجربي الرفع والجلب.'+
+  '</div>'+
+  '<pre id="t20CloudSQL" style="direction:ltr;text-align:left;white-space:pre-wrap;background:#0b2f2a;color:#e9f6ef;border-radius:14px;padding:12px;font-size:11px;line-height:1.55;max-height:330px;overflow:auto">'+sql+'</pre>'+
+  '<div class="t20-cloud-actions">'+
+  '<button class="btn" type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText(document.getElementById(\\'t20CloudSQL\\').innerText);this.textContent=\\'✅ تم النسخ\\'">📋 نسخ SQL</button>'+
+  '<button class="btn secondary" type="button" onclick="window.t20V100CloudOpen()">☁️ الرجوع للسحابة</button>'+
+  '</div>'+
+  '<p class="t20-cloud-small">هذا الكود ينشئ جدولًا واحدًا خاصًا بحسابك ويمنع المستخدم من قراءة بيانات حساب آخر عبر RLS.</p>');
+}
+function openCloud(){
+ var c=cfg(),s=session();
+ var email=(s&&s.email)||'';
+ show('☁️ ربط منصة التحدي بالسحابة',
+ '<div class="form-stack">'+
+ '<div class="t20-cloud-note"><b>الحفظ والجلب يدويان.</b><br>المنصة لا ترفع ولا تستبدل بياناتك تلقائيًا.</div>'+
+ '<label>Supabase Project URL</label>'+
+ '<input id="t20CloudUrl" class="field" value="'+esc(c.url)+'" placeholder="https://xxxx.supabase.co" autocomplete="off">'+
+ '<label>Publishable / anon key</label>'+
+ '<input id="t20CloudKey" class="field" value="'+esc(c.publishableKey)+'" placeholder="المفتاح العام فقط" autocomplete="off">'+
+ '<label>البريد الإلكتروني للحساب</label>'+
+ '<input id="t20CloudEmail" class="field" value="'+esc(email)+'" type="email" autocomplete="username">'+
+ '<label>كلمة مرور حساب المنصة</label>'+
+ '<input id="t20CloudPass" class="field" type="password" placeholder="كلمة مرور مستخدم Supabase" autocomplete="current-password">'+
+ '<div class="t20-cloud-actions">'+
+ '<button class="btn" type="button" onclick="window.t20V100CloudLogin()">🔐 حفظ الربط وتسجيل الدخول</button>'+
+ '<button class="btn secondary" type="button" onclick="window.t20V100CloudTest()">🔎 اختبار الاتصال</button>'+
+ '</div>'+
+ '<div class="t20-cloud-actions">'+
+ '<button class="btn" type="button" onclick="window.t20V100CloudUpload()">☁️ رفع البيانات</button>'+
+ '<button class="btn secondary" type="button" onclick="window.t20V100CloudDownload()">📥 جلب البيانات</button>'+
+ '</div>'+
+ '<button class="btn secondary" style="width:100%;margin-top:10px" type="button" onclick="window.t20V100CloudSetup()">🛠️ إعداد جدول السحابة</button>'+
+ '<div id="t20CloudMsg" class="t20-cloud-note">الحالة: '+(s?'🟢 مسجّل الدخول':'🟡 غير مسجّل الدخول')+'</div>'+
+ '<p class="t20-cloud-small">مهم: لا تضعي Secret key أو service_role هنا. المطلوب فقط Publishable/anon key.</p>'+
+ '</div>');
+}
+function getInputs(){
+ return {
+  url:(document.getElementById('t20CloudUrl')||{}).value||cfg().url,
+  key:(document.getElementById('t20CloudKey')||{}).value||cfg().publishableKey,
+  email:(document.getElementById('t20CloudEmail')||{}).value||((session()||{}).email||''),
+  pass:(document.getElementById('t20CloudPass')||{}).value||''
+ };
+}
+function client(c){
+ if(!window.supabase||!window.supabase.createClient)
+   throw new Error('مكتبة Supabase لم تُحمّل. تأكدي من الإنترنت ثم أعيدي فتح الصفحة.');
+ if(!c.url||!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(c.url))
+   throw new Error('رابط Supabase غير صحيح. يجب أن يكون مثل https://xxxx.supabase.co');
+ if(!c.publishableKey)throw new Error('Publishable / anon key ناقص.');
+ return window.supabase.createClient(c.url,c.publishableKey,{
+   auth:{persistSession:false,autoRefreshToken:true,detectSessionInUrl:false}
+ });
+}
+async function login(){
+ try{
+  var x=getInputs();
+  x.url=x.url.trim().replace(/\/+$/,'');
+  x.key=x.key.trim();
+  saveCfg(x.url,x.key);
+  var c=client({url:x.url,publishableKey:x.key});
+  if(!x.email||!x.pass)throw new Error('اكتبي البريد وكلمة مرور مستخدم Supabase.');
+  msg('⏳ جاري تسجيل الدخول...','t20-cloud-warn');
+  var r=await c.auth.signInWithPassword({
+    email:x.email.trim(),
+    password:x.pass
+  });
+  if(r.error)throw new Error(r.error.message||'فشل تسجيل الدخول');
+  var u=r.data&&r.data.user,sess=r.data&&r.data.session;
+  saveSession({
+    email:x.email.trim(),
+    userId:u&&u.id,
+    access_token:sess&&sess.access_token
+  });
+  msg('🟢 تم الاتصال وتسجيل الدخول بنجاح. الآن يمكنكِ الرفع والجلب يدويًا.','t20-cloud-ok');
+  setCloudStatus('🟢 السحابة متصلة');
+ }catch(e){
+  console.error(e);
+  msg('🔴 '+esc(e.message||e)+
+   '<br><span class="t20-cloud-small">إذا ظهر Failed to fetch فالمشكلة غالبًا في الاتصال أو الرابط/المفتاح. أما Invalid login credentials فتعني أن حساب Auth أو كلمة المرور غير صحيحة.</span>',
+   't20-cloud-err');
+ }
+}
+async function test(){
+ try{
+  var x=getInputs();
+  x.url=x.url.trim().replace(/\/+$/,'');
+  x.key=x.key.trim();
+  saveCfg(x.url,x.key);
+  client({url:x.url,publishableKey:x.key});
+  msg('⏳ جاري اختبار اتصال Supabase...','t20-cloud-warn');
+  var r=await fetch(x.url+'/auth/v1/settings',{headers:{apikey:x.key}});
+  if(!r.ok)throw new Error('Supabase رفض الاتصال (HTTP '+r.status+').');
+  msg('🟢 الاتصال بـ Supabase يعمل. إذا تعذر الدخول فراجعي Authentication > Users.','t20-cloud-ok');
+ }catch(e){
+  console.error(e);
+  msg('🔴 '+esc(e.message||e),'t20-cloud-err');
+ }
+}
+async function getAuth(){
+ var s=session();
+ if(!s||!s.access_token||!s.userId)throw new Error('سجّلي الدخول أولًا.');
+ return s;
+}
+async function upload(){
+ try{
+  var s=await getAuth(),c=cfg();
+  if(!c.url||!c.publishableKey)throw new Error('إعدادات Supabase ناقصة.');
+  msg('⏳ جاري رفع نسخة البيانات...','t20-cloud-warn');
+  var r=await fetch(c.url+'/rest/v1/'+CLOUD_TABLE+'?on_conflict=user_id',{
+   method:'POST',
+   headers:{
+    apikey:c.publishableKey,
+    Authorization:'Bearer '+s.access_token,
+    'Content-Type':'application/json',
+    Prefer:'resolution=merge-duplicates,return=minimal'
+   },
+   body:JSON.stringify({
+    user_id:s.userId,
+    payload:collect(),
+    updated_at:new Date().toISOString()
+   })
+  });
+  var text=await r.text();
+  if(!r.ok)throw new Error('رفع البيانات فشل (HTTP '+r.status+'): '+text.slice(0,220));
+  msg('🟢 تم رفع بيانات المنصة إلى السحابة. لم يتم تغيير بيانات الجهاز.','t20-cloud-ok');
+  setCloudStatus('🟢 آخر رفع ناجح');
+ }catch(e){
+  console.error(e);
+  msg('🔴 '+esc(e.message||e)+
+   '<br><span class="t20-cloud-small">إذا ظهر 404 فجدول '+CLOUD_TABLE+' غير موجود بعد. إذا ظهر 401/403 فراجعي تسجيل الدخول وRLS.</span>',
+   't20-cloud-err');
+ }
+}
+async function download(){
+ try{
+  var s=await getAuth(),c=cfg();
+  msg('⏳ جاري جلب البيانات...','t20-cloud-warn');
+  var r=await fetch(c.url+'/rest/v1/'+CLOUD_TABLE+
+   '?select=payload&user_id=eq.'+encodeURIComponent(s.userId),{
+    headers:{apikey:c.publishableKey,Authorization:'Bearer '+s.access_token}
+   });
+  var text=await r.text();
+  if(!r.ok)throw new Error('جلب البيانات فشل (HTTP '+r.status+'): '+text.slice(0,220));
+  var arr=JSON.parse(text);
+  if(!arr.length||!arr[0].payload)throw new Error('لا توجد نسخة سحابية لهذا الحساب.');
+  if(!confirm('سيتم أخذ نسخة احتياطية محلية ثم استبدال البيانات المحلية بالنسخة السحابية. هل تريدين المتابعة؟'))return;
+  try{if(window.t20V100Backup)window.t20V100Backup()}catch(e){}
+  var stores=arr[0].payload.stores||{};
+  Object.keys(stores).forEach(function(k){
+    if(STORE_KEYS.indexOf(k)!==-1)localStorage.setItem(k,JSON.stringify(stores[k]));
+  });
+  msg('🟢 تم جلب البيانات. سيتم تحديث المنصة الآن.','t20-cloud-ok');
+  setTimeout(function(){location.reload()},600);
+ }catch(e){
+  console.error(e);
+  msg('🔴 '+esc(e.message||e),'t20-cloud-err');
+ }
+}
+function addButton(){
+ var bar=document.querySelector('#t20V100Safety .t20v100-mini');
+ if(!bar||document.getElementById('t20V100CloudBtn'))return;
+ var b=document.createElement('button');
+ b.id='t20V100CloudBtn';
+ b.type='button';
+ b.textContent='☁️ سحابة';
+ b.onclick=openCloud;
+ bar.appendChild(b);
+}
+window.t20V100CloudLogin=login;
+window.t20V100CloudTest=test;
+window.t20V100CloudUpload=upload;
+window.t20V100CloudDownload=download;
+window.t20V100CloudOpen=openCloud;
+window.t20V100CloudSetup=showSetup;
+
+function init(){
+ addButton();
+ var s=session();
+ if(s)setCloudStatus('🟢 السحابة متصلة');
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+
 })();
 </script>
 
