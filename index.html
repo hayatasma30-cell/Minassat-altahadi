@@ -904,7 +904,7 @@ function studentDashboard(){
 
    '<div class="student-section-title"><b>🚀 وصول سريع</b></div>'+
    '<div class="student-quick">'+
-     '<button type="button" data-student-module="الدروس"><span>📖</span>الدروس</button>'+
+     '<button type="button" onclick="window.studentLessonTypes();return false;"><span>📖</span>الدروس</button>'+
      '<button type="button" data-student-module="نتحدى"><span>🧩</span>نتحدى</button>'+
      '<button type="button" data-student-module="نتطور"><span>📈</span>نتطور</button>'+
      '<button type="button" data-student-module="مركز التنبيهات"><span>🔔</span>التنبيهات</button>'+
@@ -2321,6 +2321,8 @@ window.TahadiTest.start=function(role){
   // توحيد دخول التلميذ إلى أنواع الدروس والمحتوى المنشور.
   // الأزرار تعتمد على data attributes بدل onclick حتى لا تتعارض مع مستمعات النقر العامة.
   window.studentLessonTypes=function(){
+    // V4: فتح صفحة الدروس يجب ألا يعتمد على صلاحيات الدفع أو سلامة بيانات المحتوى.
+    // عرض الأنواع أولاً؛ التحقق من الصلاحية يتم فقط عند حساب المحتوى/فتحه.
     var types=[
       ['🎥','الدروس المسجّلة','دروس خاصة بالأستاذة حياة، مسجلة وموجهة للتلميذ.'],
       ['📝','حلّ التمارين','تسجيلات حلول التمارين والتطبيقات.'],
@@ -2329,12 +2331,23 @@ window.TahadiTest.start=function(role){
       ['💻','حصص الدعم المسجّلة','تسجيلات حصص الدعم المباشرة السابقة.'],
       ['🆓','الحصص المجانية','محتوى مجاني متاح للتلاميذ.']
     ];
-    var all=(typeof getContents==='function'?getContents():[]).filter(function(x){return x.status==='منشور';});
+    var all=[];
+    try{
+      var raw=(typeof getContents==='function'?getContents():[]);
+      all=Array.isArray(raw)?raw:[];
+    }catch(e){all=[];}
     var html='<div class="section-intro"><div class="big-icon">📖</div><h3>الدروس</h3><p>المحتوى التعليمي المنشور الذي تسمح به الأستاذة حياة، منظّم حسب نوعه.</p></div><div class="admin-grid">';
     types.forEach(function(t){
-      var count=all.filter(function(x){
-        return (x.type===t[1] || x.type===t[0]+' '+t[1] || String(x.type||'').endsWith(t[1])) && studentCanAccessContent(x);
-      }).length;
+      var count=0;
+      try{
+        count=all.filter(function(x){
+          if(!x || x.status!=='منشور') return false;
+          var xt=String(x.type||'');
+          var matches=(xt===t[1] || xt===t[0]+' '+t[1] || xt.endsWith(t[1]));
+          if(!matches) return false;
+          try{return typeof studentCanAccessContent==='function'?!!studentCanAccessContent(x):true;}catch(err){return false;}
+        }).length;
+      }catch(e){count=0;}
       html+='<button type="button" class="admin-mini t20-student-lesson-type" data-student-lesson-type="'+escapeHtml(t[1]).replace(/"/g,'&quot;')+'" style="text-align:right;cursor:pointer">'+
         '<span style="font-size:28px">'+t[0]+'</span><b>'+escapeHtml(t[1])+'</b><small>'+escapeHtml(t[2])+'</small><em style="color:#1c7b64;font-style:normal;margin-top:4px">'+count+' محتوى منشور</em></button>';
     });
@@ -2344,12 +2357,22 @@ window.TahadiTest.start=function(role){
 
   window.studentLessonType=function(type){
     var wanted=String(type||'').trim();
-    var all=(typeof getContents==='function'?getContents():[]).filter(function(x){
-      var xt=String(x.type||'').trim();
-      return x.status==='منشور' && (xt===wanted || xt.endsWith(wanted)) && studentCanAccessContent(x);
+    var all=[];
+    try{
+      var raw=(typeof getContents==='function'?getContents():[]);
+      all=Array.isArray(raw)?raw:[];
+    }catch(e){all=[];}
+    var visible=[];
+    all.forEach(function(x){
+      try{
+        var xt=String(x&&x.type||'').trim();
+        if(!x || x.status!=='منشور' || !(xt===wanted || xt.endsWith(wanted))) return;
+        if(typeof studentCanAccessContent==='function' && !studentCanAccessContent(x)) return;
+        visible.push(x);
+      }catch(e){}
     });
     var icon=({'الدروس المسجّلة':'🎥','حلّ التمارين':'📝','الوثائق':'📄','الملفات':'📁','حصص الدعم المسجّلة':'💻','الحصص المجانية':'🆓'}[wanted]||'📚');
-    var rows=all.length?all.slice().reverse().map(function(x){
+    var rows=visible.length?visible.slice().reverse().map(function(x){
       return '<div class="content-row"><div style="flex:1"><strong>'+escapeHtml(x.title)+'</strong><div style="color:#63766f;font-size:12px;margin-top:4px">'+escapeHtml(x.level||'')+' • '+escapeHtml(x.service||'')+'</div></div><button type="button" class="btn t20-student-content-open" style="padding:8px 11px" data-student-content-id="'+escapeHtml(x.id).replace(/"/g,'&quot;')+'">فتح</button></div>';
     }).join(''):'<div class="request-empty">📭 لا يوجد محتوى منشور ومتاح لهذا القسم حاليًا.</div>';
     show('👨‍🎓 '+escapeHtml(wanted),'<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+escapeHtml(wanted)+'</h3><p>تظهر هنا الموارد المنشورة والمتاحة لمستواك فقط.</p></div><div class="content-list">'+rows+'</div><button type="button" class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonTypes()">العودة إلى أنواع الدروس</button>');
