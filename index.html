@@ -2962,92 +2962,60 @@ window.TahadiTest.start=function(role){
 })();
 </script>
 
-<!-- T20 V100 — DATA SAFETY LAYER
-     This layer intentionally does NOT replace the existing platform logic.
-     It adds: origin/device warning, a one-click full backup, restore, and a
-     cloud-ready configuration placeholder. No secret key is embedded.
--->
-<style id="t20-v100-safety-css">
-#t20V100Safety{position:fixed;left:12px;bottom:12px;z-index:2147483000;font-family:Arial,sans-serif}
-#t20V100Safety .t20v100-mini{background:#fff;border:1px solid #cfe3d9;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.12);padding:8px 10px;color:#245b4e;font-size:12px;display:flex;gap:6px;align-items:center}
-#t20V100Safety button{border:1px solid #c8ddd4;background:#f7fbf9;border-radius:9px;padding:6px 9px;color:#245b4e;cursor:pointer;font-weight:700}
-#t20V100Safety .t20v100-status{max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-</style>
-<div id="t20V100Safety" aria-label="حماية بيانات منصة التحدي">
-  <div class="t20v100-mini">
-    <span class="t20v100-status" id="t20V100Status">🟢 حماية البيانات</span>
-    <button type="button" onclick="window.t20V100Backup()">💾 نسخة</button>
-    <button type="button" onclick="window.t20V100Restore()">📥 استرجاع</button>
-    <input id="t20V100RestoreInput" type="file" accept="application/json,.json" style="display:none" onchange="window.t20V100RestoreFile(this)">
-  </div>
-</div>
-<script id="t20-v100-safety-js">
+<script id="t20-v101-cloud-storage">
 (function(){
 'use strict';
-var KEYS=[
- 't20_students','t20_parents','t20_teachers','t20_payments','t20_schedules',
- 't20_challenges','t20_attendance','t20_contents','t20_requests','t20_notifications',
- 't20_results','t20_settings'
-];
-var META_KEY='t20_v100_meta';
-var CONFIG_KEY='t20_cloud_config';
-function read(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
-function stamp(){return new Date().toISOString()}
-function setStatus(t){var el=document.getElementById('t20V100Status');if(el)el.textContent=t}
-function collect(){
- var stores={}; KEYS.forEach(function(k){var v=read(k);if(v!==null)stores[k]=v;});
- return {format:'T20-V100-BACKUP',version:'V100',exportedAt:stamp(),origin:location.origin,stores:stores};
-}
-window.t20V100Backup=function(){
+/* V101 — cloud-ready storage layer. Existing UI, spaces and local backup remain intact. */
+const CLOUD_KEYS=['t20_students','t20_parents','t20_teachers','t20_payments','t20_schedules','t20_challenges','t20_attendance','t20_contents','t20_requests','t20_notifications','t20_results'];
+const CFG_URL='t20_cloud_url', CFG_KEY='t20_cloud_key';
+let syncing=false, ready=false;
+function cfg(){return {url:(localStorage.getItem(CFG_URL)||'').replace(/\/$/,''),key:localStorage.getItem(CFG_KEY)||''};}
+function configured(){const c=cfg();return !!(c.url&&c.key);}
+function headers(){const c=cfg();return {'apikey':c.key,'Authorization':'Bearer '+c.key,'Content-Type':'application/json','Prefer':'return=representation'};}
+function overlay(on,msg){let x=document.getElementById('t20-cloud-overlay');if(on){if(!x){x=document.createElement('div');x.id='t20-cloud-overlay';x.style.cssText='position:fixed;inset:0;z-index:999999;background:rgba(255,255,255,.96);display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:inherit;direction:rtl';document.body.appendChild(x);}x.innerHTML='<div style="max-width:420px;background:#fff;border:1px solid #d8e8e1;border-radius:22px;padding:26px;box-shadow:0 10px 35px rgba(0,0,0,.08)"><div style="font-size:38px">☁️</div><h3 style="color:#155f50;margin:10px 0">'+(msg||'جاري التحقق من البيانات')+'</h3><p style="color:#6a7b75;line-height:1.8;margin:0">لن نغيّر أي بيانات محفوظة محليًا.</p></div>';}else if(x)x.remove();}
+async function cloudRows(){const c=cfg();if(!configured())return null;const r=await fetch(c.url+'/rest/v1/t20_state?select=store_key,data,updated_at',{headers:headers()});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}
+async function push(key,value){if(!configured()||syncing||!CLOUD_KEYS.includes(key))return;try{const c=cfg();await fetch(c.url+'/rest/v1/t20_state',{method:'POST',headers:Object.assign({},headers(),{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify({store_key:key,data:JSON.parse(value),updated_at:new Date().toISOString()})});}catch(e){console.warn('T20 cloud sync:',e);}}
+const oldSet=Storage.prototype.setItem;
+Storage.prototype.setItem=function(k,v){oldSet.call(this,k,v);if(CLOUD_KEYS.includes(k))push(k,v);};
+async function pull(){if(!configured())return {configured:false};
+ const rows=await cloudRows(); if(!Array.isArray(rows))return {configured:true,rows:0};
+ let changed=false;
+ syncing=true;
  try{
-  var data=collect();
-  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  var url=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=url;a.download='tahadi20-V100-backup-'+stamp().slice(0,10)+'.json';
-  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
-  localStorage.setItem(META_KEY,JSON.stringify({lastBackup:stamp(),origin:location.origin}));
-  setStatus('🟢 نسخة محفوظة');
- }catch(e){setStatus('🔴 تعذر إنشاء النسخة');console.error(e)}
-};
-window.t20V100Restore=function(){var i=document.getElementById('t20V100RestoreInput');if(i)i.click()}
-window.t20V100RestoreFile=function(input){
- var f=input&&input.files&&input.files[0];if(!f)return;
- var r=new FileReader();r.onload=function(){
-  try{
-   var d=JSON.parse(r.result);
-   if(!d||d.format!=='T20-V100-BACKUP'||!d.stores)throw new Error('صيغة النسخة غير صحيحة');
-   if(!confirm('سيتم استبدال البيانات المحلية الموجودة بالبيانات الموجودة في النسخة. هل تريدين المتابعة؟')){input.value='';return}
-   Object.keys(d.stores).forEach(function(k){if(KEYS.indexOf(k)!==-1)localStorage.setItem(k,JSON.stringify(d.stores[k]))});
-   localStorage.setItem(META_KEY,JSON.stringify({lastRestore:stamp(),source:d.exportedAt||'',origin:location.origin}));
-   setStatus('🟢 تم الاسترجاع');
-   setTimeout(function(){location.reload()},400);
-  }catch(e){alert('ملف النسخة غير صالح أو لا ينتمي لمنصة التحدي V100.');console.error(e)}
-  input.value='';
- };r.readAsText(f);
-};
-window.t20V100CloudConfig=function(){
- try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{"url":"","publishableKey":""}')}catch(e){return {url:'',publishableKey:''}}
-};
-window.t20V100SetCloudConfig=function(url,key){
- if(typeof url!=='string'||typeof key!=='string')return false;
- localStorage.setItem(CONFIG_KEY,JSON.stringify({url:url.trim(),publishableKey:key.trim()}));
- return true;
-};
-function init(){
- var meta=read(META_KEY)||{};
- var cloud=window.t20V100CloudConfig();
- if(!cloud.url||!cloud.publishableKey){
-   setStatus(meta.lastBackup?'🟢 البيانات محلية • آخر نسخة محفوظة':'🟡 البيانات محلية');
- }
- var old=location.origin;
- var previous=meta.origin;
- if(previous&&previous!==old){
-   setStatus('🟠 نطاق جديد • استوردي النسخة الاحتياطية');
- }
+   rows.forEach(row=>{if(!CLOUD_KEYS.includes(row.store_key)||row.data==null)return;const local=localStorage.getItem(row.store_key);const cloud=JSON.stringify(row.data);if(local!==cloud){localStorage.setItem(row.store_key,cloud);changed=true;}});
+ }finally{syncing=false;}
+ return {configured:true,rows:rows.length,changed};
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+window.t20CloudStatus=function(){return {configured:configured(),url:cfg().url||'',keys:CLOUD_KEYS.slice()};};
+window.t20CloudSaveConfig=async function(url,key){url=String(url||'').trim().replace(/\/$/,'');key=String(key||'').trim();if(!url||!key)throw new Error('أدخلي Project URL و Publishable/anon key');localStorage.setItem(CFG_URL,url);localStorage.setItem(CFG_KEY,key);const test=await cloudRows();return test;};
+window.t20CloudClearConfig=function(){localStorage.removeItem(CFG_URL);localStorage.removeItem(CFG_KEY);};
+window.t20CloudSetup=function(){
+ const c=cfg();
+ const html='<div class="real-form">'+
+ '<label>Project URL</label><input class="field" id="t20CloudUrl" placeholder="https://xxxx.supabase.co" value="'+escapeHtml(c.url)+'">'+
+ '<label>Publishable / anon key</label><input class="field" id="t20CloudKey" placeholder="ضعِي المفتاح العام فقط" value="'+escapeHtml(c.key)+'">'+
+ '<div class="real-check">⚠️ لا تضعي Service Role Key داخل HTML.</div>'+
+ '<button class="btn" onclick="t20CloudConnect()">☁️ حفظ واختبار الاتصال</button>'+
+ '<button class="btn secondary" onclick="t20CloudPushLocal()">⬆️ رفع البيانات المحلية للسحابة</button>'+
+ '<button class="btn secondary" onclick="t20CloudPullNow()">⬇️ جلب البيانات من السحابة</button>'+
+ '<div id="t20CloudMsg" class="real-empty">'+(configured()?'🟢 التخزين السحابي مهيأ.':'🟡 لم يتم تفعيل التخزين السحابي بعد.')+'</div>'+back('realMaintenance')+'</div>';
+ show('☁️ التخزين السحابي',realWrap('☁️ التخزين السحابي','ربط منصة التحدي بقاعدة البيانات المركزية دون حذف التخزين المحلي.',html));
+};
+window.t20CloudConnect=async function(){const m=document.getElementById('t20CloudMsg');try{await t20CloudSaveConfig(document.getElementById('t20CloudUrl').value,document.getElementById('t20CloudKey').value);m.innerHTML='🟢 تم الاتصال بقاعدة البيانات بنجاح.';}catch(e){m.innerHTML='🔴 تعذر الاتصال: '+escapeHtml(e.message||String(e));}};
+window.t20CloudPushLocal=async function(){const m=document.getElementById('t20CloudMsg');if(!configured()){m.innerHTML='🟡 أعدّي إعداد الاتصال أولًا.';return;}try{syncing=true;for(const k of CLOUD_KEYS){const v=localStorage.getItem(k);if(v!=null)await push(k,v);}syncing=false;m.innerHTML='🟢 تم رفع البيانات المحلية الموجودة إلى السحابة.';}catch(e){syncing=false;m.innerHTML='🔴 فشل الرفع: '+escapeHtml(e.message||String(e));}};
+window.t20CloudPullNow=async function(){const m=document.getElementById('t20CloudMsg');try{const r=await pull();if(r.changed)location.reload();else m.innerHTML='🟢 البيانات المحلية محدثة.';}catch(e){m.innerHTML='🔴 فشل الجلب: '+escapeHtml(e.message||String(e));}};
+/* Add cloud controls to the existing maintenance screen without replacing it. */
+const oldMaintenance=window.realMaintenance;
+if(typeof oldMaintenance==='function')window.realMaintenance=function(){oldMaintenance();const box=document.querySelector('.real-shell');if(!box)return;const toolbar=box.querySelector('.real-toolbar');if(toolbar&&!toolbar.querySelector('.t20-cloud-btn')){const b=document.createElement('button');b.className='btn secondary t20-cloud-btn';b.type='button';b.textContent='☁️ التخزين السحابي';b.onclick=window.t20CloudSetup;toolbar.appendChild(b);}const empty=box.querySelector('.real-empty');if(empty&&!empty.dataset.cloudNote){empty.dataset.cloudNote='1';empty.innerHTML+='';}};
+async function boot(){
+ if(!configured())return;
+ overlay(true,'جاري مزامنة البيانات');
+ try{const r=await pull(); if(r.changed)location.reload();}
+ catch(e){console.warn('T20 cloud boot:',e);}
+ finally{overlay(false);ready=true;}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else setTimeout(boot,0);
 })();
 </script>
-
 </body>
 </html>
