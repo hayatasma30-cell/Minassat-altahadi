@@ -866,60 +866,27 @@ function renderStudentLastActivity(){
 function studentDashboard(){
  const studentName=localStorage.getItem('t20_student_name')||'تلميذي العزيز';
  const studentLevel=localStorage.getItem('t20_student_level')||'مستواك الدراسي';
- const studentCode=localStorage.getItem('t20_student_code')||'';
  const safeName=escapeHtml(studentName);
  const safeLevel=escapeHtml(studentLevel);
- const codeText=studentCode ? 'كود: '+escapeHtml(studentCode) : 'حساب التلميذ';
-
  const html=
  '<div class="student-home">'+
    '<div class="student-welcome">'+
      '<div class="student-welcome-top">'+
-       '<div><h3>مرحبًا '+safeName+' 👋</h3><p>أهلًا بك في فضائك الشخصي في منصة التحدي.</p></div>'+
+       '<div><h3>مرحبًا '+safeName+' 👋</h3><p>أهلًا بك في فضائك في منصة التحدي.</p></div>'+
        '<div class="student-avatar">👨‍🎓</div>'+
      '</div>'+
-     '<div class="student-meta">'+
-       '<span class="student-pill">🎓 '+safeLevel+'</span>'+
-       '<span class="student-pill">🔐 '+codeText+'</span>'+
-     '</div>'+
+     '<div class="student-meta"><span class="student-pill">🎓 '+safeLevel+'</span></div>'+
    '</div>'+
-
-   '<div class="student-alert">📌 <b>إعلان مهم</b><br>ستظهر هنا الإعلانات والتنبيهات الخاصة بمستواك وخدماتك فقط.</div>'+
-
-   '<div class="student-section-title"><b>📅 لوحة اليوم</b><span style="font-size:12px;color:#71857d">أنشطتك القادمة</span></div>'+
-   '<div class="student-mini-grid">'+
-     '<button class="student-mini-card" type="button" data-student-module="لوحة اليوم"><span class="ico">📅</span><b>لوحة اليوم</b><small>الحصص والأنشطة المبرمجة</small></button>'+
-     '<button class="student-mini-card" type="button" data-student-module="دروس الدعم"><span class="ico">🏫</span><b>دروس الدعم</b><small>موعد الحصة وحالتها</small></button>'+
+   '<div class="student-section-title"><b>اختر نوع المحتوى</b></div>'+
+   '<div class="student-mini-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">'+
+     '<button class="student-mini-card" type="button" onclick="studentPaidContent();return false;"><span class="ico">💳</span><b>المحتوى المدفوع</b><small>حصص الدعم • الدورات • مخزن التحدي</small></button>'+
+     '<button class="student-mini-card" type="button" onclick="studentFreeContent();return false;"><span class="ico">🆓</span><b>المحتوى المجاني</b><small>الدروس • اللايفات المسجلة • التحديات • الملخصات</small></button>'+
    '</div>'+
-
-   '<div class="student-section-title"><b>📈 تطوري</b><span style="font-size:12px;color:#71857d">متابعة التقدم</span></div>'+
-   '<div class="student-progress">'+
-     '<div class="student-progress-row"><span>التقدم في المسار</span><b>قيد التفعيل</b></div>'+
-     '<div class="student-bar"><span style="width:0%"></span></div>'+
-     '<p style="margin:10px 0 0;color:#63766f;font-size:12px;line-height:1.7">عند ربط حسابك بالمحتوى والنتائج، سيظهر تقدمك الحقيقي هنا.</p>'+
-   '</div>'+
-
-   '<div class="student-section-title"><b>⚡ تحدي اليوم</b></div>'+
-   '<div class="student-empty">🧩 لا يوجد سؤال تحدٍّ منشور لك حاليًا.<br><small>سيظهر هنا تلقائيًا عندما تنشر الأستاذة حياة تحديًا موجّهًا لمستواك.</small></div>'+
-
-   '<div class="student-section-title"><b>🚀 وصول سريع</b></div>'+
-   '<div class="student-quick">'+
-     '<button type="button" onclick="window.studentLessonTypes();return false;"><span>📖</span>الدروس</button>'+
-     '<button type="button" data-student-module="نتحدى"><span>🧩</span>نتحدى</button>'+
-     '<button type="button" data-student-module="نتطور"><span>📈</span>نتطور</button>'+
-     '<button type="button" data-student-module="مركز التنبيهات"><span>🔔</span>التنبيهات</button>'+
-     '<button type="button" data-student-module="ملفي"><span>👤</span>ملفي</button>'+
-     '<button type="button" data-student-module="أرشيفي"><span>🗂️</span>أرشيفي</button>'+
-   '</div>'+
-
-   '<div class="student-section-title"><b>🔄 آخر نشاط</b></div>'+
-   renderStudentLastActivity()+
-
-   '<button class="btn secondary" style="width:100%;margin-top:2px" onclick="studentExit()">← الرجوع</button>'+
+   '<button class="btn secondary" style="width:100%;margin-top:12px" type="button" onclick="studentNotifications();return false;">🔔 التنبيهات</button>'+
  '</div>';
-
  show('👨‍🎓 فضاء التلاميذ',html);
 }
+
 function getContents(){
  try{return JSON.parse(localStorage.getItem('t20_contents')||'[]')}catch(e){return []}
 }
@@ -989,100 +956,43 @@ function openStudentContent(id){
  localStorage.setItem('t20_last_activity',JSON.stringify({type:'content',id:item.id,title:item.title,at:new Date().toISOString()}));
  const url=normalizeContentUrl(item.url);
  const viewer=url?getContentViewer(url,item.type,item.title):'<div class="request-empty">📭 لم يتم ربط رابط حقيقي بهذا المحتوى بعد.<br><small>أضيفي رابط الفيديو أو الملف من إدارة المحتوى ليتمكن التلميذ من فتحه هنا.</small></div>';
- const icon=({'🎥 الدروس المسجّلة':'🎥','📝 حلّ التمارين':'📝','📄 الوثائق':'📄','📁 الملفات':'📁','💻 حصص الدعم المسجّلة':'💻','🆓 الحصص المجانية':'🆓'}[item.type]||'📚');
- show('📚 '+escapeHtml(item.title),'<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.level||'')+' • '+escapeHtml(item.service||'')+'</p></div>'+viewer+'<button class="btn secondary" style="width:100%;margin-top:10px" onclick="studentLessonType('+J(item.type)+')">العودة</button>');
+ const icon=({'🎥 الدروس المسجّلة':'🎥','📝 حلّ التمارين':'📝','📄 الوثائق':'📄','📁 الملفات':'📁','💻 حصص الدعم المسجّلة':'💻','🆓 الحصص المجانية':'🆓','🎥 اللايفات المسجلة':'🎥'}[item.type]||'📚');
+ show('📚 '+escapeHtml(item.title),'<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+escapeHtml(item.title)+'</h3><p>'+escapeHtml(item.level||'')+' • '+escapeHtml(item.service||'')+'</p></div>'+viewer+'<button class="btn secondary" style="width:100%;margin-top:10px" onclick="studentDashboard()">العودة</button>');
 }
 function studentLessonType(type){
  const all=getContents().filter(x=>x.status==='منشور' && (x.type===type || String(x.type||'').endsWith(type)) && studentCanAccessContent(x));
  const rows=all.length?all.slice().reverse().map(x=>'<div class="content-row"><div style="flex:1"><strong>'+escapeHtml(x.title)+'</strong><div style="color:#63766f;font-size:12px;margin-top:4px">'+escapeHtml(x.level)+' • '+escapeHtml(x.service)+'</div></div><button class="btn" style="padding:8px 11px" type="button" onclick="openStudentContent('+J(x.id)+')">فتح</button></div>').join(''):'<div class="request-empty">📭 لا يوجد محتوى منشور ومتاح لهذا القسم حاليًا.</div>';
  show('👨‍🎓 '+escapeHtml(type),'<div class="section-intro"><div class="big-icon">'+({'الدروس المسجّلة':'🎥','حلّ التمارين':'📝','الوثائق':'📄','الملفات':'📁','حصص الدعم المسجّلة':'💻','الحصص المجانية':'🆓'}[type]||'📚')+'</div><h3>'+escapeHtml(type)+'</h3><p>تظهر هنا الموارد المنشورة والمتاحة لمستواك فقط.</p></div><div class="content-list">'+rows+'</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonTypes()">العودة إلى أنواع الدروس</button>');
 }
-function studentModule(title){
- if(title==='الدروس'){studentLessonTypes();return;}
- if(title==='لوحة اليوم'){studentTodayDashboard();return;}
- if(title==='نتطور'){studentProgressDashboard();return;}
- if(title==='مركز التنبيهات'){studentNotifications();return;}
- if(title==='دروس الدعم'){studentSupportDashboard();return;}
- show('👨‍🎓 '+title,'<div style="text-align:center;padding:12px 4px"><div style="font-size:48px">'+({'الحصص المجانية':'🆓','دروس الدعم':'🏫','الدورات':'🎓','مراجعة وتطبيق':'📚','نتحدى':'🧩','نتطور':'📈','أرشيفي':'🗂️','مركز التنبيهات':'🔔','ملفي':'👤'}[title]||'📚')+'</div><h3 style="color:var(--deep);margin:8px 0">'+title+'</h3><p style="color:#63766f;line-height:1.9">هذا القسم موجود في فضاء التلاميذ، وسيتم تفعيل وظائفه في المراحل التالية.</p><button class="btn" style="width:100%;margin-top:12px" onclick="studentDashboard()">العودة لفضاء التلاميذ</button></div>');
-}
-// V80 — فضاء التلاميذ: قسم دروس الدعم
-function studentSupportDashboard(){
- const html='<div class="student-support-page">'+
- '<div class="support-hero" style="background:linear-gradient(135deg,#eef9f2,#fff9e9);border:1px solid #cfe5d8;border-radius:22px;padding:18px;margin-bottom:12px">'+
- '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><h3 style="margin:0;color:var(--deep);font-size:22px">🏫 دروس الدعم</h3><p style="margin:7px 0 0;color:#63766f;line-height:1.8">متابعة حصص الدعم الخاصة بمستواك، ومواعيدها، وحالتها، وتسجيلاتها بعد انتهاء الحصة.</p></div><span style="font-size:42px">📚</span></div></div>'+
- '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px">'+
- '<div style="font-weight:900;color:var(--deep);margin-bottom:8px">📌 اشتراكك الحالي</div>'+
- '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">'+
- '<div style="background:#f7fbf8;border-radius:14px;padding:11px"><small style="color:#71857d">الحالة</small><b style="display:block;margin-top:4px;color:#63766f">لا توجد بيانات بعد</b></div>'+
- '<div style="background:#f7fbf8;border-radius:14px;padding:11px"><small style="color:#71857d">الحصص</small><b style="display:block;margin-top:4px;color:#63766f">0 / 4</b></div></div>'+
- '<p style="margin:10px 0 0;color:#71857d;font-size:12px;line-height:1.7">ستظهر حالة اشتراكك الحقيقية وعدد الحصص المستعملة والمتبقية بعد ربط حسابك بخدمة الدعم.</p></div>'+
- '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px">'+
- '<div style="font-weight:900;color:var(--deep);margin-bottom:10px">💻 تلاميذ Zoom</div>'+
- '<div class="student-empty">📅 لا توجد حصة Zoom مبرمجة لك حاليًا.<br><small>عند برمجة حصة موجّهة لمستواك ستظهر هنا مع التاريخ والساعة والعدّ التنازلي ورابط الدخول.</small></div></div>'+
- '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px">'+
- '<div style="font-weight:900;color:var(--deep);margin-bottom:10px">🏫 حصص فردية حضورية</div>'+
- '<div class="student-empty">📅 لا توجد حصة حضورية مبرمجة لك حاليًا.<br><small>الحصص الحضورية تُعرض هنا بشكل منفصل عن حصص Zoom.</small></div></div>'+
- '<div style="background:#fdf9e9;border:1px dashed #d5ad57;border-radius:18px;padding:14px;margin-bottom:12px;color:#5f604c;line-height:1.8;font-size:12px">🔔 <b>نظام الاشتراك:</b> اشتراك الدعم مخصص لأربع حصص في الشهر. كل حصة تُحتسب من الاشتراك، وعند استنفاد الحصص يظهر تنبيه التجديد قبل متابعة الحصص القادمة.</div>'+
- '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px">'+
- '<div style="font-weight:900;color:var(--deep);margin-bottom:10px">🎥 حصص الدعم المسجّلة</div>'+
- '<div class="student-empty">📭 لا توجد تسجيلات دعم متاحة لك حاليًا.<br><small>بعد انتهاء الحصة المباشرة وحفظ التسجيل، سيظهر هنا إذا كان متاحًا لحسابك.</small></div></div>'+
- '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px">'+
- '<div style="font-weight:900;color:var(--deep);margin-bottom:10px">💬 أسئلة الحصص</div>'+
- '<div class="student-empty">💬 لا توجد أسئلة أو أجوبة مرتبطة بحصصك بعد.<br><small>عند تفعيل الحصة، يمكن طرح الأسئلة ومشاهدة أجوبة الأستاذة حياة المرتبطة بها.</small></div></div>'+
- '<div style="background:#f7fbf8;border-radius:16px;padding:12px;color:#63766f;font-size:12px;line-height:1.8">🔒 هذه المعلومات خاصة بحسابك، ولا تظهر للتلاميذ الآخرين.</div>'+
- '<button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentDashboard()">← العودة إلى فضاء التلاميذ</button>'+
- '</div>';
- show('🏫 دروس الدعم',html);
-}
 
-function studentTodayDashboard(){
- const now=new Date();
- const dateText=now.toLocaleDateString('ar-DZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
- const activities=[];
- let html='<div class="student-today">'+
- '<div class="today-head"><div class="today-head-row"><div><h3>📅 لوحة اليوم</h3><p>كل ما يخص يومك الدراسي في مكان واحد.</p></div><span style="font-size:34px">🗓️</span></div><div class="today-date">'+dateText+'</div></div>'+
- '<div class="today-summary"><div class="today-stat"><strong>'+activities.length+'</strong><small>أنشطة اليوم</small></div><div class="today-stat"><strong>0</strong><small>حصص مباشرة</small></div><div class="today-stat"><strong>0</strong><small>تحديات</small></div></div>';
- if(!activities.length){
-   html+='<div class="today-empty">🌿 <b>لا توجد أنشطة مبرمجة لك اليوم.</b><br>عند إضافة حصة أو دورة أو تحدٍّ موجّه لمستواك، سيظهر هنا تلقائيًا مع موعده والعدّ التنازلي.</div>';
- }
- html+='<div class="today-note">🔔 <b>التنبيهات:</b> عند تفعيل الجدولة الحقيقية ستظهر التذكيرات قبل 24 ساعة، وقبل ساعة، وعند بداية النشاط.</div>'+
- '<button class="btn secondary" style="width:100%;margin-top:2px" onclick="studentDashboard()">← العودة إلى الرئيسية</button></div>';
- show('📅 لوحة اليوم',html);
-}
-
-function studentProgressDashboard(){
- const html='<div class="student-progress-page">'+
- '<div class="progress-hero"><h3>📈 تطوري</h3><p>تابع تقدمك الحقيقي في التعلم والأنشطة والتحديات.</p></div>'+
- '<div class="progress-main"><div class="progress-main-top"><b>📊 التقدم العام</b><span>لم يُحتسب بعد</span></div><div class="progress-track"><span></span></div><p style="margin:10px 0 0;color:#63766f;font-size:12px;line-height:1.7">ستظهر نسبة تقدمك تلقائيًا بعد ربط حسابك بالدروس والأنشطة والنتائج.</p></div>'+
- '<div class="progress-grid">'+
- '<div class="progress-card"><span class="ico">📚</span><b>الدروس المكتملة</b><small>لا توجد بيانات بعد.</small></div>'+
- '<div class="progress-card"><span class="ico">🧩</span><b>التحديات المنجزة</b><small>لا توجد بيانات بعد.</small></div>'+
- '<div class="progress-card"><span class="ico">📝</span><b>نتائج الاختبارات</b><small>لا توجد نتائج بعد.</small></div>'+
- '<div class="progress-card"><span class="ico">🏆</span><b>إنجازاتي</b><small>ستظهر الشارات عند تحقيقها.</small></div>'+
- '<div class="progress-card"><span class="ico">🔥</span><b>سلسلة التفاعل</b><small>تبدأ عند تفعيل الأنشطة.</small></div>'+
- '<div class="progress-card"><span class="ico">🧠</span><b>أخطائي</b><small>ستُجمع الأخطاء بعد إنجاز التحديات والاختبارات.</small></div>'+
- '</div>'+
- '<div class="progress-goal">🎯 <b>هدف الأسبوع</b><br><span>لم يتم تحديد هدف بعد.</span></div>'+
- '<div class="progress-note">🔒 المعلومات التي ستظهر هنا تخص حسابك أنت فقط، وتُبنى على نشاطك ونتائجك الفعلية.</div>'+
- '<button class="btn secondary" style="width:100%;margin-top:2px" onclick="studentDashboard()">← العودة إلى الرئيسية</button>'+
- '</div>';
- show('📈 تطوري',html);
-}
 
 function studentNotifications(){
- const notifications=[];
- let html='<div class="student-notify-page">'+
- '<div class="notify-hero"><div class="notify-hero-row"><div><h3>🔔 مركز التنبيهات</h3><p>تنبيهاتك الخاصة بالدروس والحصص والتحديات.</p></div><div class="notify-count">'+notifications.length+'</div></div></div>'+
- '<div class="notify-filter"><button class="active" type="button">الكل</button><button type="button">غير المقروءة</button></div>';
- if(!notifications.length){
-   html+='<div class="notify-empty">🔕 <b>لا توجد تنبيهات حاليًا.</b><br>عند نشر الأستاذة حياة حصة أو درس أو تحدٍّ موجّه لمستواك، سيظهر التنبيه هنا.</div>';
+ const ns=typeof R==='function'?R('t20_notifications',[]):[];
+ const s=typeof v102Student==='function'?v102Student():null;
+ const lev=typeof v102Level==='function'?v102Level():(localStorage.getItem('t20_student_level')||'');
+ const mode=String(s&&s.supportMode||'').trim();
+ const type=String(s&&s.supportType||'').trim();
+ const code=String(localStorage.getItem('t20_student_code')||'').trim();
+ const visible=(Array.isArray(ns)?ns:[]).filter(function(n){
+   const nl=String(n.level||'').trim();
+   const nm=String(n.supportMode||n.group||n.category||'').trim();
+   const nc=String(n.studentCode||n.studentId||'').trim();
+   if(nl && nl!=='كل المستويات' && nl!==lev) return false;
+   if(nc && nc!==code) return false;
+   if(nm && nm!=='كل الفئات'){
+     const ok=nm===mode || nm===type || (nm==='دعم عبر Zoom' && mode==='Zoom') || (nm==='حضوري' && mode==='حضوري') || (nm==='دعم مجاني' && (n.service==='مجاني'||n.free===true)) || (nm==='دورات' && n.service==='دورة');
+     if(!ok)return false;
+   }
+   return true;
+ }).slice().reverse();
+ let html='<div class="student-notify-page"><div class="notify-hero"><div class="notify-hero-row"><div><h3>🔔 التنبيهات</h3><p>كل جديد يخص مستواك وفئتك يظهر هنا.</p></div><div class="notify-count">'+visible.length+'</div></div></div>';
+ if(!visible.length){
+   html+='<div class="notify-empty">🔕 <b>لا توجد تنبيهات حاليًا.</b><br>عند إضافة حصة أو دورة أو درس أو ملف أو تحدٍّ يخصك، سيظهر التنبيه هنا.</div>';
  }else{
-   notifications.forEach(n=>{
-     html+='<div class="notify-card '+(n.unread?'unread':'')+'"><div class="notify-card-top"><span class="notify-icon">'+n.icon+'</span><span class="notify-badge">'+(n.unread?'جديد':'مقروء')+'</span></div><h4>'+escapeHtml(n.title)+'</h4><p>'+escapeHtml(n.text)+'</p><div class="notify-time">'+escapeHtml(n.time)+'</div></div>';
-   });
+   visible.forEach(function(n){html+='<div class="notify-card '+(n.unread?'unread':'')+'"><div class="notify-card-top"><span class="notify-icon">🔔</span><span class="notify-badge">'+(n.unread?'جديد':'مقروء')+'</span></div><h4>'+escapeHtml(n.title||'تنبيه جديد')+'</h4><p>'+escapeHtml(n.text||n.message||'')+'</p><div class="notify-time">'+escapeHtml(n.createdAt?new Date(n.createdAt).toLocaleString('ar-DZ'):'')+'</div></div>';});
  }
- html+='<button class="btn secondary" style="width:100%;margin-top:2px" onclick="studentDashboard()">← العودة إلى الرئيسية</button></div>';
- show('🔔 مركز التنبيهات',html);
+ html+='<button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentDashboard()">← العودة إلى فضاء التلاميذ</button></div>';
+ show('🔔 التنبيهات',html);
 }
 
 function admin(){adminDashboard();}
@@ -1151,7 +1061,6 @@ function stopTestBroadcast(){
 }
 function adminModule(title){
  if(title==='المحتوى'){ return adminContent(); }
- if(title==='رزنامة التحدي' || title==='الحصص والرزنامة'){ return realSchedules(); }
  if(title==='لوحة اليوم'){ return todayDashboard(); }
  if(title==='الإشعارات'){ return notificationCenter(); }
  if(title==='مركز الطلبات'){ return requestCenter(); }
@@ -1789,1275 +1698,492 @@ window.adminDashboard=function(){try{if(sessionStorage.getItem('t20_test_mode'))
 
   window.supportSystemInfo=function(){return {modes:MODES,types:TYPES,label:supportLabel}};
 
-  /* Student support space: four clearly separated combinations, with only the student's assigned one populated. */
+  /* Student support space — final structure: paid support -> Zoom/حضوري -> فردية/جماعية. */
   window.studentSupportDashboard=function(){
-    const s=studentRecord();
-    const sch=R(DB.schedules).filter(x=>scheduleMatchesStudent(x,s)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
-    const pay=R(DB.payments).filter(x=>s&&x.student===s.name&&x.service==='دروس الدعم').slice(-1)[0];
-    const used=pay?Number(pay.lessonsUsed||0):0, total=pay?Number(pay.lessonsTotal||4):4, remain=Math.max(0,total-used);
-    const combos=[['Zoom','عادية','💻','Zoom — حصص عادية'],['Zoom','فردية','👤','Zoom — حصص فردية'],['حضوري','عادية','🏫','حضوري — حصص عادية'],['حضوري','فردية','👤','حضوري — حصص فردية']];
-    let html='<div class="student-support-page">'+
-      '<div class="support-hero" style="background:linear-gradient(135deg,#eef9f2,#fff9e9);border:1px solid #cfe5d8;border-radius:22px;padding:18px;margin-bottom:12px">'+
-      '<h3 style="margin:0;color:var(--deep);font-size:22px">🏫 دروس الدعم</h3><p style="margin:7px 0;color:#63766f;line-height:1.8">أربع صيغ للحصص، وكل تلميذ تظهر له الصيغة المرتبطة بحسابه.</p></div>'+
-      '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px"><b style="color:var(--deep)">📌 اشتراكك</b><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px">'+
-      '<div style="background:#f7fbf8;border-radius:14px;padding:10px"><small>الحالة</small><b style="display:block">'+(pay?(pay.status||'غير محدد'):'غير محدد')+'</b></div>'+
-      '<div style="background:#f7fbf8;border-radius:14px;padding:10px"><small>المستعملة</small><b style="display:block">'+used+' / '+total+'</b></div>'+
-      '<div style="background:#f7fbf8;border-radius:14px;padding:10px"><small>المتبقية</small><b style="display:block">'+remain+'</b></div></div>'+
-      (s&&s.supportMode?'<p style="margin:10px 0 0;color:#1c7b64;font-weight:800">نوع تسجيلك: '+esc(supportLabel(s.supportMode,s.supportType||'عادية'))+'</p>':'<p style="margin:10px 0 0;color:#71857d">لم يتم تحديد نوع الحصة لهذا الحساب بعد.</p>')+'</div>';
-    combos.forEach(([m,t,ico,title])=>{
-      const relevant=sch.filter(x=>x.supportMode===m&&x.supportType===t);
-      const assigned=!!(s&&s.supportMode===m&&s.supportType===t);
-      html+='<div style="background:#fff;border:1px solid '+(assigned?'#9bcfb9':'#dcebe2')+';border-radius:18px;padding:14px;margin-bottom:10px;'+(assigned?'box-shadow:0 4px 16px rgba(28,123,100,.08)':'')+'">'+
-        '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="color:var(--deep)">'+ico+' '+title+'</b>'+(assigned?'<span class="real-tag">✓ نوعك</span>':'<span style="font-size:11px;color:#9aa9a3">غير مخصص</span>')+'</div>'+
-        (assigned?(relevant.length?'<div style="margin-top:10px">'+relevant.map(x=>'<div class="real-row"><strong>'+esc(x.title)+'</strong><small>'+esc(x.date)+' • '+esc(x.time)+'</small><small>'+esc(x.groupName||'حصة الدعم')+(x.supportMode==='Zoom'&&x.link?' • رابط Zoom متاح':'')+'</small></div>').join('')+'</div>':'<div class="student-empty" style="margin-top:10px">📅 لا توجد حصة مبرمجة حاليًا.</div>'):'<div style="margin-top:8px;color:#9aa9a3;font-size:12px">هذا النوع لا يظهر ضمن اشتراكك الحالي.</div>')+
+    var body='<div class="section-intro"><div class="big-icon">🏫</div><h3>حصص الدعم</h3><p>اختاري طريقة الدعم أولًا.</p></div>'+
+      '<div class="student-mini-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">'+
+        '<button class="student-mini-card" type="button" onclick="studentSupportMode(\'Zoom\');return false;"><span class="ico">💻</span><b>عبر Zoom</b><small>فردية • جماعية</small></button>'+
+        '<button class="student-mini-card" type="button" onclick="studentSupportMode(\'حضوري\');return false;"><span class="ico">🏫</span><b>حضوري</b><small>فردية • جماعية</small></button>'+
       '</div>';
-    });
-    html+='<div style="background:#fdf9e9;border:1px dashed #d5ad57;border-radius:18px;padding:14px;margin:12px 0;color:#5f604c;line-height:1.8;font-size:12px">🔔 <b>نظام الاشتراك:</b> 4 حصص في الشهر. كل حصة تُحتسب، والغياب يُحتسب من الحصص. عند استنفاد الحصص يظهر تنبيه التجديد، وتبقى التسجيلات القديمة المسموح بها متاحة.</div>'+
-      '<div style="background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-bottom:12px"><b style="color:var(--deep)">🎥 التسجيلات</b><div class="student-empty" style="margin-top:8px">تظهر هنا التسجيلات المرتبطة بحصص الدعم الخاصة بحسابك.</div></div>'+back('studentDashboard')+'</div>';
-    show('🏫 دروس الدعم',html);
+    show('🏫 حصص الدعم',wrap('حصص الدعم','🏫',body));
   };
 
-  /* Admin schedules: full support session model. */
-  window.newSchedule=function(){
-    const students=R(DB.students); const opts=students.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+' — '+esc(x.level)+'</option>').join('');
-    show('➕ إضافة حصة',realWrap('➕ حصة جديدة','اختاري طريقة الحضور ونوع الحصة؛ الفردية تُربط بتلميذ محدد.', '<div class="real-form">'+form('عنوان الحصة','scTitle','مثال: دعم السنة الرابعة متوسط')+'<label>الخدمة</label><select id="scService" class="field"><option>دروس الدعم</option><option>دورة</option><option>مراجعة وتطبيق</option></select><label>المستوى</label><select id="scLevel" class="field">'+levels().map(x=>'<option>'+x+'</option>').join('')+'</select><label>طريقة الحضور</label><select id="scMode" class="field"><option value="Zoom">💻 Zoom</option><option value="حضوري">🏫 حضوري</option></select><label>نوع الحصة</label><select id="scType" class="field"><option value="عادية">👥 عادية / جماعية</option><option value="فردية">👤 فردية</option></select><label>التلميذ (يُملأ فقط للحصة الفردية)</label><select id="scStudent" class="field"><option value="">— حصة جماعية —</option>'+opts+'</select>'+form('التاريخ','scDate','YYYY-MM-DD')+form('الوقت','scTime','19:00 - 21:00')+form('اسم المجموعة (اختياري)','scGroup','مثال: المجموعة 4 متوسط')+form('رابط Zoom أو المحتوى','scLink','لـ Zoom يمكن وضع رابط الدخول')+'<button class="btn" onclick="saveSchedule()">💾 حفظ</button></div>'));
-  };
-  window.saveSchedule=function(){
-    const type=document.getElementById('scType').value, sid=document.getElementById('scStudent').value||''; if(type==='فردية'&&!sid){alert('الحصة الفردية لازم تربطيها بتلميذ محدد.');return;}
-    const s=sid?R(DB.students).find(x=>x.id===sid):null; const mode=document.getElementById('scMode').value;
-    if(mode==='حضوري'&&document.getElementById('scLink').value.trim()){ /* رابط اختياري، لا نمنعه */ }
-    const x={id:id('sch'),title:document.getElementById('scTitle').value.trim(),service:document.getElementById('scService').value,level:document.getElementById('scLevel').value,date:document.getElementById('scDate').value.trim(),time:document.getElementById('scTime').value.trim(),supportMode:mode,supportType:type,studentId:sid,studentName:s?s.name:'',groupName:document.getElementById('scGroup').value.trim(),type:type==='فردية'?'دروس دعم فردية':'دروس دعم عادية',link:document.getElementById('scLink').value.trim()};
-    if(!x.title||!x.date){alert('أدخلي عنوان الحصة والتاريخ');return;} const a=R(DB.schedules);a.push(x);W(DB.schedules,a);realSchedules();
-  };
-  window.realSchedules=function(){
-    const list=R(DB.schedules);const rows=list.length?list.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(x=>'<div class="real-row"><div class="real-row-top"><div><strong>'+esc(x.title)+'</strong><small>'+esc(x.date)+' • '+esc(x.time)+' • '+esc(x.level)+'</small><small>'+esc(x.service||'دروس الدعم')+' • '+esc(x.groupName||'')+'</small></div>'+badge(x.supportMode||'غير محدد',x.supportType||'غير محدد')+'</div><small style="display:block;margin-top:6px">'+(x.supportType==='فردية'?'👤 '+esc(x.studentName||'تلميذ غير محدد'):'👥 حصة جماعية')+(x.supportMode==='Zoom'?' • 💻 Zoom':' • 🏫 حضوري')+'</small><div class="real-actions"><button class="real-danger" onclick="deleteSchedule(\''+x.id+'\')">🗑️ حذف</button></div></div>').join(''):'<div class="real-empty">🗓️ لا توجد حصص مبرمجة.</div>';
-    show('🗓️ الحصص والرزنامة',realWrap('🗓️ الحصص والرزنامة','دروس الدعم: Zoom/حضوري × عادية/فردية، مع ربط الحصة بالتلميذ عند الفردية.', '<div class="real-toolbar"><button class="btn" onclick="newSchedule()">➕ إضافة حصة</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')));
+  window.studentSupportMode=function(mode){
+    var title=mode==='Zoom'?'دروس الدعم عبر Zoom':'دروس الدعم الحضوري';
+    var icon=mode==='Zoom'?'💻':'🏫';
+    var body='<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+title+'</h3><p>اختاري نوع الحصة.</p></div>'+
+      '<div class="student-mini-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">'+
+        '<button class="student-mini-card" type="button" onclick="studentSupportDetail(\''+mode+'\',\'فردية\');return false;"><span class="ico">👤</span><b>فردية</b><small>دعم فردي</small></button>'+
+        '<button class="student-mini-card" type="button" onclick="studentSupportDetail(\''+mode+'\',\'جماعية\');return false;"><span class="ico">👥</span><b>جماعية</b><small>دعم جماعي</small></button>'+
+      '</div>';
+    show(icon+' '+title,wrap(title,icon,body));
   };
 
-  /* Payment: keep support type/mode attached to every receipt. */
-  window.newPayment=function(){const opts=R(DB.students).map(x=>'<option>'+esc(x.name)+'</option>').join('');show('➕ تسجيل دفع',realWrap('➕ وصل دفع','اربط الدفع بنوع تسجيل التلميذ في دروس الدعم.', '<div class="real-form"><label>التلميذ</label><select id="payStudent" class="field">'+opts+'</select><label>الخدمة</label><select id="payService" class="field"><option>دروس الدعم</option><option>الدروس المسجّلة</option><option>دورة</option><option>مراجعة وتطبيق</option></select>'+form('الشهر','payMonth','مثال: أكتوبر 2026')+'<label>المبلغ</label><input id="payAmount" class="field" type="number" value="1000">'+form('رقم الوصل','payReceipt','مثال: R-001')+'<label>عدد الحصص في الاشتراك</label><input id="payLessonsTotal" class="field" type="number" value="4"><label>الحصص المستعملة</label><input id="payLessonsUsed" class="field" type="number" value="0"><label>الحالة</label><select id="payStatus" class="field"><option>مدفوع</option><option>قيد التحقق</option><option>غير مدفوع</option></select><button class="btn" onclick="savePayment()">💾 حفظ</button></div>'))};
-  window.savePayment=function(){const n=document.getElementById('payStudent')?.value||'غير محدد',s=R(DB.students).find(x=>x.name===n);const x={id:id('pay'),student:n,studentId:s?.id||'',service:document.getElementById('payService').value,month:document.getElementById('payMonth').value.trim(),amount:Number(document.getElementById('payAmount').value||0),receipt:document.getElementById('payReceipt').value.trim(),status:document.getElementById('payStatus').value,lessonsTotal:Number(document.getElementById('payLessonsTotal').value||4),lessonsUsed:Number(document.getElementById('payLessonsUsed').value||0),supportMode:s?.supportMode||'',supportType:s?.supportType||'',date:new Date().toISOString().slice(0,10)};const a=R(DB.payments);a.push(x);W(DB.payments,a);realPayments()};
-  window.realPayments=function(){const list=R(DB.payments);const rows=list.length?list.slice().reverse().map(x=>'<div class="real-row"><div class="real-row-top"><div><strong>'+esc(x.student)+'</strong><small>'+esc(x.month)+' • '+money(x.amount)+'</small><small>'+esc(x.service||'دروس الدعم')+' • '+esc(supportLabel(x.supportMode||'غير محدد',x.supportType||'غير محدد'))+'</small><small>الحصص: '+Number(x.lessonsUsed||0)+' / '+Number(x.lessonsTotal||4)+' • الوصل: '+esc(x.receipt||'بدون رقم')+'</small></div><span class="real-tag">'+esc(x.status)+'</span></div><div class="real-actions"><button onclick="cyclePayment(\''+x.id+'\')">🔄 الحالة</button><button class="real-danger" onclick="deletePayment(\''+x.id+'\')">🗑️ حذف</button></div></div>').join(''):'<div class="real-empty">💳 لا توجد مدفوعات مسجلة.</div>';show('💳 الدفع',realWrap('💳 متابعة الدفع','الدفع مرتبط بالخدمة وطريقة الحضور ونوع الحصة وعدد الحصص.', '<div class="real-toolbar"><button class="btn" onclick="newPayment()">➕ تسجيل دفع</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')))};
-
-  /* Parent view: show child's support classification and latest schedule. */
-  window.parentDashboard=function(){
-    var n=localStorage.getItem('t20_parent_name')||'ولي الأمر', c=localStorage.getItem('t20_parent_code')||'', parent=R(DB.parents).find(function(p){return p.name===n&&(!c||p.code===c)});
-    if(parent&&typeof t20EnsureParentLinks==='function')t20EnsureParentLinks();
-    var kids=parent?R(DB.students).filter(function(x){return x.parentId===parent.id}):R(DB.students).filter(function(x){return x.parent===n});
-    var rows=kids.length?kids.map(function(k){var sch=R(DB.schedules).filter(function(x){return scheduleMatchesStudent(x,k)}).sort(function(a,b){return (a.date+a.time).localeCompare(b.date+b.time)})[0];return '<div class="real-row"><strong>'+esc(k.name)+'</strong><small>'+esc(k.level)+' • '+esc(supportLabel(k.supportMode||'غير محدد',k.supportType||'غير محدد'))+'</small>'+(sch?'<small>أقرب حصة: '+esc(sch.date)+' • '+esc(sch.time)+' • '+esc(sch.title)+'</small>':'<small>لا توجد حصة مبرمجة حاليًا.</small>')+'</div>'}).join(''):'<div class="real-empty">لم يتم ربط تلميذ بهذا الولي بعد.</div>';
-    show('👨‍👩‍👧 فضاء الأولياء',realWrap('👨‍👩‍👧 مرحبًا '+esc(n),'متابعة الأبناء مع طريقة الحضور ونوع الحصة والرزنامة.','<div class="real-table">'+rows+'</div><div class="real-toolbar"><button class="btn" onclick="newRequest()">📥 إرسال طلب</button></div>'));
-  };
-
-  /* Today dashboard uses the same support labels. */
-  window.realToday=function(){const s=R(DB.students),p=R(DB.parents),pay=R(DB.payments),sch=R(DB.schedules),c=R(DB.challenges);const today=new Date().toISOString().slice(0,10);const todaySch=sch.filter(x=>x.date===today);const body='<div class="real-kpis"><button type="button" class="real-kpi real-kpi-click" onclick="realStudents()" aria-label="فتح إدارة التلاميذ"><b>'+s.length+'</b><span>التلاميذ</span></button><button type="button" class="real-kpi real-kpi-click" onclick="realParents()" aria-label="فتح إدارة الأولياء"><b>'+p.length+'</b><span>الأولياء</span></button><div class="real-kpi"><b>'+pay.filter(x=>x.status==='مدفوع').length+'</b><span>مدفوعات مؤكدة</span></div><div class="real-kpi"><b>'+c.filter(x=>x.status==='منشور').length+'</b><span>تحديات منشورة</span></div></div><h4 class="subhead">📅 برنامج اليوم</h4>'+(todaySch.length?'<div class="real-table">'+todaySch.map(x=>'<div class="real-row"><strong>'+esc(x.title)+'</strong><small>'+esc(x.level)+' • '+esc(x.time)+'</small><small>'+esc(supportLabel(x.supportMode||'غير محدد',x.supportType||'غير محدد'))+(x.supportType==='فردية'?' • 👤 '+esc(x.studentName||''):'')+'</small></div>').join('')+'</div>':'<div class="real-empty">لا توجد حصص مبرمجة اليوم.</div>')+'<div class="real-toolbar">'+back('adminDashboard')+'</div>';show('📊 لوحة اليوم',realWrap('📊 لوحة اليوم','ملخص حي للبيانات، مع نوع كل حصة.',body));};
-})();
-</script>
-
-<script>
-/* V99 attendance automation for support lessons */
-(function(){
-  function findStudentsForSchedule(sc){
-    const all=R(DB.students).filter(x=>x.active!==false&&x.level===sc.level&&x.service==='دروس الدعم');
-    if(sc.supportType==='فردية') return all.filter(x=>(sc.studentId&&x.id===sc.studentId)||(sc.studentName&&x.name===sc.studentName));
-    return all.filter(x=>x.supportMode===sc.supportMode&&x.supportType===sc.supportType);
-  }
-  function attendanceRecord(sc,st){return R(DB.attendance).find(a=>a.scheduleId===sc.id&&a.studentId===st.id)}
-  function saveAttendance(sc,st,status){
-    const a=R(DB.attendance), idx=a.findIndex(x=>x.scheduleId===sc.id&&x.studentId===st.id);
-    const rec={id:idx>=0?a[idx].id:id('att'),scheduleId:sc.id,studentId:st.id,student:st.name,level:st.level,service:'دروس الدعم',supportMode:sc.supportMode,supportType:sc.supportType,date:sc.date,time:sc.time,status,updatedAt:new Date().toISOString()};
-    if(idx>=0)a[idx]=rec;else a.push(rec); W(DB.attendance,a);
-    const payments=R(DB.payments);
-    const p=payments.slice().reverse().find(x=>(x.studentId&&x.studentId===st.id)||(!x.studentId&&x.student===st.name));
-    if(p){
-      // Each payment/subscription has its own four-lesson counter. Never reuse
-      // attendance from previous months/payments.
-      const linked=a.filter(x=>x.studentId===st.id&&x.service==='دروس الدعم'&&x.paymentId===p.id&&x.status&&x.status!=='غير محدد');
-      if(!linked.length){
-        const since=p.date||'';
-        const fallback=a.filter(x=>x.studentId===st.id&&x.service==='دروس الدعم'&&x.status&&x.status!=='غير محدد'&&(!since||x.date>=since));
-        fallback.forEach(x=>{x.paymentId=p.id});
-        p.lessonsUsed=Math.min(Number(p.lessonsTotal||4),fallback.length);
+  window.studentSupportDetail=function(mode,type){
+    var isZoom=mode==='Zoom';
+    var title=(isZoom?'دروس الدعم عبر Zoom':'دروس الدعم الحضوري')+' — '+type;
+    var body='<div class="section-intro"><div class="big-icon">'+(isZoom?'💻':'🏫')+'</div><h3>'+title+'</h3></div>';
+    if(isZoom){
+      var schedules=R(DB.schedules).filter(function(x){
+        return norm(x.service)==='دروس الدعم' && norm(x.supportMode)==='Zoom' &&
+          (!x.level || norm(x.level)===level()) &&
+          (!x.supportType || norm(x.supportType)===norm(type) || (type==='جماعية' && norm(x.supportType)==='عادية'));
+      }).slice().sort(function(a,b){return String(a.date||'').concat(a.time||'').localeCompare(String(b.date||'').concat(b.time||''));});
+      body+='<div class="student-section-title"><b>🔗 حصص Zoom</b></div><div class="content-list">'+
+        (schedules.length?schedules.map(function(x){return '<div class="content-row"><div style="flex:1"><strong>📅 '+esc(x.title||'حصة دعم')+'</strong><small>'+esc(x.date||'')+' • '+esc(x.time||'')+'</small></div>'+(x.link?'<a class="btn" href="'+esc(x.link)+'" target="_blank" rel="noopener noreferrer">🔗 الدخول إلى Zoom</a>':'<span class="status">الرابط غير مضاف</span>')+'</div>';}).join(''):'<div class="student-empty">لا توجد حصة Zoom مبرمجة حاليًا.</div>')+
+      '</div>';
+      body+='<div class="student-section-title"><b>🎥 حصص Zoom المسجلة</b></div><div class="content-list">'+v102Rows(v102Items('دعم Zoom'),'لا توجد تسجيلات متاحة حاليًا.')+'</div>';
+      body+='<div class="student-section-title"><b>📄 الملفات</b></div><div class="content-list">'+v102Rows(v102Items('ملفات دعم Zoom'),'لا توجد ملفات متاحة حاليًا.')+'</div>';
+    }else{
+      var s=v102Student();
+      var access=v102HasPresentAccess(s);
+      if(access){
+        body+='<div class="student-section-title"><b>🎥 التسجيلات</b></div><div class="content-list">'+v102Rows(v102Items('دعم حضوري'),'لا توجد تسجيلات حضورية متاحة حاليًا.')+'</div>';
+        body+='<div class="student-section-title"><b>📄 الملفات</b></div><div class="content-list">'+v102Rows(v102Items('ملفات دعم حضوري'),'لا توجد ملفات متاحة حاليًا.')+'</div>';
       }else{
-        p.lessonsUsed=Math.min(Number(p.lessonsTotal||4),linked.length+1);
+        body+='<div class="student-empty">🔐 التسجيلات والملفات تصبح متاحة لك بعد أن تمنحك الأستاذة Access.</div>';
       }
-      // Link the current attendance record to the payment used for this period.
-      const current=a.find(x=>x.id===rec.id);
-      if(current) current.paymentId=p.id;
-      W(DB.attendance,a);
-      W(DB.payments,payments);
     }
-  }
-  window.realAttendance=function(scheduleId){
-    const sc=R(DB.schedules).find(x=>x.id===scheduleId);
-    if(!sc){alert('الحصة غير موجودة.');return;}
-    const sts=findStudentsForSchedule(sc);
-    const rows=sts.length?sts.map(st=>{const r=attendanceRecord(sc,st);return `<div class="real-row"><div><strong>${esc(st.name)}</strong><small>${esc(st.level)} • ${esc(supportLabel(sc.supportMode,sc.supportType))}</small><small>الحالة: ${esc(r?.status||'لم يُسجّل بعد')}</small></div><div class="real-actions"><button onclick="markSupportAttendance(${J(scheduleId)},${J(st.id)},'حاضر')">✅ حاضر</button><button onclick="markSupportAttendance(${J(scheduleId)},${J(st.id)},'غائب')">❌ غائب</button></div></div>`}).join(''):'<div class="real-empty">لا يوجد تلاميذ مطابقون لهذه الحصة.</div>';
-    show('🟢 الحضور',realWrap('🟢 حضور حصة الدعم',esc(sc.title)+' • '+esc(sc.date)+' • '+esc(sc.time)+' • '+supportLabel(sc.supportMode,sc.supportType),'<div class="real-table">'+rows+'</div>'+back('realSchedules')));
-  };
-  window.markSupportAttendance=function(scheduleId,studentId,status){const sc=R(DB.schedules).find(x=>x.id===scheduleId),st=R(DB.students).find(x=>x.id===studentId);if(!sc||!st)return;saveAttendance(sc,st,status);realAttendance(scheduleId)};
-  /* Add attendance buttons to the support schedule list without changing the visual identity. */
-  const oldRS=window.realSchedules;
-  window.realSchedules=function(){
-    const list=R(DB.schedules).slice().sort((a,b)=>(String(a.date||'')+String(a.time||'')).localeCompare(String(b.date||'')+String(b.time||'')));
-    const rows=list.length?list.map(x=>`<div class="real-row" style="cursor:pointer" onclick="openSchedule(${J(x.id)})">
-      <div class="real-row-top"><div><strong>${esc(x.title||'حصة بدون عنوان')}</strong>
-      <small>📅 ${esc(x.date||'—')} • ⏰ ${esc(x.time||'—')}</small>
-      <small>${esc(x.level||'—')} • ${esc(x.service||'دروس الدعم')} • ${esc(x.groupName||'')}</small></div>
-      <span class="real-tag">${esc(supportLabel(x.supportMode||'غير محدد',x.supportType||'غير محدد'))}</span></div>
-      <small style="display:block;margin-top:6px">${x.supportType==='فردية'?'👤 '+esc(x.studentName||'تلميذ غير محدد'):'👥 حصة جماعية'}${x.supportMode==='Zoom'?' • 💻 Zoom':' • 🏫 حضوري'}</small>
-      <div class="real-actions" onclick="event.stopPropagation()"><button onclick="realAttendance(${J(x.id)})">🟢 الحضور</button><button class="real-danger" onclick="deleteSchedule(${J(x.id)})">🗑️ حذف</button></div>
-    </div>`).join(''):'<div class="real-empty">🗓️ لا توجد حصص مبرمجة. اضغطي «➕ إضافة حصة» لإدخال أول حصة.</div>';
-    show('🗓️ الحصص والرزنامة',realWrap('🗓️ الحصص والرزنامة','أضيفي الحصص من هنا. اضغطي على أي حصة لفتح تفاصيلها.', '<div class="real-toolbar"><button class="btn" onclick="newSchedule()">➕ إضافة حصة</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')));
-  };
-  window.openSchedule=function(idv){
-    const x=R(DB.schedules).find(z=>z.id===idv); if(!x){realSchedules();return;}
-    const student=x.studentName?'<p><b>التلميذ:</b> '+esc(x.studentName)+'</p>':'';
-    const zoom=x.supportMode==='Zoom'&&x.link?'<button class="btn" style="width:100%;margin-top:8px" onclick="window.open('+J(x.link)+',&quot;_blank&quot;)">💻 فتح رابط Zoom</button>':'';
-    show('📅 تفاصيل الحصة',realWrap('📅 '+esc(x.title||'حصة'),'<b>'+esc(x.date||'—')+' • '+esc(x.time||'—')+'</b>', '<div class="real-form"><p><b>المستوى:</b> '+esc(x.level||'—')+'</p><p><b>الخدمة:</b> '+esc(x.service||'دروس الدعم')+'</p><p><b>طريقة الحضور:</b> '+esc(x.supportMode||'—')+'</p><p><b>نوع الحصة:</b> '+esc(x.supportType||'—')+'</p>'+student+'<p><b>المجموعة:</b> '+esc(x.groupName||'—')+'</p>'+zoom+'</div>'+back('realSchedules')));
+    body+=questionBox(title);
+    show((isZoom?'💻 ':'🏫 ')+title,wrap(title,isZoom?'💻':'🏫',body));
   };
 
-})();
-</script>
-<script>
-(function(){
-function R(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}
-function E(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
-function S(title,sub,body){return '<div class="real-shell"><div class="real-head"><h3>'+title+'</h3><p>'+sub+'</p></div>'+body+'</div>'}
-function B(label,fn){return '<button class="btn" style="width:100%;margin:6px 0" onclick="'+fn+'">'+label+'</button>'}
-function L(title,items,back){var h=items.length?items.join(''):'<div class="real-empty">لا توجد بيانات بعد.</div>';return S(title,'بيانات محلية للمحاكاة.',h+B('← رجوع',back))}
-window.TahadiTest=window.TahadiTest||{};
-window.TahadiTest.start=function(role){sessionStorage.setItem('t20_test_mode',role);if(role==='student'&&typeof enterTestStudent==='function'){enterTestStudent();return}if(role==='teacher'){var t=R('t20_teachers',[])[0]||{name:'أستاذ تجريبي'};show('👩‍🏫 محاكاة الأستاذ',S('👩‍🏫 فضاء الأساتذة','محاكاة محلية — لا تنشئ حسابًا حقيقيًا.','<div style="padding:12px">الأستاذ: <b>'+E(t.name)+'</b></div>'+B('👥 تلاميذي','t20TeacherStudents()')+B('📅 جدولي والحصص','t20TeacherSchedule()')+B('📊 النتائج','t20TeacherResults()')+B('✅ الحضور','t20TeacherAttendance()')+B('← خروج من المحاكاة','t20ExitSimulation()')));return}if(role==='parent'){t20ParentSimulation();return}if(role==='admin'){t20AdminSimulation();return}};
-window.t20TeacherStudents=function(){var a=R('t20_students',[]),items=a.map(function(x){return '<div style="padding:11px;border-bottom:1px solid #e5eee9"><b>'+E(x.name)+'</b><br>'+E(x.level||'')+'</div>'});show('👥 تلاميذي',L('👥 تلاميذي',items,"TahadiTest.start('teacher')"))};
-window.t20TeacherSchedule=function(){var a=R('t20_schedules',[]),items=a.map(function(x){return '<div style="padding:11px;border-bottom:1px solid #e5eee9"><b>'+E(x.date||'')+' '+E(x.time||'')+'</b><br>'+E(x.level||'')+' — '+E(x.supportMode||'')+' '+E(x.supportType||'')+'</div>'});show('📅 جدولي',L('📅 الحصص',items,"TahadiTest.start('teacher')"))};
-window.t20TeacherResults=function(){show('📊 النتائج',S('📊 النتائج','ملخص المحاكاة.','<div style="padding:12px">عدد التلاميذ: <b>'+R('t20_students',[]).length+'</b><br>عدد التحديات: <b>'+R('t20_challenges',[]).length+'</b></div>'+B('← رجوع',"TahadiTest.start('teacher')")))};
-window.t20TeacherAttendance=function(){var a=R('t20_attendance',[]),items=a.map(function(x){return '<div style="padding:11px;border-bottom:1px solid #e5eee9"><b>'+E(x.student||'')+'</b> — '+E(x.status||'')+'</div>'});show('✅ الحضور',L('✅ الحضور',items,"TahadiTest.start('teacher')"))};
-window.t20ParentSimulation=function(){show('👨‍👩‍👧 محاكاة ولي الأمر',S('👨‍👩‍👧 فضاء الأولياء','محاكاة محلية.','<div style="padding:12px">الأبناء: <b>'+R('t20_students',[]).length+'</b><br>الدفعات: <b>'+R('t20_payments',[]).length+'</b></div>'+B('👨‍👩‍👧 أبنائي','t20ParentChildren()')+B('💳 الدفع والإيصالات','t20ParentPayments()')+B('← خروج من المحاكاة','t20ExitSimulation()')))};
-window.t20ParentChildren=function(){var a=R('t20_students',[]),items=a.map(function(x){return '<div style="padding:11px;border-bottom:1px solid #e5eee9"><b>'+E(x.name)+'</b><br>'+E(x.level||'')+' — '+E(x.supportMode||'غير محدد')+' / '+E(x.supportType||'غير محدد')+'</div>'});show('👨‍👩‍👧 أبنائي',L('أبنائي',items,'t20ParentSimulation()'))};
-window.t20ParentPayments=function(){var a=R('t20_payments',[]),items=a.map(function(x){return '<div style="padding:11px;border-bottom:1px solid #e5eee9"><b>'+E(x.studentName||x.student||'')+'</b><br>'+E(x.month||'')+' — '+E(x.amount||'')+' دج — '+E(x.status||'')+'</div>'});show('💳 الدفع والإيصالات',L('💳 الدفع والإيصالات',items,'t20ParentSimulation()'))};
-window.t20AdminSimulation=function(){show('🌿 محاكاة الأستاذة حياة',S('🌿 فضاء الأستاذة حياة','محاكاة محلية.','<div style="padding:12px">التلاميذ: <b>'+R('t20_students',[]).length+'</b><br>الأولياء: <b>'+R('t20_parents',[]).length+'</b><br>الأساتذة: <b>'+R('t20_teachers',[]).length+'</b><br>الحصص: <b>'+R('t20_schedules',[]).length+'</b></div>'+B('← خروج من المحاكاة','t20ExitSimulation()')))};
-window.t20ExitSimulation=function(){sessionStorage.removeItem('t20_test_mode');if(typeof adminDashboard==='function'){adminDashboard()}else if(typeof closeM==='function'){closeM()}};
-})();
-</script>
+function questionBox(context){
+ var qs=typeof R==='function'?R('t20_student_questions',[]):[];var code=norm(localStorage.getItem('t20_student_code')), name=norm(localStorage.getItem('t20_student_name'));
+ var mine=(Array.isArray(qs)?qs:[]).filter(function(q){return (code&&norm(q.studentCode)===code)||(!code&&name&&norm(q.studentName)===name);}).slice().reverse();
+ var rowsq=mine.length?mine.map(function(q){return '<div class="content-row"><div style="flex:1"><strong>❓ '+esc(q.question)+'</strong><small>'+esc(q.answer?'الإجابة: '+q.answer:'في انتظار إجابة الأستاذة.')+'</small></div></div>';}).join(''):'<div class="student-empty">لا توجد أسئلة بعد.</div>';
+ return '<div class="student-section-title"><b>💬 أسئلتي</b></div><div class="content-list">'+rowsq+'</div><div style="background:#fff;border:1px solid #dcebe2;border-radius:16px;padding:12px;margin-top:10px"><textarea id="t20Q_'+context.replace(/\W/g,'_')+'" class="field" rows="4" placeholder="اكتبي سؤالك هنا..."></textarea><button class="btn" style="width:100%;margin-top:8px" onclick="sendStudentQuestion('+JSON.stringify(context)+')">📤 إرسال السؤال</button><small style="display:block;color:#71857d;margin-top:7px">🔒 سؤالك وإجابة الأستاذة خاصان بك فقط.</small></div>';
+}
+window.sendStudentQuestion=function(context){var id='t20Q_'+String(context).replace(/\W/g,'_'),el=document.getElementById(id),q=el&&el.value.trim();if(!q){alert('اكتبي السؤال أولًا.');return;}var s=student();var list=typeof R==='function'?R('t20_student_questions',[]):[];list=Array.isArray(list)?list:[];list.push({id:'q_'+Date.now(),studentId:s&&s.id||'',studentCode:localStorage.getItem('t20_student_code')||'',studentName:localStorage.getItem('t20_student_name')||'',level:level(),context,question:q,answer:'',status:'جديد',createdAt:new Date().toISOString()});if(typeof W==='function')W('t20_student_questions',list);else localStorage.setItem('t20_student_questions',JSON.stringify(list));if(typeof notificationCenter==='function'){try{ }catch(e){}};studentSupportDashboard();};
 
-<style id="v98-parent-space">
-.parent98{direction:rtl}.parent98 .pnav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}.parent98 .pnav button{border:1px solid #cfe2d8;background:#fff;border-radius:14px;padding:11px 8px;font-weight:900;color:#155e4f}.parent98 .pnav button.active{background:#e8f5ee;border-color:#8fc6ae}.parent98 .pchild{background:#fff;border:1px solid #d8e8e0;border-radius:18px;padding:14px;margin:10px 0}.parent98 .pchild h4{margin:0 0 5px;color:#075b4c}.parent98 .pmeta{font-size:12px;color:#6b7d76;line-height:1.8}.parent98 .pkpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.parent98 .pkpi{background:#f5faf7;border:1px solid #dbece3;border-radius:15px;padding:12px;text-align:center}.parent98 .pkpi b{display:block;font-size:22px;color:#08745c}.parent98 .pkpi span{font-size:11px;color:#64756f}.parent98 .pstatus{display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900}.parent98 .ok{background:#e6f7ed;color:#167047}.parent98 .wait{background:#fff1cf;color:#89630d}.parent98 .bad{background:#fde7e7;color:#9c3d3d}.parent98 .info{background:#e9f2ff;color:#315e90}.parent98 .psection{margin-top:14px}.parent98 .psection h4{color:#075b4c;margin:0 0 8px}.parent98 .prow{background:#fff;border:1px solid #dbe8e2;border-radius:14px;padding:11px;margin:7px 0}.parent98 .prow strong{display:block;color:#154f45}.parent98 .prow small{display:block;color:#687b74;line-height:1.7}.parent98 .pform{display:grid;gap:8px}.parent98 input,.parent98 select,.parent98 textarea{width:100%;box-sizing:border-box}.parent98 .receipt{border:1px dashed #a8cdbd;border-radius:14px;padding:12px;background:#f8fcfa}.parent98 .empty{text-align:center;padding:22px;color:#70827b;background:#fff;border:1px dashed #bfd8cd;border-radius:16px}.parent98 .danger{border-color:#e2b9b9!important;color:#9c3d3d!important;background:#fff!important}@media(max-width:560px){.parent98 .pnav{grid-template-columns:repeat(2,1fr)}}
-</style>
-<script id="v98-parent-space-js">
-(function(){
- const PKEY='t20_parent_current';
- const get=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}};
- const put=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
- const escP=v=>String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
- const moneyP=v=>Number(v||0).toLocaleString('fr-DZ')+' دج';
- function cur(){return get(PKEY,null)}
- function parentKids(){const p=cur();if(!p)return [];const all=get('t20_students',[]);return all.filter(x=> (p.id&&x.parentId===p.id)||(p.name&&x.parent===p.name)||(p.children&&String(p.children).split(/[،,]/).map(z=>z.trim()).includes(x.name)));}
- function activeKid(){const p=cur(), kids=parentKids();let id=localStorage.getItem('t20_parent_kid');if(!kids.some(k=>k.id===id)) id=kids[0]?.id||'';localStorage.setItem('t20_parent_kid',id);return kids.find(k=>k.id===id)||kids[0]||null}
- function parentPaymentMatch(x,k){return !!k&&((x.studentId&&k.id&&x.studentId===k.id)||(!x.studentId&&x.student===k.name));}
- function shell(title,sub,body){return '<div class="parent98"><div class="real-shell"><div class="real-head"><h3>'+title+'</h3><p>'+sub+'</p></div>'+body+'</div></div>'}
- function nav(tab){const tabs=[['home','🏠 الرئيسية'],['children','👨‍👩‍👧 الأبناء'],['payment','💳 الدفع'],['attendance','🟢 الحضور'],['schedule','🗓️ الرزنامة'],['results','📊 النتائج'],['notifications','🔔 الإشعارات'],['report','📋 التقرير']];return '<div class="pnav">'+tabs.map(x=>'<button class="'+(x[0]===tab?'active':'')+'" onclick="parent98Tab('+J(x[0])+')">'+x[1]+'</button>').join('')+'</div>'}
- function kidPicker(){const kids=parentKids();if(!kids.length)return '';return '<label>اختاري الابن</label><select class="field" onchange="parent98SelectKid(this.value)">'+kids.map(k=>'<option value="'+escP(k.id)+'" '+(activeKid()?.id===k.id?'selected':'')+'>'+escP(k.name)+' — '+escP(k.level)+'</option>').join('')+'</select>'}
- window.parent98SelectKid=function(id){localStorage.setItem('t20_parent_kid',id);parent98Tab('home')};
- window.parent98Tab=function(tab){
-  const p=cur();if(!p){parentLogin();return}const kids=parentKids();const k=activeKid();
-  if(tab==='home'){const pays=get('t20_payments',[]),att=get('t20_attendance',[]),sch=get('t20_schedules',[]);const kp=k?att.filter(a=>a.studentId===k.id):[];const paid=k?pays.filter(x=>parentPaymentMatch(x,k)&&x.status==='مدفوع'):[];const upcoming=k?sch.filter(x=>scheduleMatchP(x,k)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,3):[];show('👨‍👩‍👧 فضاء الأولياء',shell('👨‍👩‍👧 مرحبًا '+escP(p.name),'متابعة أبنائك، الاشتراك، الحضور والنتائج من مكان واحد.',nav('home')+kidPicker()+'<div class="pkpis"><div class="pkpi"><b>'+kids.length+'</b><span>الأبناء</span></div><div class="pkpi"><b>'+paid.length+'</b><span>دفعات مؤكدة</span></div><div class="pkpi"><b>'+kp.filter(a=>a.status==='حاضر').length+'</b><span>حصص حضرها</span></div><div class="pkpi"><b>'+kp.filter(a=>a.status==='غائب').length+'</b><span>حصص غاب عنها</span></div></div>'+(k?'<div class="psection"><h4>👤 ملف الابن</h4><div class="pchild"><h4>'+escP(k.name)+'</h4><div class="pmeta">'+escP(k.level)+' • '+escP(k.supportMode||'غير محدد')+' • '+escP(k.supportType||'غير محدد')+'</div><div class="pmeta">الاشتراك: '+moneyP(k.subscription)+'</div></div></div>':'<div class="empty">لم يتم ربط أي ابن بهذا الحساب بعد.</div>')+'<div class="psection"><h4>🗓️ أقرب الحصص</h4>'+(upcoming.length?upcoming.map(x=>'<div class="prow"><strong>'+escP(x.title)+'</strong><small>'+escP(x.date)+' • '+escP(x.time)+' • '+escP(x.supportMode||'')+' • '+escP(x.supportType||'')+'</small></div>').join(''):'<div class="empty">لا توجد حصص مبرمجة حاليًا.</div>')+'</div>'))}
-  if(tab==='children'){show('👨‍👩‍👧 أبنائي',shell('👨‍👩‍👧 ملف الأبناء','كل ولي يرى أبناءه المرتبطين بحسابه فقط.',nav('children')+(kids.length?kids.map(x=>{const pay=get('t20_payments',[]).slice().reverse().find(z=>parentPaymentMatch(z,x)&&z.service==='دروس الدعم');const used=Number(pay?.lessonsUsed||0),total=Number(pay?.lessonsTotal||4);return '<div class="pchild"><h4>'+escP(x.name)+'</h4><div class="pmeta">المستوى: '+escP(x.level)+'</div><div class="pmeta">التسجيل: '+escP(x.supportMode||'غير محدد')+' • '+escP(x.supportType||'غير محدد')+'</div><div class="pmeta">الحصص: '+used+' / '+total+' • المتبقية: '+Math.max(total-used,0)+'</div><button class="btn" onclick="parent98SelectKid(&quot;'+escP(x.id)+'&quot;)">متابعة هذا الابن</button></div>'}).join(''):'<div class="empty">لا يوجد أبناء مرتبطون بهذا الحساب.</div>')))}
-  if(tab==='payment'){show('💳 الدفع',shell('💳 الاشتراك والدفع','يمكن للولي إرسال طلب دفع وإرفاق وصل الدفع. تتم المصادقة من فضاء الأستاذة حياة.',nav('payment')+kidPicker()+(k?'<div class="psection"><h4>➕ إرسال وصل دفع</h4><div class="pform"><label>الخدمة</label><select id="p98Service" class="field"><option>دروس الدعم</option><option>دورة</option><option>مراجعة وتطبيق</option></select><label>الشهر / الفترة</label><input id="p98Month" class="field" placeholder="أكتوبر 2026"><label>المبلغ</label><input id="p98Amount" class="field" type="number" value="'+Number(k.subscription||0)+'"><label>رقم الوصل</label><input id="p98ReceiptNo" class="field" placeholder="R-001"><div class="receipt"><label>صورة وصل الدفع</label><input id="p98ReceiptFile" type="file" accept="image/*,.pdf" class="field"><small>الملف يبقى محليًا في هذه النسخة التجريبية.</small></div><button class="btn" onclick="parent98SubmitPayment()">📤 إرسال للمراجعة</button></div></div><div class="psection"><h4>📜 سجل الدفعات</h4>'+paymentRows(k)+'</div>':'<div class="empty">اختاري ابنًا أولًا.</div>')))}
-  if(tab==='attendance'){const a=k?get('t20_attendance',[]).filter(x=>x.studentId===k.id).sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time)):[];show('🟢 الحضور',shell('🟢 حضور وغياب الابن','السجل مرتبط بالحصة المسجلة في المنصة.',nav('attendance')+kidPicker()+(k?(a.length?a.map(x=>'<div class="prow"><strong>'+escP(x.date)+' • '+escP(x.time)+'</strong><small>'+escP(x.status)+' • '+escP(x.supportMode||'')+' • '+escP(x.supportType||'')+'</small></div>').join(''):'<div class="empty">لا يوجد سجل حضور بعد.</div>'):'<div class="empty">اختاري ابنًا.</div>')))}
-  if(tab==='schedule'){const a=k?get('t20_schedules',[]).filter(x=>scheduleMatchP(x,k)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)):[];show('🗓️ الرزنامة',shell('🗓️ حصص الأبناء','الحصص العادية والفردية، Zoom والحضوري، حسب تسجيل الابن.',nav('schedule')+kidPicker()+(k?(a.length?a.map(x=>'<div class="prow"><strong>'+escP(x.title)+'</strong><small>'+escP(x.date)+' • '+escP(x.time)+'</small><small>'+escP(x.supportMode||'')+' • '+escP(x.supportType||'')+(x.supportType==='فردية'?' • '+escP(x.studentName||''):'')+'</small>'+(x.supportMode==='Zoom'&&x.link?'<button class="btn" onclick="window.open(&quot;'+escP(x.link)+'&quot;,&quot;_blank&quot;)">💻 دخول Zoom</button>':'')+'</div>').join(''):'<div class="empty">لا توجد حصص مبرمجة.</div>'):'<div class="empty">اختاري ابنًا.</div>')))}
-  if(tab==='results'){const results=get('t20_results',[]).filter(x=>!k||x.studentId===k.id||x.student===k.name);const challenges=get('t20_challenges',[]).filter(x=>!k||!x.level||x.level===k.level);show('📊 النتائج',shell('📊 نتائج وتقدم الابن','عرض النتائج والإنجازات المتاحة للحساب.',nav('results')+kidPicker()+(k?'<div class="psection"><h4>📝 النتائج</h4>'+(results.length?results.map(x=>'<div class="prow"><strong>'+escP(x.title||x.challenge||'تقييم')+'</strong><small>النتيجة: '+escP(x.score||x.result||'—')+(x.date?' • '+escP(x.date):'')+'</small></div>').join(''):'<div class="empty">لا توجد نتائج مسجلة بعد.</div>')+'</div><div class="psection"><h4>⚡ التحديات المتاحة</h4>'+(challenges.length?challenges.map(x=>'<div class="prow"><strong>'+escP(x.title||'تحدي')+'</strong><small>'+escP(x.level||k.level||'')+' • '+escP(x.status||'')+'</small></div>').join(''):'<div class="empty">لا توجد تحديات منشورة حاليًا.</div>')+'</div>':'<div class="empty">اختاري ابنًا.</div>')))}
-  if(tab==='notifications'){const ns=get('t20_notifications',[]).filter(x=>!x.audience||x.audience==='الجميع'||String(x.audience).includes('الأولياء')).sort((a,b)=>(b.date||'').localeCompare(a.date||''));show('🔔 الإشعارات',shell('🔔 إشعارات الأولياء','الإشعارات الموجهة إلى فضاء الأولياء.',nav('notifications')+(ns.length?ns.map(x=>'<div class="prow"><strong>'+escP(x.title||'إشعار')+'</strong><small>'+escP(x.message||x.body||'')+'</small><small>'+escP(x.date||'')+'</small></div>').join(''):'<div class="empty">لا توجد إشعارات.</div>')))}
-  if(tab==='report'){const a=k?get('t20_attendance',[]).filter(x=>x.studentId===k.id):[], pays=k?get('t20_payments',[]).filter(x=>parentPaymentMatch(x,k)):[];show('📋 التقرير',shell('📋 التقرير الشهري','ملخص المتابعة للابن المحدد.',nav('report')+kidPicker()+(k?'<div class="pkpis"><div class="pkpi"><b>'+a.filter(x=>x.status==='حاضر').length+'</b><span>حاضر</span></div><div class="pkpi"><b>'+a.filter(x=>x.status==='غائب').length+'</b><span>غائب</span></div><div class="pkpi"><b>'+pays.filter(x=>x.status==='مدفوع').length+'</b><span>دفعات مؤكدة</span></div><div class="pkpi"><b>'+moneyP(pays.reduce((n,x)=>n+Number(x.amount||0),0))+'</b><span>إجمالي المدفوع</span></div></div><div class="psection"><h4>📌 ملاحظة</h4><div class="prow">هذا التقرير يعتمد على البيانات المسجلة في المنصة حاليًا.</div></div>':'<div class="empty">اختاري ابنًا.</div>')))}
- }
- function paymentRows(k){const a=get('t20_payments',[]).filter(x=>parentPaymentMatch(x,k)).slice().reverse();return a.length?a.map(x=>'<div class="prow"><strong>'+escP(x.month||'فترة غير محددة')+' • '+moneyP(x.amount)+'</strong><small>الحالة: <span class="pstatus '+(x.status==='مدفوع'?'ok':x.status==='قيد التحقق'?'wait':x.status==='مرفوض'?'bad':'info')+'">'+escP(x.status||'غير محدد')+'</span></small><small>الوصل: '+escP(x.receipt||'بدون رقم')+' • الحصص: '+Number(x.lessonsUsed||0)+' / '+Number(x.lessonsTotal||4)+'</small></div>').join(''):'<div class="empty">لا توجد دفعات مسجلة.</div>'}
- function scheduleMatchP(x,k){if(x.service&&x.service!=='دروس الدعم')return false;if(x.level&&x.level!==k.level)return false;if(x.supportType==='فردية')return (x.studentId&&x.studentId===k.id)||(x.studentName&&x.studentName===k.name);return (!x.supportMode||x.supportMode===k.supportMode)&&(!x.supportType||x.supportType===k.supportType)}
- window.parent98SubmitPayment=function(){const k=activeKid();if(!k)return;const file=document.getElementById('p98ReceiptFile')?.files?.[0];const base={id:'pay_'+Date.now(),student:k.name,studentId:k.id,service:document.getElementById('p98Service').value,month:document.getElementById('p98Month').value.trim(),amount:Number(document.getElementById('p98Amount').value||0),receipt:document.getElementById('p98ReceiptNo').value.trim(),status:'قيد التحقق',lessonsTotal:4,lessonsUsed:0,supportMode:k.supportMode||'',supportType:k.supportType||'',date:new Date().toISOString().slice(0,10),parentId:cur()?.id||'',parentName:cur()?.name||''};const save=(receiptData)=>{if(receiptData){base.receiptFileName=file.name;base.receiptData=receiptData}const a=get('t20_payments',[]);a.push(base);put('t20_payments',a);alert('تم إرسال طلب الدفع إلى الأستاذة حياة للمراجعة.');parent98Tab('payment')};if(file){const rd=new FileReader();rd.onload=()=>save(rd.result);rd.readAsDataURL(file)}else save(null)};
- window.parent98Logout=function(){localStorage.removeItem(PKEY);localStorage.removeItem('t20_parent_kid');if(typeof home==='function')home();else if(typeof closeM==='function')closeM()};
- window.parentDashboard=function(){const p=cur();if(!p){show('👨‍👩‍👧 فضاء الأولياء',shell('👨‍👩‍👧 تسجيل الدخول','أدخلي كود الولي للدخول إلى الحساب.','<div class="real-form">'+form('كود الولي','p98LoginCode','مثال: PAR-2026-001')+'<button class="btn" onclick="parent98Login()">دخول</button></div>'));return}parent98Tab('home')};
- window.parent98Login=function(){const c=document.getElementById('p98LoginCode')?.value.trim();const a=get('t20_parents',[]);const p=a.find(x=>x.code===c&&x.active!==false);if(!p){alert('كود الولي غير صحيح أو الحساب غير مفعل.');return}localStorage.setItem(PKEY,JSON.stringify(p));parent98Tab('home')};
- // parentLogin is kept from the canonical real-platform implementation; do not override it here.
-
- // Replace simulation with a realistic read-only parent preview using current data.
- window.t20ParentSimulation=function(){const a=get('t20_parents',[]),p=a[0];if(p){localStorage.setItem(PKEY,JSON.stringify(p));parent98Tab('home')}else{show('👨‍👩‍👧 محاكاة ولي الأمر',shell('👨‍👩‍👧 فضاء الأولياء','لا يوجد حساب ولي تجريبي حاليًا. أضيفي وليًا من لوحة الأستاذة حياة ثم أعيدي الاختبار.','<div class="empty">لا توجد حسابات أولياء في البيانات المحلية.</div><button class="btn" onclick="t20ExitSimulation()">← رجوع</button>'))}};
- window.t20ExitSimulation=function(){localStorage.removeItem(PKEY);localStorage.removeItem('t20_parent_kid');sessionStorage.removeItem('t20_test_mode');if(typeof adminDashboard==='function')adminDashboard();else if(typeof home==='function')home()};
-})();
-</script>
-<style id="v99-hardening-css">.parent99logout{width:100%;margin-top:10px!important;background:#fff!important;color:#9c3d3d!important;border:1px solid #e2b9b9!important}.parent99hint{font-size:11px;color:#71827c;line-height:1.7}</style>
-<script id="v99-hardening-js">
-(function(){
- const G=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}};
- const P='t20_parent_current';
- const put=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
- const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
- function parent(){return G(P,null)}
- function kids(){const p=parent();if(!p)return[];return G('t20_students',[]).filter(x=>(p.id&&x.parentId===p.id)||(p.name&&x.parent===p.name)||(p.children&&String(p.children).split(/[،,]/).map(z=>z.trim()).includes(x.name)))}
- function active(){const a=kids(),id=localStorage.getItem('t20_parent_kid');return a.find(x=>x.id===id)||a[0]||null}
- function payments(k){return G('t20_payments',[]).filter(x=>(x.studentId&&k.id&&x.studentId===k.id)||(!x.studentId&&x.student===k.name)).slice().reverse()}
- function attendance(k){return G('t20_attendance',[]).filter(x=>(x.studentId&&k.id&&x.studentId===k.id)||(!x.studentId&&x.student===k.name))}
- function addLogout(){const box=document.querySelector('.parent98 .real-shell');if(box&&!box.querySelector('.parent99logout')){box.insertAdjacentHTML('beforeend','<button class="btn parent99logout" onclick="parent99Logout()">🚪 تسجيل الخروج</button>')}}
- window.parent99Logout=function(){localStorage.removeItem(P);localStorage.removeItem('t20_parent_kid');sessionStorage.removeItem('t20_test_mode');if(typeof home==='function')home();else if(typeof closeM==='function')closeM()};
- // Keep the existing complete V98 parent UI, but repair identity matching for payments/attendance and add logout.
- const oldTab=window.parent98Tab;
- window.parent98Tab=function(tab){oldTab(tab);setTimeout(addLogout,0)};
- const oldPayment=window.parent98SubmitPayment;
- window.parent98SubmitPayment=function(){
-   const k=active(); if(!k){alert('اختاري ابنًا أولًا.');return}
-   const service=document.getElementById('p98Service')?.value||'دروس الدعم';
-   const month=document.getElementById('p98Month')?.value.trim();
-   const amount=Number(document.getElementById('p98Amount')?.value||0);
-   const receipt=document.getElementById('p98ReceiptNo')?.value.trim();
-   const file=document.getElementById('p98ReceiptFile')?.files?.[0];
-   if(!month){alert('أدخلي الشهر أو الفترة.');return}
-   if(!(amount>0)){alert('أدخلي مبلغًا صحيحًا.');return}
-   if(!receipt){alert('أدخلي رقم الوصل.');return}
-   const base={id:'pay_'+Date.now(),student:k.name,studentId:k.id,service,month,amount,receipt,status:'قيد التحقق',lessonsTotal:service==='دروس الدعم'?4:0,lessonsUsed:0,supportMode:k.supportMode||'',supportType:k.supportType||'',date:new Date().toISOString().slice(0,10),parentId:parent()?.id||'',parentName:parent()?.name||''};
-   const save=data=>{try{if(data){base.receiptFileName=file.name;base.receiptData=data}const a=G('t20_payments',[]);a.push(base);put('t20_payments',a);alert('تم إرسال طلب الدفع إلى الأستاذة حياة للمراجعة.');window.parent98Tab('payment')}catch(e){alert('تعذر حفظ الوصل. مساحة التخزين المحلية غير كافية. اختاري صورة أصغر.')}};
-   if(!file){save(null);return}
-   if(file.type==='application/pdf'){if(file.size>700000){alert('ملف PDF كبير. اختاري ملفًا أقل من 700 كيلوبايت.');return}const rd=new FileReader();rd.onload=()=>save(rd.result);rd.readAsDataURL(file);return}
-   const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{const max=1200,scale=Math.min(1,max/img.width,max/img.height),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));const ctx=c.getContext('2d');ctx.drawImage(img,0,0,c.width,c.height);const data=c.toDataURL('image/jpeg',0.72);if(data.length>1100000){alert('صورة الوصل مازالت كبيرة. اختاري صورة أصغر.');return}save(data)};img.onerror=()=>alert('تعذر قراءة صورة الوصل.');img.src=rd.result};rd.readAsDataURL(file)
+window.studentPaidContent=function(){
+ var body='<div class="section-intro"><div class="big-icon">💳</div><h3>المحتوى المدفوع</h3><p>المحتوى المتاح للتلاميذ المسجلين في الخدمات المدفوعة.</p></div>'+
+ '<div class="student-mini-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">'+
+ '<button class="student-mini-card" type="button" onclick="studentSupportDashboard();return false;"><span class="ico">🏫</span><b>حصص الدعم</b><small>عبر Zoom أو حضوري</small></button>'+ 
+ '<button class="student-mini-card" type="button" onclick="studentCourses();return false;"><span class="ico">🎓</span><b>الدورات</b><small>فرض • اختبار • مراجعة شاملة</small></button>'+ 
+ '<button class="student-mini-card" type="button" onclick="studentChallengeStore();return false;"><span class="ico">📦</span><b>مخزن التحدي</b><small>المحتوى المرتبط بمخزن التحدي</small></button>'+ 
+ '</div>';
+ show('💳 المحتوى المدفوع',wrap('المحتوى المدفوع','💳',body));
+};
+window.studentChallengeStore=function(){
+ var list=v102Items('مخزن التحدي');
+ show('📦 مخزن التحدي',wrap('مخزن التحدي','📦','<div class="content-list">'+v102Rows(list,'لا توجد محتويات في مخزن التحدي حاليًا.')+'</div>'));
+};
+window.studentCourses=function(){
+ var specs=[['دورات الفرض','📝'],['دورات الاختبار','🧪'],['دورات المراجعة الشاملة','📚']];
+ var body=specs.map(function(a){return '<div class="student-section-title"><b>'+a[1]+' '+a[0]+'</b></div><div class="content-list">'+v102Rows(v102Items(a[0]),'لا توجد دورة منشورة حاليًا.')+'</div>';}).join('');
+ show('🎓 الدورات',wrap('الدورات','🎓',body));
+};
+window.studentFreeContent=function(){
+ var body='<div class="section-intro"><div class="big-icon">🆓</div><h3>المحتوى المجاني</h3><p>محتوى مجاني متاح للتلاميذ حسب المستوى.</p></div>'+
+ '<div class="student-mini-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">'+
+ '<button class="student-mini-card" type="button" onclick="studentFreeSection(\'الدروس\');return false;"><span class="ico">📚</span><b>الدروس</b><small>دروس مجانية</small></button>'+ 
+ '<button class="student-mini-card" type="button" onclick="studentFreeSection(\'اللايفات المسجلة\');return false;"><span class="ico">🎥</span><b>اللايفات المسجلة</b><small>تسجيلات اللايف</small></button>'+ 
+ '<button class="student-mini-card" type="button" onclick="studentFreeSection(\'التحديات\');return false;"><span class="ico">🧩</span><b>التحديات</b><small>تحديات منصة التحدي</small></button>'+ 
+ '<button class="student-mini-card" type="button" onclick="studentFreeSection(\'الملخصات\');return false;"><span class="ico">📄</span><b>الملخصات</b><small>ملخصات مجانية</small></button>'+ 
+ '</div>';
+ show('🆓 المحتوى المجاني',wrap('المحتوى المجاني','🆓',body));
+};
+window.studentFreeSection=function(section){
+ var map={
+  'الدروس':['الدروس','📚',['الدروس','دروس مجانية']],
+  'اللايفات المسجلة':['اللايفات المسجلة','🎥',['اللايفات المسجلة','اللايفات']],
+  'التحديات':['التحديات','🧩',['التحديات','تحديات مجانية']],
+  'الملخصات':['الملخصات','📄',['الملخصات','ملخصات مجانية']]
  };
- // Repair old-name matching in the already rendered V98 tabs by wrapping data before display.
- const oldChildren=window.parent98SelectKid;
- window.parent98SelectKid=function(id){localStorage.setItem('t20_parent_kid',id||'');window.parent98Tab('home')};
-})();
-</script>
+ var cfg=map[section]||map['الدروس'];
+ var list=[];cfg[2].forEach(function(p){list=list.concat(v102Items(p));});
+ list=v102Unique(list);
+ show(cfg[1]+' '+cfg[0],wrap(cfg[0],cfg[1],'<div class="content-list">'+v102Rows(list,'لا يوجد محتوى متاح حاليًا.')+'</div>'));
+};
+window.studentRecordedLessons=function(){studentFreeSection('الدروس');};
+window.studentModule=function(title){
+ if(title==='المحتوى المدفوع'){studentPaidContent();return;}
+ if(title==='المحتوى المجاني'){studentFreeContent();return;}
+ if(title==='دروس الدعم'){studentSupportDashboard();return;}
+ if(title==='الدورات'){studentCourses();return;}
+ if(title==='مركز التنبيهات'){studentNotifications();return;}
+ if(title==='الدروس'){studentFreeSection('الدروس');return;}
+ if(title==='اللايفات المسجلة'){studentFreeSection('اللايفات المسجلة');return;}
+ if(title==='التحديات'){studentFreeSection('التحديات');return;}
+ if(title==='الملخصات'){studentFreeSection('الملخصات');return;}
+ show('👨‍🎓 '+esc(title),'<div class="student-empty">هذا القسم غير متاح.</div>');
+};
 
-<style id="v99-final-fix-css">
-/* V99 FINAL FIX — لا يغيّر التصميم الأصلي */
-.v99-test-wrap{direction:rtl;text-align:right}
-.v99-test-card{background:#fff;border:1px solid #d9e9df;border-radius:18px;padding:15px;margin:10px 0;box-shadow:0 6px 18px rgba(23,107,87,.07)}
-.v99-test-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.v99-test-btn{border:0;border-radius:13px;padding:12px 14px;background:#eaf5ee;color:#17613e;font-weight:800;cursor:pointer;width:100%}
-.v99-test-btn.primary{background:#176b57;color:#fff}
-.v99-test-btn.secondary{background:#f4efe1;color:#6a5520}
-.v99-test-small{font-size:12px;color:#63766f;line-height:1.8}
-@media(max-width:600px){.v99-test-grid{grid-template-columns:1fr}}
-</style>
-<script id="v99-final-fix-js">
+/* Admin question inbox */
+window.studentQuestionsAdmin=function(){
+ var list=typeof R==='function'?R('t20_student_questions',[]):[];list=Array.isArray(list)?list:[];
+ var body=list.length?list.slice().reverse().map(function(q){return '<div class="request-item"><div class="request-top"><div><div class="request-title">❓ '+esc(q.studentName||'تلميذ')+'</div><div class="request-meta">'+esc(q.level||'')+' • '+esc(q.context||'')+'</div></div><span class="request-status">'+esc(q.status||'جديد')+'</span></div><div class="request-body">'+esc(q.question||'')+'</div><textarea id="ans_'+esc(q.id)+'" class="field" rows="3" placeholder="اكتبي الإجابة هنا...">'+esc(q.answer||'')+'</textarea><button class="btn" style="margin-top:8px" onclick="answerStudentQuestion('+JSON.stringify(q.id)+')">📤 إرسال الإجابة</button></div>';}).join(''):'<div class="request-empty">📭 لا توجد أسئلة من التلاميذ حاليًا.</div>';
+ show('💬 أسئلة التلاميذ','<div class="request-wrap"><div class="section-intro"><div class="big-icon">💬</div><h3>أسئلة التلاميذ</h3><p>كل سؤال خاص بتلميذه، والإجابة لا تظهر إلا لصاحب السؤال.</p></div>'+body+'</div>');
+};
+window.answerStudentQuestion=function(id){var list=typeof R==='function'?R('t20_student_questions',[]):[];var el=document.getElementById('ans_'+id);var q=Array.isArray(list)?list.find(function(x){return x.id===id;}):null;if(!q||!el)return;q.answer=el.value.trim();q.status=q.answer?'تمت الإجابة':'جديد';q.answeredAt=new Date().toISOString();if(typeof W==='function')W('t20_student_questions',list);else localStorage.setItem('t20_student_questions',JSON.stringify(list));studentQuestionsAdmin();};
+
+/* Admin module hook for private questions */
+var oldAdminModule=window.adminModule;
+window.adminModule=function(title){if(title==='أسئلة التلاميذ'){studentQuestionsAdmin();return;}if(typeof oldAdminModule==='function')return oldAdminModule(title);};
+
+/* Replace old content editor with one-upload/multi-placement editor. */
+window.newContent=function(){
+ var opts=['دعم Zoom','دعم حضوري','دعم مجاني','الدورات: الفرض','الدورات: الاختبار','الدورات: المراجعة الشاملة','الدروس المسجلة','حصص مجانية','ملخصات مجانية','تحديات مجانية','نتائج'];
+ var typeOpts=['🎥 فيديو/تسجيل','📄 ملف/ملخص','🧩 تحدي','🏆 نتيجة'];
+ var html='<div class="form-stack"><label>عنوان المحتوى</label><input id="cTitle" class="field" placeholder="مثال: درس الهضم"><label>نوع المورد</label><select id="cType" class="field">'+typeOpts.map(function(x){return '<option>'+x+'</option>';}).join('')+'</select><label>المستوى</label><select id="cLevel" class="field"><option>السنة الأولى متوسط</option><option>السنة الثانية متوسط</option><option>السنة الثالثة متوسط</option><option>السنة الرابعة متوسط</option><option>السنة الأولى ثانوي</option></select><label>أماكن النشر <small>(يمكن اختيار أكثر من مكان)</small></label><select id="cPlacements" class="field" multiple size="8">'+opts.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join('')+'</select><small style="color:#71857d;line-height:1.7">أضيفي المورد مرة واحدة فقط، ثم اختاري كل الأماكن التي تريدين أن يظهر فيها.</small><label>رابط المحتوى</label><input id="cUrl" class="field" type="url" placeholder="https://..."><label>حالة النشر</label><select id="cStatus" class="field"><option>مسودة</option><option>جاهز للنشر</option><option>منشور</option></select><div class="admin-actions"><button class="btn" onclick="saveContentDraft()">💾 حفظ المحتوى</button></div></div>';
+ show('➕ إضافة محتوى جديد',html);
+};
+window.saveContentDraft=function(){
+ var title=(document.getElementById('cTitle')||{}).value?.trim()||'محتوى جديد',type=(document.getElementById('cType')||{}).value||'',levelv=(document.getElementById('cLevel')||{}).value||'',url=(document.getElementById('cUrl')||{}).value?.trim()||'',status=(document.getElementById('cStatus')||{}).value||'مسودة';
+ var placements=[].slice.call(document.getElementById('cPlacements')?.selectedOptions||[]).map(function(o){return o.value;});
+ var service=(placements[0]&&placements[0].indexOf('دعم')===0)?'دروس الدعم':(placements[0]&&placements[0].indexOf('الدورات')===0?'دورة':(placements[0]==='الدروس المسجلة'?'الدروس المسجّلة':'مجاني'));
+ var list=contents();list.push({id:'c_'+Date.now(),title,type,level:levelv,service,placements,status,url,createdAt:new Date().toISOString()});setContents(list);show('✅ تم الحفظ','<div class="section-intro"><div class="big-icon">📦</div><h3>'+esc(title)+'</h3><p>تم حفظ المورد مرة واحدة ونشره في: '+esc(placements.join('، ')||'لا يوجد')+'</p></div><button class="btn" style="width:100%" onclick="adminDashboard()">العودة إلى لوحة التحكم</button>');
+};
+
+/* Add private-question entry to the admin dashboard if not already present. */
+try{
+ var originalAdmin=window._adminDashboard;
+ if(typeof originalAdmin==='function'){
+   /* Keep original visual dashboard; adminModule now handles the destination. */
+ }
+}catch(e){}
+
+/* Remove the old "تطوري" shortcut/card from any legacy dashboard HTML if a cached layer renders it. */
+document.addEventListener('click',function(e){
+ var b=e.target&&e.target.closest?e.target.closest('[data-student-module="نتطور"]'):null;
+ if(b){e.preventDefault();e.stopImmediatePropagation();studentDashboard();}
+},true);
+
+})();
+
+/* V101 admin quick actions: private questions + targeted notifications */
 (function(){
  'use strict';
- function safe(v){return typeof escapeHtml==='function'?escapeHtml(v):String(v==null?'':v).replace(/[&<>"']/g,function(m){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])})}
- function get(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}
- function close(){if(typeof closeM==='function')closeM()}
- function back(){if(typeof home==='function')home();close()}
-
- window.v99ParentLogin=function(){
-   var code=(document.getElementById('v99ParentCode')?.value||'').trim();
-   var a=get('t20_parents',[]);
-   var p=a.find(function(x){return String(x.code||'').trim()===code && x.active!==false;});
-   if(!p){alert('كود الولي غير صحيح أو لا يوجد حساب ولي مفعل.');return;}
-   localStorage.setItem('t20_parent_current',JSON.stringify(p));
-   localStorage.setItem('t20_parent_kid','');
-   if(typeof parent98Tab==='function'){parent98Tab('home');return;}
-   if(typeof parentDashboard==='function'){parentDashboard();return;}
+ function e(v){return typeof escapeHtml==='function'?escapeHtml(String(v==null?'':v)):String(v==null?'':v);}
+ window.newStudentNotification=function(){
+   var levels=['كل المستويات','السنة الأولى متوسط','السنة الثانية متوسط','السنة الثالثة متوسط','السنة الرابعة متوسط','السنة الأولى ثانوي'];
+   var groups=['كل الفئات','دعم عبر Zoom','حضوري','دعم مجاني','دورات'];
+   show('🔔 إرسال تنبيه','<div class="form-stack"><label>عنوان التنبيه</label><input id="nTitle" class="field" placeholder="مثال: حصة اليوم عبر Zoom"><label>نص التنبيه</label><textarea id="nText" class="field" rows="4" placeholder="اكتبي تفاصيل التنبيه..."></textarea><label>المستوى</label><select id="nLevel" class="field">'+levels.map(function(x){return '<option>'+x+'</option>';}).join('')+'</select><label>الفئة</label><select id="nGroup" class="field">'+groups.map(function(x){return '<option>'+x+'</option>';}).join('')+'</select><button class="btn" onclick="saveStudentNotification()">📤 نشر التنبيه</button></div>');
  };
-
- // محاكاة مستقلة: بيانات تجريبية داخل sessionStorage فقط، ولا تلمس قاعدة البيانات الحقيقية.
- window.v99ParentSimulation=function(){
-   sessionStorage.setItem('t20_v99_sim','parent');
-   sessionStorage.setItem('t20_test_mode','parent');
-   show('👨‍👩‍👧 محاكاة ولي الأمر',
-     '<div class="v99-test-wrap">'+
-       '<div class="v99-test-card"><h3>👨‍👩‍👧 مرحبًا بولي الأمر التجريبي</h3><p>هذه واجهة محاكاة لاختبار الأزرار والتنقل فقط.</p></div>'+
-       '<div class="v99-test-card"><strong>👦 الابن التجريبي: تلميذ تجريبي</strong><div class="v99-test-small">السنة الثالثة متوسط • الحضور والنتائج والدفع ظاهرة للاختبار.</div></div>'+
-       '<div class="v99-test-grid">'+
-         '<button class="v99-test-btn primary" type="button" onclick="v99ParentSimPage(\'home\')">🏠 متابعة الابن</button>'+
-         '<button class="v99-test-btn" type="button" onclick="v99ParentSimPage(\'attendance\')">✅ الحضور</button>'+
-         '<button class="v99-test-btn" type="button" onclick="v99ParentSimPage(\'results\')">📊 النتائج</button>'+
-         '<button class="v99-test-btn" type="button" onclick="v99ParentSimPage(\'payment\')">💳 الدفع والإيصالات</button>'+
-       '</div>'+ 
-       '<button class="btn secondary" style="width:100%;margin-top:10px" type="button" onclick="v99ExitSimulation()">← خروج من المحاكاة</button>'+ 
-     '</div>');
+ window.saveStudentNotification=function(){
+   var title=(document.getElementById('nTitle')||{}).value?.trim()||'تنبيه جديد',text=(document.getElementById('nText')||{}).value?.trim()||'',level=(document.getElementById('nLevel')||{}).value||'كل المستويات',group=(document.getElementById('nGroup')||{}).value||'كل الفئات';
+   if(!text){alert('اكتبي نص التنبيه.');return;}
+   var list=typeof R==='function'?R('t20_notifications',[]):[];list=Array.isArray(list)?list:[];list.push({id:'n_'+Date.now(),title,text,level:level==='كل المستويات'?'':level,supportMode:group==='كل الفئات'?'':group,type:'منصة التحدي',createdAt:new Date().toISOString(),unread:true});if(typeof W==='function')W('t20_notifications',list);else localStorage.setItem('t20_notifications',JSON.stringify(list));show('✅ تم نشر التنبيه','<div class="section-intro"><div class="big-icon">🔔</div><h3>'+e(title)+'</h3><p>ظهر التنبيه للفئة المحددة حسب المستوى والفئة.</p></div><button class="btn" style="width:100%" onclick="adminDashboard()">العودة إلى لوحة التحكم</button>');
  };
- window.v99ParentSimPage=function(page){
-   var content='';
-   if(page==='home') content='<div class="v99-test-card"><h3>👦 تلميذ تجريبي</h3><p>المستوى: السنة الثالثة متوسط</p><p>الدروس المتبقية: <b>3 من 4</b></p></div>';
-   if(page==='attendance') content='<div class="v99-test-card"><h3>✅ الحضور</h3><p>الحصة 1: حاضر</p><p>الحصة 2: حاضر</p><p>الحصة 3: قادمة</p></div>';
-   if(page==='results') content='<div class="v99-test-card"><h3>📊 النتائج</h3><p>التحديات المنجزة: 2</p><p>آخر نتيجة: 16/20</p></div>';
-   if(page==='payment') content='<div class="v99-test-card"><h3>💳 الدفع والإيصالات</h3><p>الاشتراك: 1600 دج</p><p>الحالة: <b>مدفوع</b></p><p>الحصص المستعملة: 1 / 4</p></div>';
-   show('👨‍👩‍👧 محاكاة ولي الأمر','<div class="v99-test-wrap">'+content+'<button class="btn secondary" style="width:100%" type="button" onclick="v99ParentSimulation()">← رجوع للمحاكاة</button></div>');
- };
- window.v99ExitSimulation=function(){sessionStorage.removeItem('t20_v99_sim');sessionStorage.removeItem('t20_test_mode');close();if(typeof home==='function')home()};
-
- // إصلاح محاكاة التلميذ كذلك مع إبقاء بيانات التلميذ الحقيقيّة دون تغيير.
- window.v99StudentSimulation=function(){
-   sessionStorage.setItem('t20_v99_sim','student');sessionStorage.setItem('t20_test_mode','student');
-   localStorage.setItem('t20_student_name','تلميذ تجريبي');
-   localStorage.setItem('t20_student_code','TEST-STUDENT');
-   localStorage.setItem('t20_student_level','السنة الثالثة متوسط');
-   if(typeof studentDashboard==='function'){studentDashboard();return;}
-   show('👨‍🎓 محاكاة التلميذ','<div class="v99-test-card">تم تشغيل محاكاة التلميذ التجريبية.</div>');
- };
-
- // زر الاختبار العام: نعيد ربطه بنسخة مستقرة.
- if(window.TahadiTest){
-   window.TahadiTest.start=function(role){
-     if(role==='parent'){v99ParentSimulation();return;}
-     if(role==='student'){v99StudentSimulation();return;}
-     if(role==='teacher'){
-       sessionStorage.setItem('t20_test_mode','teacher');
-       show('👩‍🏫 محاكاة الأستاذ','<div class="v99-test-card"><h3>👩‍🏫 أستاذ تجريبي</h3><p>تم فتح محاكاة فضاء الأستاذ بنجاح.</p><button class="btn secondary" onclick="v99ExitSimulation()">← خروج</button></div>');
-     }
-   };
- }
+ var base=window.adminDashboard;
+ window.adminDashboard=function(){if(typeof base==='function')base();setTimeout(function(){var root=document.querySelector('.t20-center-head');if(!root||root.parentElement.querySelector('.t20-v101-actions'))return;var d=document.createElement('div');d.className='t20-v101-actions';d.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 14px';d.innerHTML='<button class="btn" type="button" onclick="studentQuestionsAdmin()">💬 أسئلة التلاميذ</button><button class="btn" type="button" onclick="newStudentNotification()">🔔 إرسال تنبيه</button>';root.parentElement.insertBefore(d,root.nextSibling);},30);};
 })();
+
 </script>
-
-
-<style id="t20-today-board-live-style">
-.today-section-title{margin:14px 0 8px;color:var(--deep);font-size:15px}.today-board-list{display:flex;flex-direction:column;gap:9px}.today-board-card{background:#fff;border:1px solid #d8e7df;border-radius:16px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;box-shadow:0 5px 14px rgba(20,70,55,.05)}.today-board-card h4{margin:5px 0;color:#173c35;font-size:15px}.today-board-card p{margin:0;color:#63766f;font-size:12px;line-height:1.7}.today-board-badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef7f3;color:#286b58;font-size:11px;font-weight:800}.today-points{white-space:nowrap;color:#a27b20;font-weight:900}.today-board-card .btn{white-space:nowrap;padding:8px 11px}@media(max-width:560px){.today-board-card{align-items:flex-start}.today-board-card .btn{font-size:11px;padding:7px 9px}}
-</style>
-<script id="t20-today-board-live-v2">
+<script id="t20-v102-final-support-clean">
 (function(){
 'use strict';
-function R(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}
-function E(v){return typeof escapeHtml==='function'?escapeHtml(v??''):String(v??'')}
-function norm(v){return String(v??'').replace(/[\u200e\u200f\u061c]/g,'').replace(/\s+/g,' ').trim()}
-function td(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function ST(){
- var n=localStorage.getItem('t20_student_name')||'',c=localStorage.getItem('t20_student_code')||'',l=localStorage.getItem('t20_student_level')||'';
- var a=R('t20_students',[]),s=a.find(function(x){return(c&&x.code===c)||(n&&x.name===n)});
- var simulation=sessionStorage.getItem('t20_test_mode')==='student'||sessionStorage.getItem('t20_v99_sim')==='student';
- return {name:n,code:c,level:simulation?l:((s&&s.level)||l),record:s,simulation:simulation};
+function v102Norm(v){return String(v==null?'':v).replace(/\s+/g,' ').trim();}
+function v102Esc(v){return typeof escapeHtml==='function'?escapeHtml(String(v==null?'':v)):String(v==null?'':v).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]});}
+function v102Student(){
+ var code=v102Norm(localStorage.getItem('t20_student_code')),name=v102Norm(localStorage.getItem('t20_student_name'));
+ var a=typeof R==='function'?R('t20_students',[]):[]; a=Array.isArray(a)?a:[];
+ return a.find(function(x){return (code&&v102Norm(x.code)===code)||(name&&v102Norm(x.name)===name)})||null;
 }
-function levelMatch(itemLevel,studentLevel){
- var a=norm(itemLevel),b=norm(studentLevel);
- return !a||!b||a===b;
+function v102Level(){var s=v102Student();return v102Norm(localStorage.getItem('t20_student_level'))||v102Norm(s&&s.level);}
+function v102Contents(){var a=typeof getContents==='function'?getContents():((typeof R==='function')?R('t20_contents',[]):[]);return Array.isArray(a)?a:[];}
+function v102Access(x){
+ if(!x||v102Norm(x.status)!=='منشور')return false;
+ var il=v102Norm(x.level),sl=v102Level();
+ if(il&&(!sl||il!==sl))return false;
+ var service=v102Norm(x.service);
+ if(!service||service==='مجاني')return true;
+ var s=v102Student();
+ if(service==='دروس الدعم' && s && (v102Norm(s.supportMode)||v102Norm(s.supportType))) return true;
+ var ps=typeof R==='function'?R('t20_payments',[]):[];
+ return Array.isArray(ps)&&ps.some(function(p){return v102Norm(p.status)==='مدفوع'&&v102Norm(p.service)===service&&((p.studentId&&s&&p.studentId===s.id)||(!p.studentId&&v102Norm(p.student)===v102Norm(localStorage.getItem('t20_student_name'))));});
 }
-function studentHasPaidService(service){
- var wanted=norm(service);
- if(!wanted || wanted==='مجاني') return true;
- var n=localStorage.getItem('t20_student_name')||'', c=localStorage.getItem('t20_student_code')||'';
- var students=R('t20_students',[]), st=students.find(function(x){return (c&&x.code===c)||(n&&x.name===n)});
- var payments=R('t20_payments',[]);
- return payments.some(function(p){
-   if(norm(p.status)!=='مدفوع') return false;
-   var same=!!((p.studentId&&st&&p.studentId===st.id)||(p.studentId&&c&&p.studentId===c)||(!p.studentId&&norm(p.student)===norm(n)));
-   if(!same) return false;
-   return norm(p.service)===wanted;
- });
+function v102Placement(x,p){
+ var ps=Array.isArray(x.placements)?x.placements:[];
+ if(ps.indexOf(p)!==-1)return true;
+ var s=v102Norm(x.service);
+ return s===p || (p==='الدروس المسجلة'&&s==='الدروس المسجّلة') || (p==='دورات المراجعة الشاملة'&&s==='مراجعة وتطبيق');
 }
-window.studentTodayDashboard=function(){
- var st=ST(),date=td();
- var sch=R('t20_schedules',[]).filter(function(x){
-   if(norm(x.date)!==date)return false;
-   if(!levelMatch(x.level,st.level))return false;
-   if(norm(x.supportType)==='فردية'){
-     var mine=!!(st.record&&x.studentId===st.record.id)||(st.name&&x.studentName===st.name);
-     if(!mine)return false;
-   }
-   return studentHasPaidService(x.service||'');
- });
- var allContents=typeof getContents==='function'?getContents():R('t20_contents',[]);
- var seen={};
- var cont=allContents.filter(function(x){
-   if(norm(x.status)!=='منشور'||!levelMatch(x.level,st.level)||!studentHasPaidService(x.service||''))return false;
-   var key=norm(x.title)+'|'+norm(x.type)+'|'+norm(x.service)+'|'+norm(x.level);
-   if(seen[key])return false; seen[key]=true; return true;
- }).sort(function(a,b){return String(b.createdAt||'').localeCompare(String(a.createdAt||''))});
- var ch=R('t20_challenges',[]).filter(function(x){return norm(x.status)==='منشور'&&levelMatch(x.level,st.level)});
- var nt=R('t20_notifications',[]).filter(function(x){
-   var a=norm(x.audience);
-   return !a||a==='الجميع'||a.indexOf('التلاميذ')!==-1||a.indexOf('التلميذ')!==-1;
- }).sort(function(a,b){return String(b.createdAt||'').localeCompare(String(a.createdAt||''))});
- var total=sch.length+cont.length+ch.length+nt.length,live=sch.filter(function(x){return norm(x.supportMode)==='Zoom'||norm(x.type).indexOf('Zoom')!==-1}).length;
- var h='<div class="student-today"><div class="today-head"><div class="today-head-row"><div><h3>📅 لوحة اليوم</h3><p>كل جديدك وبرنامجك الدراسي في مكان واحد.</p></div><span style="font-size:34px">🗓️</span></div><div class="today-date">'+new Date().toLocaleDateString('ar-DZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'</div></div><div class="today-summary"><div class="today-stat"><strong>'+total+'</strong><small>جديدك وأنشطتك</small></div><div class="today-stat"><strong>'+live+'</strong><small>حصص مباشرة</small></div><div class="today-stat"><strong>'+ch.length+'</strong><small>تحديات</small></div></div>';
- if(!total)h+='<div class="today-empty">🌿 <b>ما كاين حتى جديد حاليًا.</b><br>أي حصة أو درس أو ملف أو تمرين أو تحدٍّ أو إعلان موجّه لمستواك سيظهر هنا تلقائيًا.</div>';
- if(sch.length){h+='<div class="today-section-title"><b>📚 برنامج اليوم</b></div><div class="today-board-list">';sch.forEach(function(x){var a=x.link?"window.open("+JSON.stringify(x.link)+",'_blank')":"studentSupportDashboard()";h+='<div class="today-board-card"><div><span class="today-board-badge">📅 حصة اليوم</span><h4>'+E(x.title)+'</h4><p>'+E(x.level||st.level)+' • '+E(x.time||'')+'<br>'+E(x.supportMode||'')+' • '+E(x.supportType||'')+'</p></div><button class="btn" type="button" onclick="'+a+'">'+(x.link?'دخول الحصة':'التفاصيل')+' ←</button></div>'});h+='</div>'}
- if(cont.length){h+='<div class="today-section-title"><b>🆕 المحتوى المتاح لك</b></div><div class="today-board-list">';cont.slice(0,12).forEach(function(x){h+='<div class="today-board-card"><div><span class="today-board-badge">🆕 '+E(x.type||'محتوى')+'</span><h4>'+E(x.title)+'</h4><p>'+E(x.level||st.level||'')+' • '+E(x.service||'')+'</p></div><button class="btn" type="button" onclick="openStudentContent('+J(x.id)+')">فتح ←</button></div>'});h+='</div>'}
- if(ch.length){h+='<div class="today-section-title"><b>⚡ التحديات المتاحة</b></div><div class="today-board-list">';ch.slice(0,10).forEach(function(x){h+='<div class="today-board-card"><div><span class="today-board-badge">⚡ تحدي</span><h4>'+E(x.title||'تحدي')+'</h4><p>'+E(x.question||'تحدٍّ جديد متاح لك.')+'</p></div><span class="today-points">+'+Number(x.points||20)+' نقطة</span></div>'});h+='</div>'}
- if(nt.length){h+='<div class="today-section-title"><b>🔔 آخر الإعلانات</b></div><div class="today-board-list">';nt.slice(0,8).forEach(function(x){h+='<div class="today-board-card"><div><span class="today-board-badge">🔔 إعلان</span><h4>'+E(x.title||'إعلان')+'</h4><p>'+E(x.body||'')+'</p></div></div>'});h+='</div>'}
- h+='<div class="today-note">💡 <b>كل ما هو منشور وموجّه لمستواك يظهر هنا</b>، دون الحاجة للبحث بين الأقسام.</div><button class="btn secondary" style="width:100%;margin-top:2px" onclick="studentDashboard()">← العودة إلى الرئيسية</button></div>';
- show('📅 لوحة اليوم',h);
+function v102Items(p){return v102Contents().filter(function(x){return v102Access(x)&&v102Placement(x,p);}).slice().reverse();}
+function v102Rows(list,empty){return list.length?list.map(function(x){return '<div class="content-row" style="margin-top:9px"><div style="flex:1"><strong>'+v102Esc(x.title||'مورد')+'</strong><div style="color:#63766f;font-size:12px;margin-top:4px">'+v102Esc(x.level||'')+'</div></div><button type="button" class="btn" style="padding:8px 11px" onclick="openStudentContent('+JSON.stringify(x.id)+')">فتح</button></div>';}).join(''):'<div class="student-empty">📭 '+(empty||'لا يوجد محتوى متاح حاليًا.')+'</div>';}
+function v102Wrap(title,icon,body){return '<div class="student-v101"><div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+title+'</h3></div>'+body+'</div>';}
+function v102QuestionBox(context){
+ var qs=typeof R==='function'?R('t20_student_questions',[]):[];qs=Array.isArray(qs)?qs:[];
+ var s=v102Student(),code=v102Norm(localStorage.getItem('t20_student_code')),name=v102Norm(localStorage.getItem('t20_student_name'));
+ var mine=qs.filter(function(q){return (code&&v102Norm(q.studentCode)===code)||(!code&&name&&v102Norm(q.studentName)===name);}).slice().reverse();
+ var list=mine.length?mine.map(function(q){return '<div class="content-row"><div style="flex:1"><strong>❓ '+v102Esc(q.question)+'</strong><small>'+v102Esc(q.answer?'الإجابة: '+q.answer:'في انتظار إجابة الأستاذة.')+'</small></div></div>';}).join(''):'<div class="student-empty">لا توجد أسئلة بعد.</div>';
+ var id='t20Q_'+String(context).replace(/\W/g,'_');
+ return '<div class="student-section-title"><b>💬 أسئلتي</b></div><div class="content-list">'+list+'</div><div style="background:#fff;border:1px solid #dcebe2;border-radius:16px;padding:12px;margin-top:10px"><textarea id="'+id+'" class="field" rows="4" placeholder="اكتبي سؤالك هنا..."></textarea><button class="btn" style="width:100%;margin-top:8px" onclick="sendStudentQuestion('+JSON.stringify(context)+')">📤 إرسال السؤال</button><small style="display:block;color:#71857d;margin-top:7px">🔒 سؤالك وإجابة الأستاذة خاصان بك فقط.</small></div>';
+}
+function v102HasPresentAccess(s){return !!(s&&(s.supportAccess===true||v102Norm(s.supportAccess)==='نعم'||s.supportRecordingsAccess===true||v102Norm(s.supportRecordingsAccess)==='نعم'));}
+/* V102 support overrides are intentionally reduced: the student-space structure is defined once above. */
+
+/* Library: display each resource once, even if legacy records contain duplicates. */
+function v102Unique(list){var seen={};return (Array.isArray(list)?list:[]).filter(function(x){var key=v102Norm(x.id);if(!key)key=[v102Norm(x.title),v102Norm(x.type),v102Norm(x.level),v102Norm(x.service),v102Norm(x.url)].join('|');if(seen[key])return false;seen[key]=1;return true;});}
+function v102LibIcon(type){var t=v102Norm(type);return (t.indexOf('دروس')!==-1&&t.indexOf('مسجل')!==-1)||t.indexOf('حصص الدعم')!==-1?'🎥':t.indexOf('مجاني')!==-1?'🆓':t.indexOf('ملف')!==-1?'📁':t.indexOf('وثائق')!==-1?'📄':'📚';}
+function v102LibTypeLabel(type){var t=v102Norm(type);if(t==='حصص الدعم المسجلة'||t==='حصص الدعم المسجّلة')return '🎥 تسجيل ضمن دعم Zoom';return String(type||'');}
+function v102LibRows(list){list=v102Unique(list).slice().reverse();if(!list.length)return '<div class="t20-library-empty">📭 لا توجد محتويات في هذا القسم حاليًا.</div>';return '<div class="t20-library-list">'+list.map(function(x){var id=v102Esc(x.id||'').replace(/"/g,'&quot;');return '<div class="t20-library-item"><div class="t20-library-item-top"><div><strong>'+v102LibIcon(x.type)+' '+v102Esc(x.title||'محتوى بدون عنوان')+'</strong><div class="t20-library-meta">'+v102Esc(v102LibTypeLabel(x.type))+' • '+v102Esc(x.level||'')+' • '+v102Esc(x.service||'')+'</div></div><span class="t20-library-status">'+v102Esc(x.status||'مسودة')+'</span></div><div class="t20-library-actions"><button type="button" data-t20-library-action="open-content" data-t20-library-value="'+id+'">👁️ عرض</button><button type="button" data-t20-library-action="toggle-content" data-t20-library-value="'+id+'">'+(x.status==='منشور'?'⏸️ إخفاء':'🚀 نشر للتلاميذ')+'</button>'+(x.status==='منشور'?'<button type="button" class="t20-preview-student" data-t20-lib-preview="'+id+'">👨‍🎓 معاينة للتلميذ</button>':'')+(x.url?'<a href="'+v102Esc(x.url)+'" target="_blank" rel="noopener noreferrer">🔗 الرابط</a>':'')+'<button type="button" class="real-danger" data-t20-library-action="delete-content" data-t20-library-value="'+id+'">🗑️ حذف</button></div></div>';}).join('')+'</div>';}
+window.adminContent=function(){
+ var all=v102Unique(typeof getContents==='function'?getContents():R('t20_contents',[]));
+ var types=[['🎥','فيديو/تسجيل'],['📄','ملف/ملخص'],['🧩','تحدي'],['🏆','نتيجة'],['🎓','الدورات']];
+ var published=all.filter(function(x){return x.status==='منشور';}).length;
+ var html='<div class="content-admin"><div class="section-intro"><div class="big-icon">📚</div><h3>مكتبة التحدي</h3><p>كل مورد يُحفظ مرة واحدة. يمكن توجيهه لأكثر من مكان بدون إنشاء نسخة ثانية.</p></div><div class="t20-connection-box"><div class="t20-connection-ok">🔗 المكتبة مرتبطة بفضاء التلاميذ</div><div class="t20-connection-note">المورد الواحد لا يظهر مكررًا في قائمة المكتبة حتى لو وُجدت له سجلات قديمة متطابقة.</div></div><div class="admin-actions"><button type="button" class="btn" onclick="newContent()">➕ إضافة محتوى جديد</button><button type="button" class="btn secondary" onclick="adminDashboard()">العودة للوحة التحكم</button></div><h4 class="subhead">أنواع المحتوى</h4><div class="admin-grid">'+types.map(function(t){var c=all.filter(function(x){var z=v102Norm(x.type);return z===t[1]||z.endsWith(t[1]);}).length;return '<button type="button" class="admin-mini" onclick="contentFilter('+JSON.stringify(t[1])+')"><span style="font-size:28px">'+t[0]+'</span><b>'+t[1]+'</b><small>'+c+' محتوى</small></button>';}).join('')+'</div><h4 class="subhead">📌 آخر المحتويات ('+all.length+') — المنشور: '+published+'</h4>'+v102LibRows(all)+'</div>';
+ show('📚 مكتبة التحدي',html);
 };
+window.contentFilter=function(type){var all=v102Unique(typeof getContents==='function'?getContents():R('t20_contents',[]));var wanted=v102Norm(type);var list=all.filter(function(x){var z=v102Norm(x.type);return z===wanted||z.endsWith(wanted);});show('📚 '+v102Esc(wanted),'<div class="content-admin"><div class="section-intro"><div class="big-icon">📂</div><h3>'+v102Esc(wanted)+'</h3><p>المحتويات الفريدة في هذا النوع.</p></div><div class="admin-actions"><button class="btn" onclick="newContent()">➕ إضافة محتوى</button><button class="btn secondary" onclick="adminContent()">← مكتبة التحدي</button></div>'+v102LibRows(list)+'</div>');};
 })();
 </script>
 
 
-<style id="t20-content-file-fix-style">
-.t20-file-meta{background:#eef7f3;border:1px solid #d3e8de;border-radius:12px;padding:9px 11px;color:#35685a;font-size:12px;line-height:1.7;margin-top:5px}
-</style>
-<script id="t20-content-file-fix-js">
+<script id="t20-v115-student-space-final">
 (function(){
 'use strict';
-var DB_NAME='tahadi20_files_v1', STORE='files';
-function openFileDB(){
- return new Promise(function(resolve,reject){
-  if(!window.indexedDB){reject(new Error('IndexedDB غير متاح'));return;}
-  var req=indexedDB.open(DB_NAME,1);
-  req.onupgradeneeded=function(){var db=req.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:'id'});};
-  req.onsuccess=function(){resolve(req.result)};
-  req.onerror=function(){reject(req.error||new Error('تعذر فتح التخزين'))};
- });
+
+function esc115(v){
+  v=String(v==null?'':v);
+  return typeof window.escapeHtml==='function' ? window.escapeHtml(v) : v.replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
 }
-function storeFile(file,id){
- return openFileDB().then(function(db){
-  return new Promise(function(resolve,reject){
-   var tx=db.transaction(STORE,'readwrite');
-   tx.objectStore(STORE).put({id:id,name:file.name,type:file.type||'application/octet-stream',size:file.size,blob:file,createdAt:new Date().toISOString()});
-   tx.oncomplete=function(){db.close();resolve(id)};
-   tx.onerror=function(){db.close();reject(tx.error||new Error('تعذر حفظ الملف'))};
-  });
- });
+function page115(title,icon,body){
+  return '<div class="student-page-wrap">'+
+    '<div class="student-page-head"><div class="big-icon">'+(icon||'📚')+'</div><h3>'+esc115(title)+'</h3></div>'+
+    body+
+    '<button type="button" class="btn secondary student-return-btn" data-student-action="dashboard" style="width:100%;margin-top:14px">العودة إلى فضاء التلاميذ</button>'+
+    '</div>';
 }
-function getStoredFile(id){
- return openFileDB().then(function(db){
-  return new Promise(function(resolve,reject){
-   var tx=db.transaction(STORE,'readonly'),req=tx.objectStore(STORE).get(id);
-   req.onsuccess=function(){db.close();resolve(req.result||null)};
-   req.onerror=function(){db.close();reject(req.error||new Error('تعذر قراءة الملف'))};
-  });
- });
+function card115(action,label,icon,small){
+  return '<button type="button" class="student-mini-card" data-student-action="'+esc115(action)+'" style="cursor:pointer!important;pointer-events:auto!important">'+
+    '<span class="ico">'+icon+'</span><b>'+esc115(label)+'</b>'+(small?'<small>'+esc115(small)+'</small>':'')+'</button>';
 }
-function deleteStoredFile(id){
- if(!id)return Promise.resolve();
- return openFileDB().then(function(db){return new Promise(function(resolve,reject){var tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).delete(id);tx.oncomplete=function(){db.close();resolve()};tx.onerror=function(){db.close();reject(tx.error)}})}).catch(function(){});
+function list115(items,empty){
+  if(typeof window.v102Rows==='function') return window.v102Rows(items||[],empty||'لا يوجد محتوى متاح حاليًا.');
+  return '<div class="student-empty">'+esc115(empty||'لا يوجد محتوى متاح حاليًا.')+'</div>';
 }
-function fmtSize(n){n=Number(n||0);if(n<1024)return n+' B';if(n<1048576)return (n/1024).toFixed(1)+' KB';return (n/1048576).toFixed(1)+' MB'}
-window.t20StoreFile=storeFile; window.t20GetStoredFile=getStoredFile; window.t20DeleteStoredFile=deleteStoredFile;
-
-var oldSave=window.saveContentDraft;
-window.saveContentDraft=async function(){
- var title=(document.getElementById('cTitle')||{}).value?.trim()||'محتوى جديد';
- var type=(document.getElementById('cType')||{}).value||'';
- var level=(document.getElementById('cLevel')||{}).value||'';
- var service=(document.getElementById('cService')||{}).value||'';
- var status=(document.getElementById('cStatus')||{}).value||'مسودة';
- var url=(document.getElementById('cUrl')||{}).value?.trim()||'';
- var file=(document.getElementById('cFile')||{}).files?.[0]||null;
- if(!file && !url){alert('اختاري ملفًا أو أضيفي رابط المحتوى.');return;}
- var fileId='';
- try{
-  if(file){fileId='cf_'+Date.now()+'_'+Math.random().toString(36).slice(2,9);await storeFile(file,fileId);}
-  var list=typeof getContents==='function'?getContents():[];
-  var item={id:'c_'+Date.now(),title,type,level,service,status,url,fileId:fileId||'',fileName:file?file.name:'',fileType:file?file.type:'',fileSize:file?file.size:0,createdAt:new Date().toISOString()};
-  list.push(item);
-  if(typeof setContents==='function')setContents(list);else localStorage.setItem('t20_contents',JSON.stringify(list));
-  show('✅ تم الحفظ','<div class="section-intro"><div class="big-icon">📦</div><h3>'+ (typeof escapeHtml==='function'?escapeHtml(title):title) +'</h3><p>'+ (typeof escapeHtml==='function'?escapeHtml(type):type) +' — '+ (typeof escapeHtml==='function'?escapeHtml(level):level) +'<br>'+ (typeof escapeHtml==='function'?escapeHtml(service):service) +' — <b>'+ (typeof escapeHtml==='function'?escapeHtml(status):status) +'</b></p>'+(file?'<div class="t20-file-meta">📎 '+(typeof escapeHtml==='function'?escapeHtml(file.name):file.name)+'<br>الحجم: '+fmtSize(file.size)+'<br>تم حفظ الملف داخل تخزين المنصة على هذا الجهاز.</div>':'')+'<p>'+ (status==='منشور'?'هذا المحتوى أصبح ظاهرًا تلقائيًا في لوحة اليوم وفضاء التلميذ المناسب لمستواه.':'تم حفظ المحتوى، ولن يظهر للتلاميذ حتى يصبح حالته «منشور».') +'</p>'+(url?'<p><a href="'+(typeof escapeHtml==='function'?escapeHtml(url):url)+'" target="_blank" rel="noopener noreferrer" style="color:#1c7b64;font-weight:900">🔗 فتح رابط المحتوى</a></p>':'')+'</div><button class="btn" style="width:100%" onclick="adminDashboard()">العودة إلى لوحة التحكم</button>');
- }catch(e){
-  if(fileId)await deleteStoredFile(fileId);
-  alert('تعذر حفظ الملف. حاولي بملف أصغر أو أعيدي المحاولة.');
- }
-};
-
-var oldOpen=window.openStudentContent;
-window.openStudentContent=async function(id){
- var item=(typeof getContents==='function'?getContents():[]).find(function(x){return x.id===id&&x.status==='منشور'});
- if(!item || (typeof studentCanAccessContent==='function'&&!studentCanAccessContent(item))){show('🔒 الوصول إلى المحتوى','<div class="request-empty">هذا المحتوى غير متاح لحسابك أو لمستواك الدراسي.</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonTypes()">العودة</button>');return;}
- var esc=typeof escapeHtml==='function'?escapeHtml:function(v){return String(v??'')};
- localStorage.setItem('t20_last_activity',JSON.stringify({type:'content',id:item.id,title:item.title,at:new Date().toISOString()}));
- if(item.fileId){
-  try{
-   var rec=await getStoredFile(item.fileId);
-   if(rec&&rec.blob){
-    var blobUrl=URL.createObjectURL(rec.blob), lower=(rec.type||'').toLowerCase(), isPdf=lower.indexOf('pdf')!==-1||item.type==='📄 الوثائق'||item.type==='📁 الملفات';
-    var viewer=isPdf?'<div class="content-viewer"><div class="viewer-label">📄 معاينة الملف</div><iframe src="'+blobUrl+'" title="'+esc(item.title)+'" style="width:100%;height:520px;border:1px solid #d6e5de;border-radius:18px;background:#fff"></iframe><a class="btn" href="'+blobUrl+'" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none;margin-top:10px">📥 فتح الملف في نافذة مستقلة</a></div>':'<div class="content-viewer"><div class="viewer-label">📎 الملف المرفق</div><div class="t20-file-meta">'+esc(rec.name)+'<br>الحجم: '+fmtSize(rec.size)+'</div><a class="btn" href="'+blobUrl+'" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none;margin-top:10px">📥 فتح الملف</a></div>';
-    show('📚 '+esc(item.title),'<div class="section-intro"><div class="big-icon">📎</div><h3>'+esc(item.title)+'</h3><p>'+esc(item.level||'')+' • '+esc(item.service||'')+'</p></div>'+viewer+'<button class="btn secondary" style="width:100%;margin-top:10px" onclick="studentLessonType('+J(item.type)+')">العودة</button>');
-    return;
-   }
-  }catch(e){}
- }
- if(item.url){
-  var url=typeof normalizeContentUrl==='function'?normalizeContentUrl(item.url):item.url;
-  if(url){var viewer2=typeof getContentViewer==='function'?getContentViewer(url,item.type,item.title):'<a class="btn" href="'+esc(url)+'" target="_blank">فتح المحتوى</a>';show('📚 '+esc(item.title),'<div class="section-intro"><div class="big-icon">🔗</div><h3>'+esc(item.title)+'</h3><p>'+esc(item.level||'')+' • '+esc(item.service||'')+'</p></div>'+viewer2+'<button class="btn secondary" style="width:100%;margin-top:10px" onclick="studentLessonType('+J(item.type)+')">العودة</button>');return;}
- }
- show('📭 المحتوى','<div class="request-empty">لم يتم العثور على الملف المرفق أو الرابط.</div><button class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonType('+J(item.type)+')">العودة</button>');
-};
-})();
-</script>
-
-<script id="t20-simulation-level-fix">
-(function(){
-'use strict';
-var LEVELS=['السنة الأولى متوسط','السنة الثانية متوسط','السنة الثالثة متوسط','السنة الرابعة متوسط','السنة الأولى ثانوي'];
-function esc(v){return typeof escapeHtml==='function'?escapeHtml(v):String(v==null?'':v)}
-function saveRealStudentState(){
-  var keys=['t20_student_name','t20_student_code','t20_student_level'];
-  var old={}; keys.forEach(function(k){old[k]=localStorage.getItem(k)});
-  sessionStorage.setItem('t20_sim_previous_student',JSON.stringify(old));
+function items115(keys){
+  var out=[];
+  if(typeof window.v102Items!=='function') return out;
+  (keys||[]).forEach(function(k){ out=out.concat(window.v102Items(k)||[]); });
+  if(typeof window.v102Unique==='function') out=window.v102Unique(out);
+  else {
+    var seen={}; out=out.filter(function(x){var id=String(x&&x.id||x&&x.title||Math.random());if(seen[id])return false;seen[id]=1;return true;});
+  }
+  return out;
 }
-function setSimStudent(level){
-  if(!sessionStorage.getItem('t20_sim_previous_student')) saveRealStudentState();
-  sessionStorage.setItem('t20_test_mode','student');
-  sessionStorage.setItem('t20_v99_sim','student');
-  localStorage.setItem('t20_student_name','تلميذ تجريبي');
-  localStorage.setItem('t20_student_code','TEST-STUDENT');
-  localStorage.setItem('t20_student_level',level);
-  if(typeof studentDashboard==='function') studentDashboard();
+function studentLevel115(){
+  return String(localStorage.getItem('t20_student_level')||'').trim();
 }
-function chooseLevel(){
-  var buttons=LEVELS.map(function(l){return '<button type="button" class="btn t20-sim-level-btn" data-t20-sim-level="'+esc(l).replace(/"/g,'&quot;')+'" style="width:100%;margin-top:8px">🎓 '+esc(l)+'</button>'}).join('');
-  show('🧪 محاكاة التلميذ','<div class="section-intro"><div class="big-icon">🧪</div><h3>محاكاة التلميذ</h3><p>هذه محاكاة فقط. اختاري أي مستوى لاختبار محتواه، حتى لو كان التلميذ الحقيقي مسجّلًا في مستوى آخر.</p></div><div style="margin-top:12px">'+buttons+'</div><button type="button" class="btn secondary" style="width:100%;margin-top:12px" onclick="window.t20ExitSimulation()">← إلغاء المحاكاة</button>');
+function studentIdentity115(){
+  return {name:String(localStorage.getItem('t20_student_name')||'').trim(),code:String(localStorage.getItem('t20_student_code')||'').trim(),level:studentLevel115()};
 }
-window.t20ChooseSimulationLevel=setSimStudent;
-window.t20OpenStudentSimulation=chooseLevel;
-// سياق رجوع خاص عند فتح محاكاة التلميذ من فضاء الأولياء.
-window.t20OpenStudentSimulationFromParent=function(){
-  sessionStorage.setItem('t20_parent_return','1');
-  chooseLevel();
-};
-// Expose the level chooser because the final navigation layer calls it through window.
-window.chooseLevel=chooseLevel;
-window.setSimStudent=setSimStudent;
-// إصلاح أزرار اختيار المستوى داخل المحاكاة: ربط مباشر عبر event delegation
-// حتى تعمل الأزرار أيضًا عندما تُنشأ داخل نافذة show() بشكل ديناميكي.
-window.t20ExitSimulation=function(){
-  var raw=sessionStorage.getItem('t20_sim_previous_student');
-  try{
-    var old=raw?JSON.parse(raw):{};
-    ['t20_student_name','t20_student_code','t20_student_level'].forEach(function(k){
-      if(old[k]===null||old[k]===undefined)localStorage.removeItem(k);else localStorage.setItem(k,old[k]);
-    });
-  }catch(e){}
-  sessionStorage.removeItem('t20_sim_previous_student');
-  sessionStorage.removeItem('t20_v99_sim');
-  sessionStorage.removeItem('t20_test_mode');
-  /* إذا دخلنا لمحاكاة التلميذ من فضاء ولي الأمر، فالرجوع يعيدنا إلى فضاء الأولياء فقط. */
-  var parentContext=false;
-  try{ parentContext=!!localStorage.getItem('t20_parent_current') || sessionStorage.getItem('t20_parent_return')==='1'; }catch(e){}
-  if(parentContext && typeof window.parent98Tab==='function'){
-    sessionStorage.removeItem('t20_parent_return');
-    window.parent98Tab('home');
-    return;
-  }
-  if(typeof closeM==='function')closeM(); else if(typeof home==='function')home();
-};
-window.v99StudentSimulation=function(){chooseLevel();};
-window.TahadiTest=window.TahadiTest||{};
-var oldTahadiStart=window.TahadiTest.start;
-window.TahadiTest.start=function(role){
-  if(role==='student'){chooseLevel();return;}
-  if(typeof oldTahadiStart==='function')return oldTahadiStart(role);
-};
-})();
-</script>
+function show115(t,c){
+  if(typeof window.show==='function') window.show(t,c);
+}
 
-<script id="t20-student-content-navigation-fix-v4">
-(function(){
-  'use strict';
-  // توحيد دخول التلميذ إلى أنواع الدروس والمحتوى المنشور.
-  // الأزرار تعتمد على data attributes بدل onclick حتى لا تتعارض مع مستمعات النقر العامة.
-  window.studentLessonTypes=function(){
-    // V4: فتح صفحة الدروس يجب ألا يعتمد على صلاحيات الدفع أو سلامة بيانات المحتوى.
-    // عرض الأنواع أولاً؛ التحقق من الصلاحية يتم فقط عند حساب المحتوى/فتحه.
-    var types=[
-      ['🎥','الدروس المسجّلة','دروس خاصة بالأستاذة حياة، مسجلة وموجهة للتلميذ.'],
-      ['📝','حلّ التمارين','تسجيلات حلول التمارين والتطبيقات.'],
-      ['📄','الوثائق','وثائق تعليمية مرتبطة بالدروس.'],
-      ['📁','الملفات','ملفات وموارد قابلة للمشاهدة أو التحميل حسب الصلاحية.'],
-      ['💻','حصص الدعم المسجّلة','تسجيلات حصص الدعم المباشرة السابقة.'],
-      ['🆓','الحصص المجانية','محتوى مجاني متاح للتلاميذ.']
-    ];
-    var all=[];
-    try{
-      var raw=(typeof getContents==='function'?getContents():[]);
-      all=Array.isArray(raw)?raw:[];
-    }catch(e){all=[];}
-    var html='<div class="section-intro"><div class="big-icon">📖</div><h3>الدروس</h3><p>المحتوى التعليمي المنشور الذي تسمح به الأستاذة حياة، منظّم حسب نوعه.</p></div><div class="admin-grid">';
-    types.forEach(function(t){
-      var count=0;
-      try{
-        count=all.filter(function(x){
-          if(!x || x.status!=='منشور') return false;
-          var xt=String(x.type||'');
-          var matches=(xt===t[1] || xt===t[0]+' '+t[1] || xt.endsWith(t[1]));
-          if(!matches) return false;
-          try{return typeof studentCanAccessContent==='function'?!!studentCanAccessContent(x):true;}catch(err){return false;}
-        }).length;
-      }catch(e){count=0;}
-      html+='<button type="button" class="admin-mini t20-student-lesson-type" data-student-lesson-type="'+escapeHtml(t[1]).replace(/"/g,'&quot;')+'" style="text-align:right;cursor:pointer">'+
-        '<span style="font-size:28px">'+t[0]+'</span><b>'+escapeHtml(t[1])+'</b><small>'+escapeHtml(t[2])+'</small><em style="color:#1c7b64;font-style:normal;margin-top:4px">'+count+' محتوى منشور</em></button>';
-    });
-    html+='</div><button type="button" class="btn secondary" style="width:100%;margin-top:12px" onclick="studentDashboard()">العودة لفضاء التلاميذ</button>';
-    show('👨‍🎓 الدروس',html);
-  };
-
-  window.studentLessonType=function(type){
-    var wanted=String(type||'').trim();
-    var all=[];
-    try{
-      var raw=(typeof getContents==='function'?getContents():[]);
-      all=Array.isArray(raw)?raw:[];
-    }catch(e){all=[];}
-    var visible=[];
-    all.forEach(function(x){
-      try{
-        var xt=String(x&&x.type||'').trim();
-        if(!x || x.status!=='منشور' || !(xt===wanted || xt.endsWith(wanted))) return;
-        if(typeof studentCanAccessContent==='function' && !studentCanAccessContent(x)) return;
-        visible.push(x);
-      }catch(e){}
-    });
-    var icon=({'الدروس المسجّلة':'🎥','حلّ التمارين':'📝','الوثائق':'📄','الملفات':'📁','حصص الدعم المسجّلة':'💻','الحصص المجانية':'🆓'}[wanted]||'📚');
-    var rows=visible.length?visible.slice().reverse().map(function(x){
-      return '<div class="content-row"><div style="flex:1"><strong>'+escapeHtml(x.title)+'</strong><div style="color:#63766f;font-size:12px;margin-top:4px">'+escapeHtml(x.level||'')+' • '+escapeHtml(x.service||'')+'</div></div><button type="button" class="btn t20-student-content-open" style="padding:8px 11px" data-student-content-id="'+escapeHtml(x.id).replace(/"/g,'&quot;')+'">فتح</button></div>';
-    }).join(''):'<div class="request-empty">📭 لا يوجد محتوى منشور ومتاح لهذا القسم حاليًا.</div>';
-    show('👨‍🎓 '+escapeHtml(wanted),'<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+escapeHtml(wanted)+'</h3><p>تظهر هنا الموارد المنشورة والمتاحة لمستواك فقط.</p></div><div class="content-list">'+rows+'</div><button type="button" class="btn secondary" style="width:100%;margin-top:12px" onclick="studentLessonTypes()">العودة إلى أنواع الدروس</button>');
-  };
-
-  })();
-</script>
-
-<script id="t20-today-admin-kpi-navigation-fix">
-(function(){
-  'use strict';
-  function openTodayTarget(target){
-    try{
-      if(target==='students' && typeof window.realStudents==='function'){
-        window.realStudents();
-        return true;
-      }
-      if(target==='parents' && typeof window.realParents==='function'){
-        window.realParents();
-        return true;
-      }
-    }catch(err){
-      console.error('Today KPI navigation error:',err);
-    }
-    return false;
-  }
-  var oldRealToday=window.realToday;
-  if(typeof oldRealToday==='function'){
-    window.realToday=function(){
-      oldRealToday();
-      var cards=document.querySelectorAll('.real-kpi-click');
-      if(cards[0]){
-        cards[0].setAttribute('data-t20-today-target','students');
-        cards[0].setAttribute('type','button');
-      }
-      if(cards[1]){
-        cards[1].setAttribute('data-t20-today-target','parents');
-        cards[1].setAttribute('type','button');
-      }
-    };
-  }
-})();
-</script>
-
-<script id="t20-universal-back-navigation-v1">
-(function(){
-  'use strict';
-  function isBackControl(el){
-    if(!el || !(el.matches && el.matches('button,a,[role="button"]'))) return false;
-    if(el.classList.contains('close')) return false;
-    var txt=(el.textContent||'').replace(/\s+/g,' ').trim();
-    var aria=(el.getAttribute('aria-label')||'').trim();
-    var title=(el.getAttribute('title')||'').trim();
-    return /^←\s*(رجوع|الرجوع|عودة|العودة)/.test(txt) || /^🔙/.test(txt) || /^(رجوع|الرجوع|عودة|العودة)$/.test(aria) || /^(رجوع|الرجوع|عودة|العودة)$/.test(title);
-  }
-  })();
-</script>
-<script id="t20-final-parent-entry-fix-v17">
-(function(){
-  'use strict';
-  // Final parent entry point: one stable handler for the admin quick-access icon.
-  window.adminOpenSpace=function(role){
-    if(role==='parent'){
-      if(typeof window.parentLogin==='function'){ window.parentLogin(); return; }
-      if(typeof window.v99ParentSimulation==='function'){ window.v99ParentSimulation(); return; }
-    }
-    if(role==='student'){
-      if(typeof window.chooseLevel==='function'){ window.chooseLevel(); return; }
-      if(typeof window.v99StudentSimulation==='function'){ window.v99StudentSimulation(); return; }
-      if(typeof window.studentDashboard==='function'){ window.studentDashboard(); return; }
-    }
-    if(role==='teacher'){
-      if(typeof window.v99TeacherSimulation==='function'){ window.v99TeacherSimulation(); return; }
-      show('👩‍🏫 فضاء الأساتذة',realWrap('👩‍🏫 أستاذ تجريبي','محاكاة محلية من صلاحيات الإدارة.','<div class="real-empty">تم فتح الفضاء بنجاح.</div>'+back('adminDashboard')));
-    }
-  };
-  // Directly normalize the parent quick-access button so it cannot be blocked
-  // by an older click handler.
-  })();
-</script>
-<script id="t20-unified-click-router-v30">
-(function(){
-  'use strict';
-  // V30: one capture listener only. It replaces the previous competing click listeners.
-  function closest(el,sel){return el&&el.closest?el.closest(sel):null;}
-  function goBack(el){
-    var target=el&&el.getAttribute?el.getAttribute('data-t20-back-target'):null;
-    try{
-      if(target){
-        if(target==='returnHome'&&typeof window.returnHome==='function'){window.returnHome();return true;}
-        if(typeof window[target]==='function'){window[target]();return true;}
-      }
-      if(window.T20Back&&typeof window.T20Back.back==='function'){window.T20Back.back();return true;}
-      if(typeof window.backM==='function'&&document.getElementById('modal')?.classList.contains('on')){window.backM();return true;}
-      if(typeof window.home==='function'){window.home();return true;}
-    }catch(err){console.error('V30 back error',err)}
-    return false;
-  }
-  function isBack(el){
-    if(!el||!(el.matches&&el.matches('button,a,[role="button"]')))return false;
-    if(el.classList.contains('close'))return false;
-    var txt=(el.textContent||'').replace(/\s+/g,' ').trim();
-    var aria=(el.getAttribute('aria-label')||'').trim();
-    var title=(el.getAttribute('title')||'').trim();
-    return /^←\s*(رجوع|الرجوع|عودة|العودة)/.test(txt)||/^🔙/.test(txt)||/^(رجوع|الرجوع|عودة|العودة)$/.test(aria)||/^(رجوع|الرجوع|عودة|العودة)$/.test(title);
-  }
-  document.addEventListener('click',function(e){
-    var el=e.target&&e.target.closest?e.target.closest('button,a,[role="button"]'):null;
-    if(!el)return;
-
-    // Explicit navigation/back controls have highest priority.
-    if(isBack(el)){
-      e.preventDefault();e.stopImmediatePropagation();goBack(el);return;
-    }
-
-    var parentEdit=closest(e.target,'.t20-parent-edit-btn');
-    if(parentEdit){
-      e.preventDefault();e.stopImmediatePropagation();
-      var pid=parentEdit.getAttribute('data-parent-edit');
-      if(pid&&typeof window.editParent==='function')window.editParent(pid);
-      return;
-    }
-
-    var sim=closest(e.target,'.t20-sim-level-btn');
-    if(sim){
-      e.preventDefault();e.stopImmediatePropagation();
-      var level=sim.getAttribute('data-t20-sim-level');
-      if(level&&typeof window.t20ChooseSimulationLevel==='function')window.t20ChooseSimulationLevel(level);
-      else if(level&&typeof window.setSimStudent==='function')window.setSimStudent(level);
-      return;
-    }
-
-    var lesson=closest(e.target,'.t20-student-lesson-type');
-    if(lesson){
-      e.preventDefault();e.stopImmediatePropagation();
-      var type=lesson.getAttribute('data-student-lesson-type');
-      if(type&&typeof window.studentLessonType==='function')window.studentLessonType(type);
-      return;
-    }
-    var content=closest(e.target,'.t20-student-content-open');
-    if(content){
-      e.preventDefault();e.stopImmediatePropagation();
-      var cid=content.getAttribute('data-student-content-id');
-      if(cid&&typeof window.openStudentContent==='function')window.openStudentContent(cid);
-      return;
-    }
-
-    var today=closest(e.target,'[data-t20-today-target]');
-    if(today){
-      e.preventDefault();e.stopImmediatePropagation();
-      var target=today.getAttribute('data-t20-today-target');
-      try{
-        if(target==='students'&&typeof window.realStudents==='function'){window.realStudents();return;}
-        if(target==='parents'&&typeof window.realParents==='function'){window.realParents();return;}
-      }catch(err){console.error('V30 KPI error',err)}
-      return;
-    }
-
-    var video=closest(e.target,'.mini-links button[data-video]');
-    if(video){
-      e.preventDefault();e.stopImmediatePropagation();
-      if(typeof window.video==='function')window.video(video.getAttribute('data-video'));
-      return;
-    }
-
-    var adminSpace=closest(e.target,'[data-admin-space]');
-    if(adminSpace){
-      e.preventDefault();e.stopImmediatePropagation();
-      var role=adminSpace.getAttribute('data-admin-space');
-      if(typeof window.adminOpenSpace==='function')window.adminOpenSpace(role);
-      return;
-    }
-
-    var adminMod=closest(e.target,'[data-admin-module]');
-    if(adminMod){
-      e.preventDefault();e.stopImmediatePropagation();
-      var mod=adminMod.getAttribute('data-admin-module');
-      if(mod==='الأولياء'&&typeof window.openAdminParents==='function')window.openAdminParents();
-      else if(typeof window.adminModule==='function')window.adminModule(mod);
-      return;
-    }
-
-    var studentMod=closest(e.target,'[data-student-module]');
-    if(studentMod){
-      e.preventDefault();e.stopImmediatePropagation();
-      var sm=studentMod.getAttribute('data-student-module');
-      if(typeof window.studentModule==='function')window.studentModule(sm);
-      return;
-    }
-
-    var broadcast=closest(e.target,'[data-test-broadcast]');
-    if(broadcast){
-      e.preventDefault();e.stopImmediatePropagation();
-      if(typeof window.testBroadcast==='function')window.testBroadcast();
-      return;
-    }
-  },true);
-})();
-</script>
-\n<script id="t20-home-entry-clean-v50">
-(function(){
-  'use strict';
-  window.t20HomeEntry=function(role){
-    try{
-      if(role==='admin'){ if(typeof window.adminDashboard==='function'){ window.adminDashboard(); return true; } }
-      if(role==='teacher'){ if(typeof window.teacher==='function'){ window.teacher(); return true; } }
-      if(role==='student'){ if(typeof window.student==='function'){ window.student(); return true; } }
-      if(role==='parent'){
-        if(typeof window.parentLogin==='function'){
-          try{ window.parentLogin(); return true; }
-          catch(err){
-            console.error('T20 parentLogin error:',err);
-            if(typeof window.show==='function'){
-              window.show('👨‍👩‍👧 فضاء الأولياء','<div class="real-form"><label>كود الولي</label><input id="t20HomeParentCode" class="field" placeholder="أدخل كود الولي" autocomplete="off"><button class="btn" type="button" onclick="if(typeof parent98Login===\'function\'){document.getElementById(\'p98LoginCode\').value=document.getElementById(\'t20HomeParentCode\').value;parent98Login();}">🔐 دخول</button><button class="btn secondary" type="button" onclick="if(typeof t20ParentSimulation===\'function\')t20ParentSimulation();">🧪 تجربة الفضاء</button></div>');
-              return true;
-            }
-          }
-        }
-      }
-    }catch(err){ console.error('T20 canonical home entry error:',role,err); }
-    return false;
-  };
-})();
-</script>\n
-<script id="t20-canonical-space-audit-v58">
-(function(){
-  'use strict';
-  function safe(v){return typeof escapeHtml==='function'?escapeHtml(v):String(v==null?'':v).replace(/[&<>"']/g,function(m){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])});}
-  function arr(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}
-  function showError(title,err){
-    console.error('T20 canonical space error',title,err);
-    if(typeof window.show==='function')window.show('⚠️ تعذر فتح الفضاء','<div class="real-empty" style="color:#9b3d3d;line-height:2">حدث خطأ في مسار الدخول.<br><small>'+safe(err&&err.message||err)+'</small></div><button class="btn secondary" style="width:100%;margin-top:10px" onclick="home()">العودة للرئيسية</button>');
-  }
-  function open(role){
-    try{
-      if(role==='admin'){ if(typeof window.adminDashboard==='function'){window.adminDashboard();return;} throw new Error('مركز التحدي غير متاح'); }
-      if(role==='teacher'){ if(typeof window.teacher==='function'){window.teacher();return;} throw new Error('فضاء الأساتذة غير متاح'); }
-      if(role==='parent'){
-        // Canonical parent entry: one login path, then the existing parent data/dashboard.
-        window.parentLogin=function(){
-          window.show('👨‍👩‍👧 فضاء الأولياء',
-            '<div class="real-form">'+
-            '<label>اسم الولي</label><input id="realParentName" class="field" placeholder="الاسم واللقب">'+
-            '<label>كود الولي</label><input id="realParentCode" class="field" placeholder="PAR-2026-001" autocomplete="off">'+
-            '<button class="btn" type="button" onclick="window.t20CanonicalParentLogin()">دخول</button>'+
-            '<p style="color:#71817b;font-size:12px;line-height:1.7;margin-top:10px">يتم التحقق من الحساب الموجود في بيانات المنصة، ولا يتم إنشاء حساب جديد من صفحة الدخول.</p>'+
-            '</div>');
-        };
-        window.t20CanonicalParentLogin=function(){
-          var n=(document.getElementById('realParentName')?.value||'').trim();
-          var c=(document.getElementById('realParentCode')?.value||'').trim();
-          if(!n||!c){alert('أدخلي اسم الولي والكود.');return;}
-          var a=arr('t20_parents');
-          var p=a.find(function(x){return String(x.name||'').trim()===n && String(x.code||'').trim()===c && x.active!==false;});
-          if(!p){alert('بيانات الولي غير صحيحة أو الحساب غير مفعل.');return;}
-          localStorage.setItem('t20_parent_current',JSON.stringify(p));
-          localStorage.setItem('t20_parent_id',p.id||'');
-          localStorage.setItem('t20_parent_name',p.name||n);
-          localStorage.setItem('t20_parent_code',p.code||c);
-          localStorage.removeItem('t20_parent_kid');
-          if(typeof window.parent98Tab==='function'){window.parent98Tab('home');return;}
-          if(typeof window.parentDashboard==='function'){window.parentDashboard();return;}
-          throw new Error('واجهة فضاء الأولياء غير متاحة');
-        };
-        window.parentLogin(); return;
-      }
-      if(role==='student'){ if(typeof window.student==='function'){window.student();return;} throw new Error('فضاء التلاميذ غير متاح'); }
-    }catch(err){showError(role,err)}
-  }
-  window.t20CanonicalOpenSpace=open;
-  window.t20CanonicalAudit={
-    keys:{students:'t20_students',parents:'t20_parents',teachers:'t20_teachers',payments:'t20_payments',schedules:'t20_schedules',contents:'t20_contents'},
-    check:function(){
-      return {admin:typeof window.adminDashboard==='function',teacher:typeof window.teacher==='function',parent:typeof window.parentLogin==='function',student:typeof window.student==='function'};
-    }
-  };
-  // One canonical home route. Existing legacy handlers delegate to this function.
-  window.t20HomeEntry=open;
-  var oldHomeButtons=function(){
-    document.querySelectorAll('.t20-home-space-btn').forEach(function(btn){
-      var role=btn.classList.contains('space1')?'admin':btn.classList.contains('space2')?'teacher':btn.classList.contains('space3')?'parent':btn.classList.contains('space4')?'student':null;
-      if(!role)return;
-      btn.setAttribute('data-t20-canonical-space',role);
-    });
-  };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',oldHomeButtons);else oldHomeButtons();
-  // Override the final adminOpenSpace so quick-access routes cannot point to the wrong space.
-  window.adminOpenSpace=function(role){open(role)};
-})();
-</script>
-
-
-<style id="t20-space-routing-v59-css">
-/* V59 — isolated, independent routing for the four home spaces */
-.t20-home-space-btn{cursor:pointer!important;}
-</style>
-<script id="t20-space-routing-v59-js">
-(function(){
-  'use strict';
-  function replaceButton(btn, role){
-    if(!btn || btn.dataset.v59Bound==='1') return;
-    var clone=btn.cloneNode(true);
-    clone.dataset.v59Bound='1';
-    clone.removeAttribute('onclick');
-    clone.addEventListener('click',function(e){
-      e.preventDefault(); e.stopPropagation();
-      try{ openRole(role); }catch(err){
-        console.error('V59 space error:',role,err);
-        if(typeof window.show==='function') window.show('⚠️ تعذر فتح الفضاء','<div class="real-empty" style="color:#9b3d3d;line-height:2">حدث خطأ في مسار الدخول.<br><small>'+String(err&&err.message||err)+'</small></div>');
-      }
-      return false;
-    },false);
-    btn.replaceWith(clone);
-  }
-  function openRole(role){
-    if(role==='admin'){
-      sessionStorage.removeItem('t20_test_mode');
-      if(typeof window._adminDashboard==='function'){window._adminDashboard();return;}
-      if(typeof window.adminDashboard==='function'){window.adminDashboard();return;}
-      throw new Error('مركز التحدي غير متاح');
-    }
-    if(role==='teacher'){
-      if(typeof window.teacher==='function'){window.teacher();return;}
-      throw new Error('فضاء الأساتذة غير متاح');
-    }
-    if(role==='parent'){
-      window.t20FinalParentEntry(); return;
-    }
-    if(role==='student'){
-      if(typeof window.student==='function'){window.student();return;}
-      throw new Error('فضاء التلاميذ غير متاح');
-    }
-  }
-  window.t20FinalParentEntry=function(){
-    if(typeof window.show!=='function') throw new Error('واجهة العرض غير متاحة');
-    window.show('👨‍👩‍👧 فضاء الأولياء',
-      '<div class="real-shell" dir="rtl">'+
-      '<div class="real-head"><h3>👨‍👩‍👧 دخول الولي</h3><p>تابعي وضعية أبنائك من فضائك الخاص.</p></div>'+
-      '<div class="real-form">'+
-      '<label>اسم الولي</label><input id="v59ParentName" class="field" placeholder="الاسم واللقب" autocomplete="off">'+
-      '<label>كود الولي</label><input id="v59ParentCode" class="field" placeholder="PAR-2026-001" autocomplete="off">'+
-      '<button class="btn" type="button" onclick="t20FinalParentLogin()">🔐 دخول</button>'+
-      '</div></div>');
-  };
-  window.t20FinalParentLogin=function(){
-    var n=(document.getElementById('v59ParentName')?.value||'').trim();
-    var c=(document.getElementById('v59ParentCode')?.value||'').trim();
-    if(!n||!c){alert('أدخلي اسم الولي والكود.');return;}
-    var list=[];
-    try{list=JSON.parse(localStorage.getItem('t20_parents')||'[]')}catch(e){list=[]}
-    var found=list.find(function(x){return String(x.name||'').trim()===n && String(x.code||'').trim()===c && x.active!==false;});
-    if(!found){alert('اسم الولي أو الكود غير صحيح.');return;}
-    localStorage.setItem('t20_parent_current',JSON.stringify(found));
-    localStorage.setItem('t20_parent_id',found.id||'');
-    localStorage.setItem('t20_parent_name',found.name||n);
-    localStorage.setItem('t20_parent_code',found.code||c);
-    localStorage.removeItem('t20_parent_kid');
-    if(typeof window.parent98Tab==='function'){window.parent98Tab('home');return;}
-    if(typeof window.parentDashboard==='function'){window.parentDashboard();return;}
-    throw new Error('واجهة فضاء الأولياء غير متاحة');
-  };
-  function bind(){
-    var map={space1:'admin',space2:'teacher',space3:'parent',space4:'student'};
-    document.querySelectorAll('.t20-home-space-btn').forEach(function(btn){
-      var role=null;
-      Object.keys(map).some(function(c){if(btn.classList.contains(c)){role=map[c];return true;}return false;});
-      if(role) replaceButton(btn,role);
-    });
-    window.t20V59SpaceAudit=function(){
-      return {
-        admin:typeof window._adminDashboard==='function'||typeof window.adminDashboard==='function',
-        teacher:typeof window.teacher==='function',
-        parent:typeof window.t20FinalParentEntry==='function',
-        student:typeof window.student==='function',
-        data:{students:localStorage.getItem('t20_students')!==null,parents:localStorage.getItem('t20_parents')!==null,teachers:localStorage.getItem('t20_teachers')!==null}
-      };
-    };
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
-})();
-</script>
-
-<script id="t20-parent-simulation-final-fix">
-(function(){
-  'use strict';
-  function esc(v){return typeof window.escapeHtml==='function'?window.escapeHtml(v):String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
-  function showSim(title,body){
-    sessionStorage.setItem('t20_test_mode','parent');
-    sessionStorage.setItem('t20_v99_sim','parent');
-    window.show(title,'<div class="v99-test-wrap">'+body+'</div>');
-  }
-  function homeSim(){
-    showSim('👨‍👩‍👧 محاكاة ولي الأمر',
-      '<div class="v99-test-card"><h3>👨‍👩‍👧 ولي الأمر التجريبي</h3><p>هذه محاكاة مستقلة لا تغيّر بيانات الأولياء الحقيقية.</p><p><b>الابن:</b> تلميذ تجريبي<br><b>المستوى:</b> السنة الثالثة متوسط</p></div>'+
-      '<div class="v99-test-grid">'+
-        '<button class="v99-test-btn primary" type="button" onclick="window.t20ParentSimFinalPage(\'review\')">📚 مراجعة المحاكاة</button>'+
-        '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimFinalPage(\'attendance\')">✅ الحضور</button>'+
-        '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimFinalPage(\'results\')">📊 النتائج</button>'+
-        '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimFinalPage(\'payment\')">💳 الدفع والإيصالات</button>'+
-      '</div>'+
-      '<button class="btn secondary" style="width:100%;margin-top:10px" type="button" onclick="window.t20ParentSimulationExit()">← خروج من المحاكاة</button>');
-  }
-  window.t20ParentSimFinalPage=function(page){
-    var content='';
-    if(page==='review') content='<div class="v99-test-card"><h3>📚 مراجعة المحاكاة</h3><p>هذه صفحة المراجعة داخل محاكاة ولي الأمر.</p><p>الابن التجريبي: <b>تلميذ تجريبي</b></p><p>المستوى: <b>السنة الثالثة متوسط</b></p><p>الدروس المتبقية: <b>3 من 4</b></p></div>';
-    if(page==='attendance') content='<div class="v99-test-card"><h3>✅ الحضور</h3><p>الحصة 1: حاضر</p><p>الحصة 2: حاضر</p><p>الحصة 3: قادمة</p></div>';
-    if(page==='results') content='<div class="v99-test-card"><h3>📊 النتائج</h3><p>التحديات المنجزة: 2</p><p>آخر نتيجة: <b>16/20</b></p></div>';
-    if(page==='payment') content='<div class="v99-test-card"><h3>💳 الدفع والإيصالات</h3><p>الاشتراك: <b>1600 دج</b></p><p>الحالة: <b>مدفوع</b></p><p>الحصص المستعملة: 1 / 4</p></div>';
-    showSim('👨‍👩‍👧 محاكاة ولي الأمر',content+'<button class="btn secondary" style="width:100%;margin-top:10px" type="button" onclick="window.t20ParentSimulationFinal()">← رجوع للمحاكاة</button>');
-  };
-  window.t20ParentSimulationFinal=homeSim;
-  window.t20ParentSimulationExit=function(){
-    sessionStorage.removeItem('t20_v99_sim');
-    sessionStorage.removeItem('t20_test_mode');
-    if(typeof window.closeM==='function')window.closeM();
-  };
-  window.v99ParentSimulation=homeSim;
-  window.t20ParentSimulation=homeSim;
-  window.TahadiTest=window.TahadiTest||{};
-  window.TahadiTest.start=function(role){
-    if(role==='parent'){homeSim();return;}
-    if(role==='student' && typeof window.chooseLevel==='function'){window.chooseLevel();return;}
-    if(role==='teacher' && typeof window.show==='function'){
-      window.show('👩‍🏫 محاكاة الأستاذ','<div class="v99-test-card"><h3>👩‍🏫 أستاذ تجريبي</h3><p>تم فتح محاكاة فضاء الأستاذ.</p></div>');
-    }
-  };
-})();
-</script>
-
-
-<script id="t20-parent-child-LOCKED-route-v1">
-(function(){
-  'use strict';
-  var CTX='t20_parent_child_locked_context';
-  var SAVED='t20_parent_child_locked_saved_student';
-  function hasParent(){try{return !!localStorage.getItem('t20_parent_current')}catch(e){return false}}
-  function read(k,d){try{var x=sessionStorage.getItem(k);return x?JSON.parse(x):d}catch(e){return d}}
-  function write(k,v){try{sessionStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-  function saveStudent(){
-    write(SAVED,{name:localStorage.getItem('t20_student_name'),code:localStorage.getItem('t20_student_code'),level:localStorage.getItem('t20_student_level')});
-  }
-  function clearContext(){
-    try{sessionStorage.removeItem(CTX);sessionStorage.removeItem(SAVED);sessionStorage.removeItem('t20_parent_return');sessionStorage.removeItem('t20_v99_sim');sessionStorage.removeItem('t20_test_mode');sessionStorage.removeItem('t20_sim_previous_student')}catch(e){}
-  }
-  function restoreStudent(){
-    var old=read(SAVED,null);
-    if(!old)return;
-    ['name','code','level'].forEach(function(k){
-      var key='t20_student_'+k;
-      if(old[k]===null||old[k]===undefined)localStorage.removeItem(key);else localStorage.setItem(key,old[k]);
-    });
-  }
-  function returnToParent(){
-    restoreStudent();
-    clearContext();
-    if(typeof window.parent98Tab==='function'){window.parent98Tab('home');return;}
-    if(typeof window.parentDashboard==='function'){window.parentDashboard();return;}
-    if(typeof window.closeM==='function')window.closeM();
-  }
-  function openChild(id){
-    if(!hasParent())return false;
-    var kids=[];
-    try{kids=JSON.parse(localStorage.getItem('t20_students')||'[]')}catch(e){}
-    var k=kids.find(function(x){return String(x.id||'')===String(id||'')});
-    if(!k)return false;
-    saveStudent();
-    write(CTX,{parentId:(function(){try{var p=JSON.parse(localStorage.getItem('t20_parent_current')||'null');return p&&p.id||''}catch(e){return ''}})(),kidId:k.id||id});
-    localStorage.setItem('t20_parent_kid',k.id||id||'');
-    sessionStorage.setItem('t20_test_mode','student');
-    sessionStorage.setItem('t20_v99_sim','student');
-    localStorage.setItem('t20_student_name',k.name||'');
-    localStorage.setItem('t20_student_code',k.code||'');
-    localStorage.setItem('t20_student_level',k.level||'السنة الثالثة متوسط');
-    if(typeof window.studentDashboard==='function'){window.studentDashboard();return true;}
-    return false;
-  }
-  function active(){try{return !!sessionStorage.getItem(CTX)&&hasParent()}catch(e){return false}}
-  window.t20ParentChildLockedOpen=openChild;
-  window.t20ParentChildLockedReturn=returnToParent;
-  // Capture only the real parent's "متابعة هذا الابن" buttons.
+/* One delegated click handler for all dynamically-created student buttons. */
+if(!window.__t20StudentV115ClickBound){
+  window.__t20StudentV115ClickBound=true;
   document.addEventListener('click',function(ev){
-    var b=ev.target&&ev.target.closest?ev.target.closest('.parent98 .pchild button'):null;
-    if(!b||!hasParent())return;
-    var txt=(b.textContent||'').replace(/\s+/g,' ').trim();
-    if(txt.indexOf('متابعة هذا الابن')<0 && txt.indexOf('متابعة التلميذ')<0)return;
-    var oc=b.getAttribute('onclick')||'';
-    var m=oc.match(/parent98SelectKid\(\s*(?:&quot;|["'])([^"'&]+)(?:&quot;|["'])\s*\)/);
-    if(!m)m=oc.match(/parent98SelectKid\(\s*['"]([^'"]+)['"]\s*\)/);
-    var id=m&&m[1];
-    if(!id)return;
-    ev.preventDefault();ev.stopImmediatePropagation();
-    openChild(id);
+    var b=ev.target && ev.target.closest ? ev.target.closest('[data-student-action]') : null;
+    if(!b) return;
+    ev.preventDefault(); ev.stopPropagation();
+    var a=b.getAttribute('data-student-action')||'';
+    if(typeof window.t20StudentAction==='function') window.t20StudentAction(a);
   },true);
-  // The student-space back action is redirected only while this locked context exists.
-  window.studentExit=function(){
-    if(active()){returnToParent();return;}
-    try{if(typeof window.closeM==='function')window.closeM()}catch(e){}
-    if(typeof window.returnHome==='function')window.returnHome();
-  };
-  window.t20ExitSimulation=function(){
-    if(active()){returnToParent();return;}
-    if(typeof window.closeM==='function')window.closeM();
-  };
-})();
-</script>
-<!-- T20 FINAL PARENT SIMULATION NAVIGATION FIX -->
-<script id="t20-final-parent-simulation-nav-fix">
-(function(){
-  'use strict';
-  var SIM='t20_parent_sim_active';
-  function esc(v){return typeof window.escapeHtml==='function'?window.escapeHtml(v):String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
-  function mark(){sessionStorage.setItem(SIM,'1');sessionStorage.setItem('t20_test_mode','parent');sessionStorage.setItem('t20_v99_sim','parent')}
-  function render(title,body){
-    mark();
-    window.show(title,'<div class="v99-test-wrap">'+body+'</div>');
-  }
-  function home(){
-    render('👨‍👩‍👧 محاكاة ولي الأمر',
-      '<div class="v99-test-card"><h3>👨‍👩‍👧 ولي الأمر التجريبي</h3><p>هذه محاكاة مستقلة لا تغيّر بيانات الأولياء الحقيقية.</p><p><b>الابن:</b> تلميذ تجريبي<br><b>المستوى:</b> السنة الثالثة متوسط</p></div>'+
-      '<div class="v99-test-grid">'+
-      '<button class="v99-test-btn primary" type="button" onclick="window.t20ParentSimNav(\'review\')">📚 مراجعة المحاكاة</button>'+ 
-      '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimNav(\'attendance\')">✅ الحضور</button>'+ 
-      '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimNav(\'results\')">📊 النتائج</button>'+ 
-      '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimNav(\'payment\')">💳 الدفع والإيصالات</button>'+ 
-      '<button class="v99-test-btn" type="button" onclick="window.t20ParentSimNav(\'child\')">👦 متابعة التلميذ</button>'+ 
-      '</div>'+ 
-      '<button class="btn secondary" style="width:100%;margin-top:10px" type="button" onclick="window.t20ParentSimulationExit()">← خروج من المحاكاة</button>');
-  }
-  function page(view){
-    var title='👨‍👩‍👧 محاكاة ولي الأمر', content='';
-    if(view==='review') content='<div class="v99-test-card"><h3>📚 مراجعة المحاكاة</h3><p>هذه صفحة المراجعة داخل محاكاة ولي الأمر.</p><p>الابن التجريبي: <b>تلميذ تجريبي</b></p><p>المستوى: <b>السنة الثالثة متوسط</b></p><p>الدروس المتبقية: <b>3 من 4</b></p></div>';
-    if(view==='child') content='<div class="v99-test-card"><h3>👦 متابعة التلميذ</h3><p><b>التلميذ:</b> تلميذ تجريبي</p><p><b>المستوى:</b> السنة الثالثة متوسط</p><p><b>الحضور:</b> 2 حاضر • 1 قادم</p><p><b>النتيجة الأخيرة:</b> 16/20</p></div>';
-    if(view==='attendance') content='<div class="v99-test-card"><h3>✅ الحضور</h3><p>الحصة 1: حاضر</p><p>الحصة 2: حاضر</p><p>الحصة 3: قادمة</p></div>';
-    if(view==='results') content='<div class="v99-test-card"><h3>📊 النتائج</h3><p>التحديات المنجزة: 2</p><p>آخر نتيجة: <b>16/20</b></p></div>';
-    if(view==='payment') content='<div class="v99-test-card"><h3>💳 الدفع والإيصالات</h3><p>الاشتراك: <b>1600 دج</b></p><p>الحالة: <b>مدفوع</b></p><p>الحصص المستعملة: 1 / 4</p></div>';
-    render(title,content+'<button class="btn secondary" style="width:100%;margin-top:10px" type="button" onclick="window.t20ParentSimNav(\'home\')">← رجوع إلى المحاكاة</button>');
-  }
-  window.t20ParentSimNav=function(view){ if(view==='home'){home();return;} page(view); };
-  window.t20ParentSimulationFinal=home;
-  window.t20ParentSimFinalPage=function(view){window.t20ParentSimNav(view)};
-  window.v99ParentSimPage=function(view){window.t20ParentSimNav(view==='home'?'home':view)};
-  window.v99ParentSimulation=home;
-  window.t20ParentSimulation=home;
-  window.t20ParentSimulationExit=function(){
-    sessionStorage.removeItem(SIM);
-    sessionStorage.removeItem('t20_v99_sim');
-    sessionStorage.removeItem('t20_test_mode');
-    if(typeof window.closeM==='function') window.closeM();
-  };
-  window.TahadiTest=window.TahadiTest||{};
-  var oldStart=window.TahadiTest.start;
-  window.TahadiTest.start=function(role){
-    if(role==='parent'){home();return;}
-    if(role==='student' && typeof window.chooseLevel==='function'){window.chooseLevel();return;}
-    if(typeof oldStart==='function') return oldStart.apply(this,arguments);
-  };
-})();
-</script>
-
-<!-- V2: hide modal back controls; keep top × close -->
-<style id="t20-modal-no-back-v2">
-#modal button:not(.close)[data-t20-back-target],
-#modal button:not(.close).real-back,
-#modal button:not(.close)[onclick*="backM"],
-#modal button:not(.close)[onclick*="رجوع"],
-#modal button:not(.close)[onclick*="عودة"]{display:none!important;}
-</style>
-<script id="t20-modal-no-back-v2-js">
-(function(){
-  'use strict';
-  function hideBackButtons(){
-    var modal=document.getElementById('modal');
-    if(!modal) return;
-    modal.querySelectorAll('button:not(.close),a,[role="button"]').forEach(function(el){
-      if(el.classList && el.classList.contains('close')) return;
-      var txt=(el.textContent||'').replace(/\s+/g,' ').trim();
-      var aria=(el.getAttribute('aria-label')||'').trim();
-      var title=(el.getAttribute('title')||'').trim();
-      if(/^←\s*(رجوع|الرجوع|عودة|العودة)/.test(txt) || /^🔙/.test(txt) || /^(رجوع|الرجوع|عودة|العودة)$/.test(aria) || /^(رجوع|الرجوع|عودة|العودة)$/.test(title)){
-        el.style.display='none';
-      }
-    });
-  }
-  document.addEventListener('DOMContentLoaded',hideBackButtons);
-  var modal=document.getElementById('modal');
-  if(modal){new MutationObserver(hideBackButtons).observe(modal,{childList:true,subtree:true});}
-})();
-</script>
-
-<style id="t20-student-final-navigation-fix-v1">
-/* النسخة النهائية: التنقل في فضاء التلاميذ بزر الرجوع في الهاتف فقط */
-#modal .close,
-#modal button.real-back,
-#modal button[data-t20-back-target],
-#modal button[onclick*="رجوع"],
-#modal button[onclick*="عودة"],
-#modal button[onclick*="studentDashboard()"],
-#modal button[onclick*="studentLessonTypes()"],
-#modal button[onclick*="studentLessonType("]{
-  display:none !important;
 }
-</style>
-<script id="t20-student-final-navigation-fix-v1-js">
-(function(){
-  'use strict';
-  var modal=document.getElementById('modal');
-  if(!modal || typeof window.show!=='function' || typeof window.closeM!=='function') return;
 
-  /* نحافظ على النسخ الأصلية حتى لا نكسر المنصة */
-  var originalShow=window.show;
-  var originalClose=window.closeM;
-  var T20_STATE='t20_modal_page';
-  var handlingPop=false;
+window.t20StudentAction=function(action){
+  var p=String(action||'');
+  if(p==='dashboard'){window.studentDashboard();return;}
+  if(p==='paid'){window.studentPaidContent();return;}
+  if(p==='free'){window.studentFreeContent();return;}
+  if(p==='notifications'){window.studentNotifications();return;}
+  if(p==='support'){window.studentSupportDashboard();return;}
+  if(p==='courses'){window.studentCourses();return;}
+  if(p==='recorded'){window.studentRecordedLessons();return;}
+  if(p==='free-videos'){window.studentFreeVideos();return;}
+  if(p==='summaries'){window.studentFreeSection('الملخصات');return;}
+  if(p==='challenges'){window.studentFreeSection('التحديات');return;}
+  if(p==='results'){window.studentResults();return;}
+  if(p==='zoom'){window.studentSupportMode('Zoom');return;}
+  if(p==='onsite'){window.studentSupportMode('حضوري');return;}
+  if(p==='zoom-info'){window.studentZoomScheduleInfo();return;}
+  if(p==='support-recordings-zoom'){window.studentSupportRecordings('Zoom');return;}
+  if(p==='support-files-zoom'){window.studentSupportFiles('Zoom');return;}
+  if(p==='support-recordings-onsite'){window.studentSupportRecordings('حضوري');return;}
+  if(p==='support-files-onsite'){window.studentSupportFiles('حضوري');return;}
+  if(p.indexOf('support-detail:')===0){var q=p.split(':');window.studentSupportDetail(q[1]||'Zoom',q[2]||'جماعية');return;}
+  if(p.indexOf('course:')===0){window.studentCourseSection(p.slice(7));return;}
+  if(p.indexOf('free:')===0){window.studentFreeSection(p.slice(5));return;}
+  if(p.indexOf('content:')===0){window.openStudentContent(p.slice(8));return;}
+  if(p==='question'){window.studentQuestionPage('عام','💬');return;}
+};
 
-  window.show=function(title,content,skipHistory){
-    if(!skipHistory){
-      try{
-        history.pushState({t20:T20_STATE}, document.title, location.href);
-      }catch(e){}
-    }
-    return originalShow(title,content,!!skipHistory);
-  };
+window.studentDashboard=function(){
+  var name=localStorage.getItem('t20_student_name')||'تلميذي العزيز';
+  var lev=localStorage.getItem('t20_student_level')||'مستواك الدراسي';
+  var body='<div class="student-home">'+
+    '<div class="student-welcome"><div class="student-welcome-top"><div><h3>مرحبًا '+esc115(name)+' 👋</h3><p>أهلًا بك في فضائك في منصة التحدي.</p></div><div class="student-avatar">👨‍🎓</div></div><div class="student-meta"><span class="student-pill">🎓 '+esc115(lev)+'</span></div></div>'+
+    '<div class="student-section-title"><b>اختر نوع المحتوى</b></div>'+
+    '<div class="student-mini-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">'+
+      card115('paid','المحتوى المدفوع','💳','حصص الدعم • الدورات • الدروس المسجلة')+
+      card115('free','المحتوى المجاني','🆓','فيديوهات • ملخصات • تحديات • نتائج')+
+    '</div>'+
+    '<button type="button" class="btn secondary" data-student-action="notifications" style="width:100%;margin-top:12px;cursor:pointer!important;pointer-events:auto!important">🔔 التنبيهات</button>'+
+    '</div>';
+  show115('👨‍🎓 فضاء التلاميذ',body);
+};
 
-  window.closeM=function(){
-    try{
-      if(history.state && history.state.t20===T20_STATE){
-        history.back();
-        return;
-      }
-    }catch(e){}
-    return originalClose();
-  };
+window.studentPaidContent=function(){
+  var body='<div class="section-intro"><div class="big-icon">💳</div><h3>المحتوى المدفوع</h3><p>اختاري القسم الذي تريدين الدخول إليه.</p></div>'+
+    '<div class="student-mini-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">'+
+      card115('support','حصص الدعم','🏫','عبر Zoom أو حضوري')+
+      card115('courses','الدورات','🎓','فرض • اختبار • مراجعة شاملة')+
+      card115('recorded','الدروس المسجلة','🎥','دروس مستقلة مسجلة')+
+    '</div>';
+  show115('💳 المحتوى المدفوع',page115('المحتوى المدفوع','💳',body));
+};
 
-  window.addEventListener('popstate',function(){
-    if(handlingPop) return;
-    if(!modal.classList.contains('on')) return;
-    handlingPop=true;
-    try{ originalClose(); }finally{
-      setTimeout(function(){handlingPop=false;},0);
-    }
-  });
+window.studentFreeContent=function(){
+  var body='<div class="section-intro"><div class="big-icon">🆓</div><h3>المحتوى المجاني</h3><p>اختاري نوع المحتوى.</p></div>'+
+    '<div class="student-mini-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">'+
+      card115('free-videos','الفيديوهات المجانية','🎥','اللايفات والفيديوهات المجانية')+
+      card115('summaries','الملخصات','📄','ملخصات مجانية')+
+      card115('challenges','التحديات','🧩','تحديات منصة التحدي')+
+      card115('results','النتائج','🏆','نتائجك ونتائج التحديات')+
+    '</div>';
+  show115('🆓 المحتوى المجاني',page115('المحتوى المجاني','🆓',body));
+};
 
-  function removeStudentBackButtons(){
-    var root=document.getElementById('modal');
-    if(!root) return;
-    root.querySelectorAll('button,a,[role="button"]').forEach(function(el){
-      var txt=(el.textContent||'').replace(/\s+/g,' ').trim();
-      var oc=el.getAttribute('onclick')||'';
-      var aria=el.getAttribute('aria-label')||'';
-      if(el.classList.contains('close') ||
-         /^←?\s*(رجوع|الرجوع|عودة|العودة)/.test(txt) ||
-         /(^|\W)(رجوع|الرجوع|عودة|العودة)(\W|$)/.test(aria) ||
-         /studentDashboard\(\)|studentLessonTypes\(\)|studentLessonType\(/.test(oc)){
-        el.style.display='none';
-      }
-    });
+window.studentSupportDashboard=function(){
+  var body='<div class="section-intro"><div class="big-icon">🏫</div><h3>حصص الدعم</h3><p>اختاري طريقة الدعم.</p></div>'+
+    '<div class="student-mini-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">'+
+      card115('zoom','عبر Zoom','💻','فردية • جماعية')+
+      card115('onsite','حضوري','🏫','فردية • جماعية')+
+    '</div>';
+  show115('🏫 حصص الدعم',page115('حصص الدعم','🏫',body));
+};
+
+window.studentSupportMode=function(mode){
+  var zoom=mode==='Zoom', title=zoom?'دروس الدعم عبر Zoom':'دروس الدعم الحضوري', icon=zoom?'💻':'🏫';
+  var body='<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+esc115(title)+'</h3><p>اختاري نوع الحصة.</p></div>'+
+    '<div class="student-mini-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">'+
+      card115('support-detail:'+mode+':فردية','فردية','👤','دعم فردي')+
+      card115('support-detail:'+mode+':جماعية','جماعية','👥','دعم جماعي')+
+    '</div>';
+  show115(icon+' '+title,page115(title,icon,body));
+};
+
+window.studentSupportDetail=function(mode,type){
+  var zoom=mode==='Zoom', title=(zoom?'دروس الدعم عبر Zoom':'دروس الدعم الحضوري')+' — '+type, icon=zoom?'💻':'🏫';
+  var body='<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+esc115(title)+'</h3><p>اختاري ما تريدين الوصول إليه.</p></div>';
+  if(zoom){
+    var schedules=(typeof R==='function'&&window.DB&&DB.schedules)?R(DB.schedules).filter(function(x){
+      return String(x.service||'').trim()==='دروس الدعم' && String(x.supportMode||'').trim()==='Zoom' &&
+        (!x.level || !studentLevel115() || String(x.level).trim()===studentLevel115()) &&
+        (!x.supportType || String(x.supportType).trim()===type || (type==='جماعية'&&String(x.supportType).trim()==='عادية'));
+    }):[];
+    if(schedules.length){
+      body+='<div class="student-section-title"><b>🔗 رابط الحصة</b></div><div class="content-list">'+schedules.map(function(x){
+        return '<div class="content-row"><div style="flex:1"><strong>📅 '+esc115(x.title||'حصة دعم')+'</strong><small>'+esc115(x.date||'')+' • '+esc115(x.time||'')+'</small></div>'+(x.link?'<a class="btn" href="'+esc115(x.link)+'" target="_blank" rel="noopener noreferrer">🔗 الدخول إلى Zoom</a>':'<span class="status">الرابط غير مضاف</span>')+'</div>';
+      }).join('')+'</div>';
+    }else body+=card115('zoom-info','رابط الحصة','🔗','لا توجد حصة مبرمجة حاليًا');
+    body+=card115('support-recordings-zoom','حصص Zoom المسجلة','🎥','تسجيلات حصص الدعم بعد انتهائها');
+    body+=card115('support-files-zoom','الملفات','📄','الملفات والكتيبات الخاصة بالحصة');
+  }else{
+    body+=card115('support-recordings-onsite','حصص الدعم المسجلة','🎥','تسجيلات حصص الدعم الحضوري');
+    body+=card115('support-files-onsite','الملفات','📄','الملفات والكتيبات الخاصة بالحصة');
   }
-  new MutationObserver(removeStudentBackButtons).observe(modal,{childList:true,subtree:true});
-  document.addEventListener('DOMContentLoaded',removeStudentBackButtons);
+  body+=card115('question','أسئلتي','💬','سؤال خاص بك وإجابة خاصة بك فقط');
+  show115(icon+' '+title,page115(title,icon,body));
+};
 
-  /* ربط موحّد لأزرار فضاء التلاميذ، حتى لو أُنشئت الصفحة ديناميكيًا */
-  document.addEventListener('click',function(e){
-    var el=e.target && e.target.closest ? e.target.closest('[data-student-module]') : null;
-    if(!el) return;
-    e.preventDefault();
-    e.stopPropagation();
-    var name=el.getAttribute('data-student-module');
-    if(typeof window.studentModule==='function') window.studentModule(name);
+window.studentZoomScheduleInfo=function(){
+  show115('🔗 رابط الحصة',page115('رابط الحصة','🔗','<div class="student-empty">لا توجد حصة Zoom مبرمجة حاليًا.</div>'));
+};
+window.studentSupportRecordings=function(mode){
+  var key=mode==='Zoom'?'دعم Zoom':'دعم حضوري';
+  var list=items115([key,'حصص الدعم المسجلة']);
+  show115('🎥 '+(mode==='Zoom'?'حصص Zoom المسجلة':'حصص الدعم المسجلة'),page115(mode==='Zoom'?'حصص Zoom المسجلة':'حصص الدعم المسجلة','🎥','<div class="content-list">'+list115(list,'لا توجد تسجيلات متاحة حاليًا.')+'</div>'));
+};
+window.studentSupportFiles=function(mode){
+  var keys=mode==='Zoom'?['ملفات دعم Zoom']:['ملفات دعم حضوري'];
+  var list=items115(keys);
+  show115('📄 الملفات',page115('الملفات','📄','<div class="content-list">'+list115(list,'لا توجد ملفات متاحة حاليًا.')+'</div>'));
+};
+
+window.studentCourses=function(){
+  var body='<div class="section-intro"><div class="big-icon">🎓</div><h3>الدورات</h3><p>اختاري نوع الدورة.</p></div>'+
+    '<div class="student-mini-grid" style="grid-template-columns:repeat(1,minmax(0,1fr));">'+
+      card115('course:دورات الفرض','دورات الفرض','📝','دورات خاصة بالفرض')+
+      card115('course:دورات الاختبار','دورات الاختبار','🧪','دورات خاصة بالاختبار')+
+      card115('course:دورات المراجعة الشاملة','دورات المراجعة الشاملة','📚','مراجعة شاملة')+
+    '</div>';
+  show115('🎓 الدورات',page115('الدورات','🎓',body));
+};
+window.studentCourseSection=function(kind){
+  var list=items115([kind]);
+  show115('🎓 '+kind,page115(kind,'🎓','<div class="content-list">'+list115(list,'لا توجد دورة منشورة حاليًا.')+'</div>'));
+};
+window.studentRecordedLessons=function(){
+  var list=items115(['الدروس المسجّلة','الدروس المسجلة','دروس مسجلة']);
+  show115('🎥 الدروس المسجلة',page115('الدروس المسجلة','🎥','<div class="content-list">'+list115(list,'لا توجد دروس مسجلة منشورة حاليًا.')+'</div>'));
+};
+
+window.studentFreeVideos=function(){
+  var list=items115(['الحصص المجانية','اللايفات المسجلة','اللايفات','فيديو/تسجيل']);
+  show115('🎥 الفيديوهات المجانية',page115('الفيديوهات المجانية','🎥','<div class="content-list">'+list115(list,'لا توجد فيديوهات مجانية منشورة حاليًا.')+'</div>'));
+};
+window.studentFreeSection=function(section){
+  var map={
+    'الملخصات':['الملخصات','📄',['الملخصات المجانية','ملخصات مجانية','الملخصات']],
+    'التحديات':['التحديات','🧩',['التحديات المجانية','تحديات مجانية','التحديات']]
+  };
+  var cfg=map[section];
+  if(!cfg){ window.studentFreeVideos(); return; }
+  var list=items115(cfg[2]);
+  show115(cfg[1]+' '+cfg[0],page115(cfg[0],cfg[1],'<div class="content-list">'+list115(list,'لا يوجد محتوى متاح حاليًا.')+'</div>'));
+};
+
+window.studentResults=function(){
+  var me=studentIdentity115(), all=typeof R==='function'?R('t20_results',[]):[];
+  var mine=(Array.isArray(all)?all:[]).filter(function(x){
+    var code=String(x.studentCode||x.code||x.studentId||'').trim(), name=String(x.studentName||x.student||x.name||'').trim(), lev=String(x.level||'').trim();
+    if(code && me.code) return code===me.code;
+    if(name && me.name) return name===me.name && (!lev || !me.level || lev===me.level);
+    return false;
+  }).slice().reverse();
+  var body='';
+  if(!mine.length){ body='<div class="student-empty">🏆 لا توجد نتائج مسجلة لهذا التلميذ حاليًا.</div>'; }
+  else body='<div class="content-list">'+mine.map(function(x){
+    return '<div class="content-row"><div style="flex:1"><strong>🏆 '+esc115(x.title||x.challenge||x.name||'نتيجة')+'</strong><small>'+
+      esc115(x.score!=null?('النتيجة: '+x.score):x.result!=null?('النتيجة: '+x.result):'نتيجة مسجلة')+
+      (x.date?' • '+esc115(x.date):'')+'</small></div></div>';
+  }).join('')+'</div>';
+  show115('🏆 النتائج',page115('النتائج','🏆',body));
+};
+
+/* Notifications: keep the existing filtering logic but make the button reliable. */
+if(typeof window.studentNotifications!=='function'){
+  window.studentNotifications=function(){
+    var ns=typeof R==='function'?R('t20_notifications',[]):[];
+    var me=studentIdentity115();
+    var visible=(Array.isArray(ns)?ns:[]).filter(function(n){
+      var lev=String(n.level||'').trim(), code=String(n.studentCode||n.studentId||'').trim();
+      if(lev && lev!=='كل المستويات' && me.level && lev!==me.level) return false;
+      if(code && me.code && code!==me.code) return false;
+      return true;
+    }).slice().reverse();
+    var body='<div class="student-notify-page">'+(visible.length?visible.map(function(n){return '<div class="notify-card"><h4>🔔 '+esc115(n.title||'تنبيه جديد')+'</h4><p>'+esc115(n.text||n.message||'')+'</p></div>';}).join(''):'<div class="notify-empty">🔕 <b>لا توجد تنبيهات حاليًا.</b></div>')+'</div>';
+    show115('🔔 التنبيهات',page115('التنبيهات','🔔',body));
+  };
+}
+
+/* Make legacy content rows clickable even when they were produced by older helpers. */
+if(!window.__t20StudentLegacyContentClickBound){
+  window.__t20StudentLegacyContentClickBound=true;
+  document.addEventListener('click',function(ev){
+    var b=ev.target && ev.target.closest ? ev.target.closest('.content-row button') : null;
+    if(!b) return;
+    var m=(b.getAttribute('onclick')||'').match(/openStudentContent\(([^)]+)\)/);
+    if(!m) return;
+    try{ ev.preventDefault(); ev.stopPropagation(); var id=JSON.parse(m[1]); if(typeof window.openStudentContent==='function') window.openStudentContent(id); }catch(e){}
   },true);
+}
 })();
 </script>
 
