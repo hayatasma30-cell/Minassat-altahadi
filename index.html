@@ -1523,8 +1523,59 @@ window.saveTeacher=function(){const x={id:id('tch'),name:document.getElementById
 function realPayments(){const list=R(DB.payments),students=R(DB.students);const rows=list.length?list.slice().reverse().map(x=>'<div class="real-row"><div class="real-row-top"><div><strong>'+esc(x.student)+'</strong><small>'+esc(x.month)+' • '+money(x.amount)+'</small><small>الوصل: '+esc(x.receipt||'بدون رقم')+' • '+esc(x.date)+'</small></div><span class="real-tag">'+esc(x.status)+'</span></div><div class="real-actions"><button onclick="cyclePayment(\''+x.id+'\')">🔄 الحالة</button><button class="real-danger" onclick="deletePayment(\''+x.id+'\')">🗑️ حذف</button></div></div>').join(''):'<div class="real-empty">💳 لا توجد مدفوعات مسجلة.</div>';show('💳 الدفع',realWrap('💳 متابعة الدفع','الاشتراكات، الوصلات وحالة الوصول إلى حصص الدعم.', '<div class="real-toolbar"><button class="btn" onclick="newPayment()">➕ تسجيل دفع</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')))}
 window.newPayment=function(){const opts=R(DB.students).map(x=>'<option>'+esc(x.name)+'</option>').join('');show('➕ تسجيل دفع',realWrap('➕ وصل دفع','سجّلي الدفع وربطيه بالتلميذ.', '<div class="real-form"><label>التلميذ</label><select id="payStudent" class="field">'+opts+'</select>'+form('الشهر','payMonth','مثال: أكتوبر 2026')+'<label>المبلغ</label><input id="payAmount" class="field" type="number" value="1000">'+form('رقم الوصل','payReceipt','مثال: R-001')+'<label>الحالة</label><select id="payStatus" class="field"><option>مدفوع</option><option>قيد التحقق</option><option>غير مدفوع</option></select><button class="btn" onclick="savePayment()">💾 حفظ</button></div>'))};window.savePayment=function(){const x={id:id('pay'),student:document.getElementById('payStudent')?.value||'غير محدد',month:document.getElementById('payMonth').value.trim(),amount:Number(document.getElementById('payAmount').value||0),receipt:document.getElementById('payReceipt').value.trim(),status:document.getElementById('payStatus').value,date:new Date().toISOString().slice(0,10)};const a=R(DB.payments);a.push(x);W(DB.payments,a);realPayments()};window.cyclePayment=function(i){const o=['مدفوع','قيد التحقق','غير مدفوع'];const a=R(DB.payments).map(x=>x.id===i?{...x,status:o[(o.indexOf(x.status)+1)%o.length]}:x);W(DB.payments,a);realPayments()};window.deletePayment=function(i){W(DB.payments,R(DB.payments).filter(x=>x.id!==i));realPayments()}
 
-function realSchedules(){const list=R(DB.schedules);const rows=list.length?list.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(x=>'<div class="real-row"><strong>'+esc(x.title)+'</strong><small>'+esc(x.date)+' • '+esc(x.time)+' • '+esc(x.level)+'</small><small>'+esc(x.type)+' • '+esc(x.link||'بدون رابط')+'</small><div class="real-actions"><button class="real-danger" onclick="deleteSchedule(\''+x.id+'\')">🗑️ حذف</button></div></div>').join(''):'<div class="real-empty">🗓️ لا توجد حصص مبرمجة.</div>';show('🗓️ الحصص والرزنامة',realWrap('🗓️ الحصص والرزنامة','الدعم، الحصص الفردية، البث والأنشطة المبرمجة.', '<div class="real-toolbar"><button class="btn" onclick="newSchedule()">➕ إضافة حصة</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')))}
-window.newSchedule=function(){show('➕ إضافة حصة',realWrap('➕ حصة جديدة','ستظهر في لوحة اليوم للتلميذ حسب المستوى.', '<div class="real-form">'+form('عنوان الحصة','scTitle','مثال: دعم السنة الرابعة متوسط')+'<label>المستوى</label><select id="scLevel" class="field">'+levels().map(x=>'<option>'+x+'</option>').join('')+'</select>'+form('التاريخ','scDate','YYYY-MM-DD')+form('الوقت','scTime','19:00 - 21:00')+form('النوع','scType','دعم / حصة فردية / بث')+form('رابط Zoom أو المحتوى','scLink','اختياري')+'<button class="btn" onclick="saveSchedule()">💾 حفظ</button></div>'))};window.saveSchedule=function(){const x={id:id('sch'),title:document.getElementById('scTitle').value.trim(),level:document.getElementById('scLevel').value,date:document.getElementById('scDate').value.trim(),time:document.getElementById('scTime').value.trim(),type:document.getElementById('scType').value.trim(),link:document.getElementById('scLink').value.trim()};if(!x.title||!x.date){alert('أدخلي عنوان الحصة والتاريخ');return}const a=R(DB.schedules);a.push(x);W(DB.schedules,a);realSchedules()};window.deleteSchedule=function(i){W(DB.schedules,R(DB.schedules).filter(x=>x.id!==i));realSchedules()}
+function realSchedules(){
+ const list=R(DB.schedules);
+ const rows=list.length?list.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(x=>{
+   const sid=x.studentId||'';
+   return '<div class="real-row"><div class="real-row-top"><div><strong>'+esc(x.title)+'</strong><small>'+esc(x.date)+' • '+esc(x.time)+' • '+esc(x.level)+'</small><small>'+esc(x.supportMode||'')+' • '+esc(x.supportType||x.type||'')+(x.studentName?' • '+esc(x.studentName):'')+'</small><small>'+esc(x.link||'بدون رابط')+'</small></div></div><div class="real-actions"><button type="button" onclick="editSchedule(\''+String(x.id).replace(/'/g,"\\'")+ '\')">✏️ تعديل</button><button type="button" class="real-danger" onclick="deleteSchedule(\''+String(x.id).replace(/'/g,"\\'")+ '\')">🗑️ حذف</button></div></div>';
+ }).join(''):'<div class="real-empty">🗓️ لا توجد حصص مبرمجة.</div>';
+ show('🗓️ الحصص والرزنامة',realWrap('🗓️ الحصص والرزنامة','الدعم، الحصص الفردية، البث والأنشطة المبرمجة.','<div class="real-toolbar"><button type="button" class="btn" onclick="newSchedule()">➕ إضافة حصة</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')))
+}
+window.newSchedule=function(){
+ const sts=R(DB.students).filter(x=>x.active!==false);
+ show('➕ إضافة حصة',realWrap('➕ حصة جديدة','أضيفي الحصة مرة واحدة، وستُستخدم نفسها في الرزنامة ولوحة اليوم والحضور.','<div class="real-form">'+
+ form('عنوان الحصة','scTitle','مثال: دعم السنة الثالثة متوسط')+
+ '<label>المستوى</label><select id="scLevel" class="field">'+levels().map(x=>'<option>'+esc(x)+'</option>').join('')+'</select>'+ 
+ '<label>طريقة الدعم</label><select id="scMode" class="field"><option value="Zoom">💻 Zoom</option><option value="حضوري">🏫 حضوري</option></select>'+ 
+ '<label>نوع الحصة</label><select id="scType" class="field"><option value="جماعية">👥 جماعية</option><option value="فردية">👤 فردية</option></select>'+ 
+ '<label>التلميذ (للحصة الفردية)</label><select id="scStudent" class="field"><option value="">— حصة جماعية —</option>'+sts.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+' • '+esc(x.level)+'</option>').join('')+'</select>'+ 
+ form('اسم المجموعة (اختياري)','scGroup','مثال: مجموعة السنة الثالثة')+
+ '<label>التاريخ</label><input id="scDate" class="field" type="date">'+
+ form('الوقت','scTime','19:00 - 20:00')+
+ form('رابط Zoom (اختياري)','scLink','https://...')+
+ '<button type="button" class="btn" onclick="saveSchedule()">💾 حفظ الحصة</button><button type="button" class="btn secondary" onclick="realSchedules()">← إلغاء</button></div>'));
+};
+window.saveSchedule=function(){
+ const type=document.getElementById('scType').value, sid=document.getElementById('scStudent').value;
+ if(type==='فردية'&&!sid){alert('الحصة الفردية لازم تربطيها بتلميذ محدد.');return;}
+ const st=sid?R(DB.students).find(x=>String(x.id)===String(sid)):null;
+ const x={id:id('sch'),title:document.getElementById('scTitle').value.trim(),service:'دروس الدعم',level:document.getElementById('scLevel').value,date:document.getElementById('scDate').value,time:document.getElementById('scTime').value.trim(),supportMode:document.getElementById('scMode').value,supportType:type,studentId:sid,studentName:st?st.name:'',groupName:document.getElementById('scGroup').value.trim(),type:type==='فردية'?'دروس دعم فردية':'دروس دعم جماعية',link:document.getElementById('scLink').value.trim()};
+ if(!x.title||!x.date||!x.time){alert('أدخلي عنوان الحصة والتاريخ والوقت.');return;}
+ const a=R(DB.schedules);a.push(x);W(DB.schedules,a);realSchedules();
+};
+window.editSchedule=function(idv){
+ const x=R(DB.schedules).find(v=>String(v.id)===String(idv)); if(!x){alert('الحصة غير موجودة.');return;}
+ const sts=R(DB.students).filter(v=>v.active!==false);
+ show('✏️ تعديل الحصة',realWrap('✏️ تعديل الحصة','نعدّل نفس الحصة، بدون إنشاء نسخة ثانية.','<div class="real-form">'+
+ form('عنوان الحصة','esTitle','')+
+ '<label>المستوى</label><select id="esLevel" class="field">'+levels().map(v=>'<option>'+esc(v)+'</option>').join('')+'</select>'+ 
+ '<label>طريقة الدعم</label><select id="esMode" class="field"><option value="Zoom">💻 Zoom</option><option value="حضوري">🏫 حضوري</option></select>'+ 
+ '<label>نوع الحصة</label><select id="esType" class="field"><option value="جماعية">👥 جماعية</option><option value="فردية">👤 فردية</option></select>'+ 
+ '<label>التلميذ (للحصة الفردية)</label><select id="esStudent" class="field"><option value="">— حصة جماعية —</option>'+sts.map(v=>'<option value="'+esc(v.id)+'">'+esc(v.name)+' • '+esc(v.level)+'</option>').join('')+'</select>'+ 
+ form('اسم المجموعة (اختياري)','esGroup','')+'<label>التاريخ</label><input id="esDate" class="field" type="date">'+form('الوقت','esTime','19:00 - 20:00')+form('رابط Zoom (اختياري)','esLink','')+
+ '<button type="button" class="btn" onclick="saveScheduleEdit(\''+String(x.id).replace(/'/g,"\\'")+'\')">💾 حفظ التعديل</button><button type="button" class="btn secondary" onclick="realSchedules()">← إلغاء</button></div>'));
+ document.getElementById('esTitle').value=x.title||'';document.getElementById('esLevel').value=x.level||'';document.getElementById('esMode').value=x.supportMode||'Zoom';document.getElementById('esType').value=x.supportType||((x.type||'').includes('فردية')?'فردية':'جماعية');document.getElementById('esStudent').value=x.studentId||'';document.getElementById('esGroup').value=x.groupName||'';document.getElementById('esDate').value=x.date||'';document.getElementById('esTime').value=x.time||'';document.getElementById('esLink').value=x.link||'';
+};
+window.saveScheduleEdit=function(idv){
+ const a=R(DB.schedules),i=a.findIndex(v=>String(v.id)===String(idv));if(i<0){alert('الحصة غير موجودة.');return;}
+ const type=document.getElementById('esType').value,sid=document.getElementById('esStudent').value;
+ if(type==='فردية'&&!sid){alert('الحصة الفردية لازم تربطيها بتلميذ محدد.');return;}
+ const st=sid?R(DB.students).find(v=>String(v.id)===String(sid)):null,old=a[i];
+ a[i]=Object.assign({},old,{title:document.getElementById('esTitle').value.trim(),level:document.getElementById('esLevel').value,supportMode:document.getElementById('esMode').value,supportType:type,studentId:sid,studentName:st?st.name:'',groupName:document.getElementById('esGroup').value.trim(),date:document.getElementById('esDate').value,time:document.getElementById('esTime').value.trim(),link:document.getElementById('esLink').value.trim(),type:type==='فردية'?'دروس دعم فردية':'دروس دعم جماعية'});
+ if(!a[i].title||!a[i].date||!a[i].time){alert('أدخلي عنوان الحصة والتاريخ والوقت.');return;}
+ W(DB.schedules,a);realSchedules();
+};
+window.deleteSchedule=function(i){if(!confirm('حذف هذه الحصة؟'))return;W(DB.schedules,R(DB.schedules).filter(x=>String(x.id)!==String(i)));realSchedules()}
 
 function realChallenges(){const list=R(DB.challenges);const rows=list.length?list.slice().reverse().map(x=>'<div class="real-row"><div class="real-row-top"><div><strong>'+esc(x.title)+'</strong><small>'+esc(x.level)+' • '+esc(x.question)+'</small></div><span class="real-tag">'+esc(x.status)+'</span></div><div class="real-actions"><button onclick="toggleChallenge(\''+x.id+'\')">'+(x.status==='منشور'?'⏸️ إخفاء':'▶️ نشر')+'</button><button class="real-danger" onclick="deleteChallenge(\''+x.id+'\')">🗑️ حذف</button></div></div>').join(''):'<div class="real-empty">⚡ لا توجد تحديات.</div>';show('⚡ التحديات',realWrap('⚡ التحديات','أسئلة ومسابقات وهدايا، مع نشر وإخفاء التحدي.', '<div class="real-toolbar"><button class="btn" onclick="newChallenge()">➕ إضافة تحدي</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')))}
 window.newChallenge=function(){show('➕ تحدي جديد',realWrap('➕ إنشاء تحدي','ينشر لاحقًا في فضاء التلاميذ حسب المستوى.', '<div class="real-form">'+form('عنوان التحدي','chTitle','تحدي رقم 01')+'<label>المستوى</label><select id="chLevel" class="field">'+levels().map(x=>'<option>'+x+'</option>').join('')+'</select>'+form('السؤال','chQuestion','اكتبي السؤال هنا')+form('الإجابة الصحيحة','chAnswer','الإجابة')+'<label>النقاط</label><input id="chPoints" class="field" type="number" value="20"><button class="btn" onclick="saveChallenge()">💾 حفظ</button></div>'))};window.saveChallenge=function(){const x={id:id('ch'),title:document.getElementById('chTitle').value.trim(),level:document.getElementById('chLevel').value,question:document.getElementById('chQuestion').value.trim(),answer:document.getElementById('chAnswer').value.trim(),points:Number(document.getElementById('chPoints').value||20),status:'مسودة'};const a=R(DB.challenges);a.push(x);W(DB.challenges,a);realChallenges()};window.toggleChallenge=function(i){const a=R(DB.challenges).map(x=>x.id===i?{...x,status:x.status==='منشور'?'مسودة':'منشور'}:x);W(DB.challenges,a);realChallenges()};window.deleteChallenge=function(i){W(DB.challenges,R(DB.challenges).filter(x=>x.id!==i));realChallenges()}
@@ -1568,11 +1619,15 @@ window.adminDashboard=function(){try{if(sessionStorage.getItem('t20_test_mode'))
     if(result){result.style.display='block';result.innerHTML='<strong>🧪 وضع الاختبار مفعل</strong><br>الدور: <b>'+({student:'تلميذ تجريبي',parent:'ولي أمر تجريبي',teacher:'أستاذ تجريبي'}[role]||role)+'</b><br><small>المحاكاة محلية ولا تعدّل حسابات حقيقية.</small>'}
     sessionStorage.setItem('t20_test_mode',role);
     if(role==='student'){
-      localStorage.setItem('t20_student_name','تلميذ تجريبي');
-      localStorage.setItem('t20_student_code','TEST-STUDENT');
-      localStorage.setItem('t20_student_level','السنة الثالثة متوسط');
-      
-      if(typeof studentDashboard==='function') studentDashboard();
+      var levelsForTest=['السنة الأولى متوسط','السنة الثانية متوسط','السنة الثالثة متوسط','السنة الرابعة متوسط','السنة الأولى ثانوي'];
+      var box=document.getElementById('tahadi-test-mode');
+      var host=box||document.body;
+      var old=document.getElementById('t20-test-level-picker'); if(old) old.remove();
+      var picker=document.createElement('div');
+      picker.id='t20-test-level-picker';
+      picker.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(4,55,43,.58);display:flex;align-items:center;justify-content:center;padding:18px;direction:rtl';
+      picker.innerHTML=`<div style="width:min(520px,100%);background:#fff;border-radius:24px;padding:22px;box-shadow:0 18px 50px rgba(0,0,0,.25)"><h3 style="margin:0 0 8px;color:#155c49">👨‍🎓 اختبار فضاء التلاميذ</h3><p style="margin:0 0 16px;color:#63766f;line-height:1.8">اختاري المستوى الذي تريدين اختباره. المستويات الخمسة مفعّلة.</p><label style="display:block;font-weight:700;margin-bottom:7px">المستوى</label><select id="t20TestLevel" class="field" style="width:100%;margin-bottom:14px">${levelsForTest.map(function(v){return '<option>'+v+'</option>';}).join('')}</select><div style="display:flex;gap:8px"><button type="button" class="btn" style="flex:1" onclick="window.TahadiTest.confirmStudentLevel()">دخول</button><button type="button" class="btn secondary" style="flex:1" onclick="document.getElementById('t20-test-level-picker').remove()">إلغاء</button></div></div>`;
+      document.body.appendChild(picker);
     } else if(role==='parent'){
       localStorage.setItem('t20_parent_name','ولي أمر تجريبي');
       localStorage.setItem('t20_parent_code','TEST-PARENT');
@@ -1580,6 +1635,16 @@ window.adminDashboard=function(){try{if(sessionStorage.getItem('t20_test_mode'))
     } else if(role==='teacher'){
       if(typeof show==='function') show('👩‍🏫 فضاء الأساتذة', realWrap('👩‍🏫 أستاذ تجريبي','هذه محاكاة محلية لفضاء الأستاذ.','<div class="real-empty">تم فتح الفضاء بنجاح.</div>'+back('home')));
     }
+  };
+  window.TahadiTest.confirmStudentLevel = function(){
+    var el=document.getElementById('t20TestLevel');
+    var level=el&&el.value;
+    if(!level){alert('اختاري المستوى أولًا.');return;}
+    localStorage.setItem('t20_student_name','تلميذ تجريبي');
+    localStorage.setItem('t20_student_code','TEST-STUDENT');
+    localStorage.setItem('t20_student_level',level);
+    var picker=document.getElementById('t20-test-level-picker'); if(picker) picker.remove();
+    if(typeof studentDashboard==='function') studentDashboard();
   };
   // The old V84 overlay must never intercept the real student interface.
   window.V84Sim = window.V84Sim || {};
@@ -1923,7 +1988,7 @@ window.adminContent=function(){
  var all=v102Unique(typeof getContents==='function'?getContents():R('t20_contents',[]));
  var types=[['🎥','فيديو/تسجيل'],['📄','ملف/ملخص'],['🧩','تحدي'],['🏆','نتيجة'],['🎓','الدورات']];
  var published=all.filter(function(x){return x.status==='منشور';}).length;
- var html='<div class="content-admin"><div class="section-intro"><div class="big-icon">📚</div><h3>مكتبة التحدي</h3><p>كل مورد يُحفظ مرة واحدة. يمكن توجيهه لأكثر من مكان بدون إنشاء نسخة ثانية.</p></div><div class="t20-connection-box"><div class="t20-connection-ok">🔗 المكتبة مرتبطة بفضاء التلاميذ</div><div class="t20-connection-note">المورد الواحد لا يظهر مكررًا في قائمة المكتبة حتى لو وُجدت له سجلات قديمة متطابقة.</div></div><div class="admin-actions"><button type="button" class="btn" onclick="newContent()">➕ إضافة محتوى جديد</button><button type="button" class="btn secondary" onclick="adminDashboard()">العودة للوحة التحكم</button></div><h4 class="subhead">أنواع المحتوى</h4><div class="admin-grid">'+types.map(function(t){var c=all.filter(function(x){var z=v102Norm(x.type);return z===t[1]||z.endsWith(t[1]);}).length;return '<button type="button" class="admin-mini" onclick="contentFilter('+JSON.stringify(t[1])+')"><span style="font-size:28px">'+t[0]+'</span><b>'+t[1]+'</b><small>'+c+' محتوى</small></button>';}).join('')+'</div><h4 class="subhead">📌 آخر المحتويات ('+all.length+') — المنشور: '+published+'</h4>'+v102LibRows(all)+'</div>';
+ var html='<div class="content-admin"><div class="section-intro"><div class="big-icon">📚</div><h3>مكتبة التحدي</h3><p>كل مورد يُحفظ مرة واحدة. يمكن توجيهه لأكثر من مكان بدون إنشاء نسخة ثانية.</p></div><div class="t20-connection-box"><div class="t20-connection-ok">🔗 المكتبة مرتبطة بفضاء التلاميذ</div><div class="t20-connection-note">المورد الواحد لا يظهر مكررًا في قائمة المكتبة حتى لو وُجدت له سجلات قديمة متطابقة.</div></div><div class="admin-actions"><button type="button" class="btn" onclick="newContent()">➕ إضافة محتوى جديد</button><button type="button" class="btn secondary" onclick="adminDashboard()">العودة للوحة التحكم</button></div><h4 class="subhead">أنواع المحتوى</h4><div class="admin-grid">'+types.map(function(t){var c=all.filter(function(x){var z=v102Norm(x.type);return z===t[1]||z.endsWith(t[1]);}).length;return '<button type="button" class="admin-mini" onclick="contentFilter('+JSON.stringify(t[1])+')"><span style="font-size:28px">'+t[0]+'</span><b>'+t[1]+'</b><small>'+c+' محتوى</small></button>';}).join('')+'</div></div>';
  show('📚 مكتبة التحدي',html);
 };
 window.contentFilter=function(type){var all=v102Unique(typeof getContents==='function'?getContents():R('t20_contents',[]));var wanted=v102Norm(type);var list=all.filter(function(x){var z=v102Norm(x.type);return z===wanted||z.endsWith(wanted);});show('📚 '+v102Esc(wanted),'<div class="content-admin"><div class="section-intro"><div class="big-icon">📂</div><h3>'+v102Esc(wanted)+'</h3><p>المحتويات الفريدة في هذا النوع.</p></div><div class="admin-actions"><button class="btn" onclick="newContent()">➕ إضافة محتوى</button><button class="btn secondary" onclick="adminContent()">← مكتبة التحدي</button></div>'+v102LibRows(list)+'</div>');};
@@ -2010,7 +2075,7 @@ window.t20StudentAction=function(action){
   if(p.indexOf('course:')===0){window.studentCourseSection(p.slice(7));return;}
   if(p.indexOf('free:')===0){window.studentFreeSection(p.slice(5));return;}
   if(p.indexOf('content:')===0){window.openStudentContent(p.slice(8));return;}
-  if(p==='question'){window.studentQuestionPage('عام','💬');return;}
+  if(p==='question'){window.studentQuestionsPage();return;}
 };
 
 window.studentDashboard=function(){
@@ -2022,6 +2087,7 @@ window.studentDashboard=function(){
     '<div class="student-mini-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">'+
       card115('paid','المحتوى المدفوع','💳','حصص الدعم • الدورات • الدروس المسجلة')+
       card115('free','المحتوى المجاني','🆓','فيديوهات • ملخصات • تحديات • نتائج')+
+      card115('question','أسئلتي','💬','كل أسئلتك وإجابات الأستاذة مرتبطة بالمحتوى')+
     '</div>'+
     '<button type="button" class="btn secondary" data-student-action="notifications" style="width:100%;margin-top:12px;cursor:pointer!important;pointer-events:auto!important">🔔 التنبيهات</button>'+
     '</div>';
@@ -2139,6 +2205,85 @@ window.studentFreeSection=function(section){
   show115(cfg[1]+' '+cfg[0],page115(cfg[0],cfg[1],'<div class="content-list">'+list115(list,'لا يوجد محتوى متاح حاليًا.')+'</div>'));
 };
 
+/* V116: private questions are a standalone section, while every question remains linked to one content item. */
+function questions116(){
+  var a=typeof R==='function'?R('t20_student_questions',[]):[];
+  return Array.isArray(a)?a:[];
+}
+function identity116(){
+  return typeof studentIdentity115==='function'?studentIdentity115():{
+    name:String(localStorage.getItem('t20_student_name')||'').trim(),
+    code:String(localStorage.getItem('t20_student_code')||'').trim(),
+    level:String(localStorage.getItem('t20_student_level')||'').trim()
+  };
+}
+function mineQuestions116(){
+  var me=identity116();
+  return questions116().filter(function(q){
+    if(me.code && q.studentCode) return String(q.studentCode).trim()===me.code;
+    if(me.name && q.studentName) return String(q.studentName).trim()===me.name && (!q.level || !me.level || String(q.level).trim()===me.level);
+    return false;
+  }).slice().reverse();
+}
+function questionContextLabel116(q){
+  return q.contentTitle||q.context||'محتوى غير محدد';
+}
+function questionBox116(contentId,contentTitle){
+  var safeId=String(contentId||'general').replace(/[^\w-]/g,'_');
+  var mine=mineQuestions116().filter(function(q){return String(q.contentId||'')===String(contentId||'');});
+  var rows=mine.length?mine.map(function(q){
+    return '<div class="content-row"><div style="flex:1"><strong>❓ '+esc115(q.question)+'</strong><small>'+(q.answer?'💚 إجابة الأستاذة: '+esc115(q.answer):'⏳ في انتظار إجابة الأستاذة.')+'</small></div></div>';
+  }).join(''):'<div class="student-empty">لا توجد أسئلة حول هذا المحتوى بعد.</div>';
+  return '<div class="student-section-title" style="margin-top:16px"><b>💬 أسئلتي حول '+esc115(contentTitle||'هذا المحتوى')+'</b></div>'+
+    '<div class="content-list">'+rows+'</div>'+
+    '<div style="background:#fff;border:1px solid #dcebe2;border-radius:16px;padding:12px;margin-top:10px">'+
+    '<textarea id="t20Q116_'+safeId+'" class="field" rows="4" placeholder="اكتب سؤالك حول هذا المحتوى..."></textarea>'+
+    '<button class="btn" type="button" style="width:100%;margin-top:8px" onclick="sendContentQuestion116('+JSON.stringify(String(contentId||''))+','+JSON.stringify(String(contentTitle||''))+')">📤 إرسال السؤال</button>'+
+    '<small style="display:block;color:#71857d;margin-top:7px">🔒 سؤالك وإجابة الأستاذة خاصان بك فقط، ويبقيان مرتبطين بهذا المحتوى.</small>'+
+    '</div>';
+}
+window.sendContentQuestion116=function(contentId,contentTitle){
+  var safeId=String(contentId||'').replace(/[^\w-]/g,'_');
+  var el=document.getElementById('t20Q116_'+safeId),q=el&&el.value.trim();
+  if(!q){alert('اكتب سؤالك أولًا.');return;}
+  var me=identity116(),list=questions116();
+  list.push({id:'q_'+Date.now(),studentId:'',studentCode:me.code,studentName:me.name,level:me.level,contentId:String(contentId||''),contentTitle:String(contentTitle||''),question:q,answer:'',status:'جديد',createdAt:new Date().toISOString()});
+  if(typeof W==='function')W('t20_student_questions',list);else localStorage.setItem('t20_student_questions',JSON.stringify(list));
+  window.studentQuestionsPage();
+};
+window.studentQuestionsPage=function(){
+  var mine=mineQuestions116();
+  var body='<div class="section-intro"><div class="big-icon">💬</div><h3>أسئلتي</h3><p>كل سؤال يبقى مرتبطًا بالمحتوى الذي طرحته حوله، وإجابة الأستاذة لا تظهر إلا لك.</p></div>';
+  if(!mine.length){
+    body+='<div class="student-empty">💬 لا توجد أسئلة بعد.<br><small>افتح أي فيديو أو دورة أو درس أو ملخص، وستجد «أسئلتي حول هذا المحتوى» تحته.</small></div>';
+  }else{
+    body+='<div class="content-list">'+mine.map(function(q){
+      return '<div class="content-row"><div style="flex:1"><strong>❓ '+esc115(q.question)+'</strong><small>📚 '+esc115(questionContextLabel116(q))+'</small><small>'+(q.answer?'💚 إجابة الأستاذة: '+esc115(q.answer):'⏳ في انتظار إجابة الأستاذة.')+'</small></div>'+(q.contentId?'<button class="btn" type="button" style="padding:8px 11px" onclick="openStudentContent('+JSON.stringify(String(q.contentId))+')">فتح المحتوى</button>':'')+'</div>';
+    }).join('')+'</div>';
+  }
+  show115('💬 أسئلتي',page115('أسئلتي','💬',body));
+};
+/* Override the content opener so the question box is attached to the exact item. */
+window.openStudentContent=function(id){
+  var item=null;
+  if(typeof getContents==='function') item=getContents().find(function(x){return String(x.id)===String(id)&&x.status==='منشور';});
+  if(!item && typeof v102Items==='function') item=items115([]).find(function(x){return String(x.id)===String(id);});
+  if(!item || (typeof studentCanAccessContent==='function' && !studentCanAccessContent(item))){
+    show115('🔒 الوصول إلى المحتوى',page115('الوصول إلى المحتوى','🔒','<div class="request-empty">هذا المحتوى غير متاح لحسابك أو لمستواك الدراسي.</div>'));
+    return;
+  }
+  localStorage.setItem('t20_last_activity',JSON.stringify({type:'content',id:item.id,title:item.title,at:new Date().toISOString()}));
+  var url=typeof normalizeContentUrl==='function'?normalizeContentUrl(item.url):String(item.url||'').trim();
+  var viewer=url&&typeof getContentViewer==='function'?getContentViewer(url,item.type,item.title):'<div class="request-empty">📭 لم يتم ربط رابط حقيقي بهذا المحتوى بعد.</div>';
+  var icon='📚';
+  var type=String(item.type||'');
+  if(type.indexOf('فيديو')>=0||type.indexOf('مسجل')>=0||type.indexOf('لايف')>=0||type.indexOf('دعم')>=0) icon='🎥';
+  else if(type.indexOf('ملخص')>=0||type.indexOf('وثائق')>=0||type.indexOf('ملف')>=0) icon='📄';
+  else if(type.indexOf('دورة')>=0) icon='🎓';
+  var body='<div class="section-intro"><div class="big-icon">'+icon+'</div><h3>'+esc115(item.title||'محتوى')+'</h3><p>'+esc115(item.level||'')+(item.service?' • '+esc115(item.service):'')+'</p></div>'+viewer+questionBox116(item.id,item.title);
+  show115('📚 '+String(item.title||'محتوى'),page115(item.title||'محتوى',icon,body));
+};
+
 window.studentResults=function(){
   var me=studentIdentity115(), all=typeof R==='function'?R('t20_results',[]):[];
   var mine=(Array.isArray(all)?all:[]).filter(function(x){
@@ -2187,5 +2332,550 @@ if(!window.__t20StudentLegacyContentClickBound){
 })();
 </script>
 
+
+<style id="t20-v116-questions">
+.t20-v116-question{background:#fff;border:1px solid #dcebe2;border-radius:18px;padding:14px;margin-top:14px}
+</style>
+
+
+<style id="v146-today-four-cards">
+.today-four-grid{margin-top:10px;}
+.today-four-card{min-height:118px;display:flex;flex-direction:column;justify-content:center;text-align:center;}
+.today-four-card .ico{margin-bottom:6px;}
+.today-four-card b{font-size:14px;}
+.today-four-card small{font-size:11px;line-height:1.55;}
+</style>
+<script id="v126-teacher-space-final-routing-and-today">
+(function(){
+  'use strict';
+
+  function esc(v){ return typeof window.escapeHtml==='function' ? window.escapeHtml(String(v==null?'':v)) : String(v==null?'':v).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];}); }
+  function read(key, def){ try{ if(typeof window.R==='function') return window.R(key,def); var v=localStorage.getItem(key); return v?JSON.parse(v):def; }catch(e){return def;} }
+  function write(key,v){ try{ if(typeof window.W==='function'){window.W(key,v);return;} localStorage.setItem(key,JSON.stringify(v)); }catch(e){} }
+  function todayKey(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function doneMap(){ var x=read('t20_today_done',{}); return x&&typeof x==='object'&&!Array.isArray(x)?x:{}; }
+  function done(id){ return !!doneMap()[todayKey()+'__'+id]; }
+  function finish(id){ var x=doneMap(); x[todayKey()+'__'+id]=true; write('t20_today_done',x); window.t20TeacherToday(); }
+  function dateLabel(){ return new Date().toLocaleDateString('ar-DZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }
+
+  function normDate(v){
+    var s=String(v==null?'':v).trim();
+    if(!s) return '';
+    s=s.replace(/[٠-٩]/g,function(d){return String('٠١٢٣٤٥٦٧٨٩'.indexOf(d));});
+    s=s.replace(/[Tt].*$/,'').trim();
+    var m;
+    // YYYY-MM-DD / YYYY/MM/DD / YYYY.MM.DD / YYYY_MM_DD
+    m=s.match(/^(\d{4})[-\/. _](\d{1,2})[-\/. _](\d{1,2})/);
+    if(m) return m[1]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[3]).padStart(2,'0');
+    // DD-MM-YYYY / DD/MM/YYYY / DD.MM.YYYY / DD_MM_YYYY
+    m=s.match(/^(\d{1,2})[-\/. _](\d{1,2})[-\/. _](\d{4})/);
+    if(m) return m[3]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');
+    return '';
+  }
+  function buildTeacherTodayFiles(){
+    var today=todayKey(), files=[
+      {key:'sessions',icon:'🕐',title:'حصصي اليوم',sub:'الحصص المبرمجة اليوم',items:[]},
+      {key:'corrections',icon:'🧩',title:'التحديات المطلوب تصحيحها',sub:'التحديات التي حان موعد تصحيحها',items:[]},
+      {key:'publishing',icon:'📤',title:'المحتوى المبرمج اليوم',sub:'المحتوى الذي حُدد نشره اليوم',items:[]},
+      {key:'follow',icon:'💬',title:'الردود والمتابعات',sub:'ما حُددت متابعته اليوم',items:[]},
+      {key:'students',icon:'👩‍🎓',title:'متابعات التلاميذ',sub:'متابعات التلاميذ المبرمجة اليوم',items:[]},
+      {key:'admin',icon:'📋',title:'المهام الإدارية',sub:'الأعمال الإدارية المستحقة اليوم',items:[]},
+      {key:'other',icon:'📝',title:'مهام أخرى',sub:'مهامك الشخصية المبرمجة اليوم',items:[]},
+      {key:'suggestions',icon:'💡',title:'اقتراحات اليوم',sub:'اقتراحات مساعدة مبنية على ما هو مبرمج اليوم',items:[]}
+    ];
+    var by=k=>files.find(f=>f.key===k);
+    var sch=read('t20_schedules',[]); if(!Array.isArray(sch)) sch=[];
+    var todaySch=sch.filter(x=>normDate(x.date)===today).sort((a,b)=>String(a.time||'').localeCompare(String(b.time||'')));
+    todaySch.forEach((x,i)=>{var id='session_'+(x.id||i);if(!done(id))by('sessions').items.push({id,icon:'🕐',title:'حصة — '+(x.title||'حصة مبرمجة'),detail:[x.time,x.level,x.type].filter(Boolean).join(' • '),open:'realSchedules'});});
+
+    var ch=read('t20_challenges',[]); if(!Array.isArray(ch)) ch=[];
+    ch.forEach((x,i)=>{var d=normDate(x.correctionDate||x.correctDate||x.correction_due||x.dueDate);if(d===today){var id='challenge_'+(x.id||i);if(!done(id))by('corrections').items.push({id,icon:'🧩',title:'تصحيح — '+(x.title||'تحدي'),detail:[x.level,x.status].filter(Boolean).join(' • '),open:'realChallenges'});}});
+
+    var cont=read('t20_contents',[]); if(!Array.isArray(cont)) cont=[];
+    cont.forEach((x,i)=>{var d=normDate(x.publishDate||x.scheduledDate||x.publishAt);if(d===today){var id='content_'+(x.id||i);if(!done(id))by('publishing').items.push({id,icon:'📤',title:'نشر — '+(x.title||'محتوى'),detail:[x.level,x.type||x.category].filter(Boolean).join(' • '),open:'adminContent'});}});
+
+    var qs=read('t20_student_questions',[]); if(!Array.isArray(qs)) qs=[];
+    qs.forEach((x,i)=>{var d=normDate(x.followUpDate||x.dueDate);if(d===today&&x.status!=='تمت الإجابة'){var id='question_'+(x.id||i);if(!done(id))by('follow').items.push({id,icon:'💬',title:'الرد على سؤال تلميذ',detail:[x.studentName,x.context].filter(Boolean).join(' • '),open:'studentQuestionsAdmin'});}});
+
+    ['t20_student_followups','t20_followups'].forEach(function(store){var a=read(store,[]);if(!Array.isArray(a))return;a.forEach(function(x,i){var d=normDate(x.date||x.dueDate||x.followUpDate);if(d===today&&x.status!=='مكتمل'&&x.status!=='تمت'){var id='student_'+store+'_'+(x.id||i);if(!done(id))by('students').items.push({id,icon:'👩‍🎓',title:x.title||'متابعة تلميذ',detail:[x.studentName,x.level,x.detail].filter(Boolean).join(' • '),open:'realStudents'});}});});
+
+    var req=read('t20_requests',[]); if(!Array.isArray(req)) req=[];
+    req.forEach((x,i)=>{var d=normDate(x.dueDate||x.followUpDate);if(d===today&&x.status!=='مكتمل'){var id='request_'+(x.id||i);if(!done(id))by('admin').items.push({id,icon:'📋',title:'متابعة طلب',detail:x.title||x.type||x.student||'طلب',open:'requestCenter'});}});
+
+    var cal=read('t20_calendar_tasks',[]); if(!Array.isArray(cal)) cal=[];
+    cal.forEach((x,i)=>{var d=normDate(x.date||x.dueDate||x.taskDate);if(d===today&&x.status!=='مكتمل'){var id='other_'+(x.id||i);if(!done(id))by('other').items.push({id,icon:'📝',title:x.title||'مهمة اليوم',detail:x.detail||'مهمة مبرمجة في الرزنامة',open:null});}});
+
+    var sug=by('suggestions');
+    if(todaySch.length){
+      sug.items.push({id:'sug_schedule',icon:'📅',title:'راجعي حصص اليوم قبل بدايتها',detail:'لديكِ '+todaySch.length+' حصة مبرمجة اليوم.',open:'sessions'});
+      todaySch.forEach(function(x,i){
+        var typ=String(x.type||'').toLowerCase();
+        if(/zoom|عن بعد|فردية|جماعية/.test(typ)||x.link) sug.items.push({id:'sug_link_'+i,icon:'🔗',title:'تأكدي من تفاصيل الحصة',detail:[x.title,x.time,x.link?'الرابط موجود':'لا يوجد رابط'].filter(Boolean).join(' • '),open:'sessions'});
+      });
+    }
+    if(by('corrections').items.length) sug.items.push({id:'sug_corr',icon:'🧩',title:'ابدئي بالتصحيحات المستحقة',detail:'يوجد '+by('corrections').items.length+' تحدي/تحديات محددة للتصحيح اليوم.',open:'corrections'});
+    if(by('publishing').items.length) sug.items.push({id:'sug_pub',icon:'📤',title:'حضّري المحتوى المبرمج للنشر',detail:'يوجد محتوى محدد للنشر اليوم.',open:'publishing'});
+    if(by('follow').items.length) sug.items.push({id:'sug_follow',icon:'💬',title:'راجعي الردود المطلوبة',detail:'لديكِ ردود أو متابعات محددة لهذا اليوم.',open:'follow'});
+    if(by('students').items.length) sug.items.push({id:'sug_students',icon:'👩‍🎓',title:'راجعي متابعات التلاميذ',detail:'توجد متابعات مبرمجة اليوم.',open:'students'});
+    if(by('admin').items.length) sug.items.push({id:'sug_admin',icon:'📋',title:'أكملي الأعمال الإدارية المستحقة',detail:'توجد أعمال إدارية محددة لهذا اليوم.',open:'admin'});
+    if(by('other').items.length) sug.items.push({id:'sug_other',icon:'📝',title:'راجعي مهامك الشخصية',detail:'توجد مهام أخرى مبرمجة اليوم.',open:'other'});
+    if(!sug.items.length) sug.items.push({id:'sug_empty',icon:'🌿',title:'يوم هادئ',detail:'لا توجد مهام أو اقتراحات مبنية على بيانات اليوم حالياً.',open:null});
+    return {today:today,files:files,todaySch:todaySch};
+  }
+
+  function todayGroupDefs(files){
+    var by=function(k){return files.find(function(f){return f.key===k;})||{items:[]};};
+    return [
+      {key:'g_sessions',icon:'🕐',title:'حصصي ومواعيدي',sub:'الحصص والمواعيد المبرمجة اليوم',keys:['sessions']},
+      {key:'g_content',icon:'🧩',title:'التحديات والمحتوى',sub:'التحديات والتصحيحات والمحتوى المبرمج',keys:['corrections','publishing']},
+      {key:'g_follow',icon:'💬',title:'الردود والمتابعات',sub:'ردود التلاميذ والمتابعات المبرمجة',keys:['follow','students']},
+      {key:'g_admin',icon:'📋',title:'المهام الإدارية والشخصية',sub:'الأعمال الإدارية والمهام الشخصية والاقتراحات',keys:['admin','other','suggestions']}
+    ].map(function(g){
+      g.items=[];g.keys.forEach(function(k){g.items=g.items.concat(by(k).items||[]);});
+      return g;
+    });
+  }
+
+  window.t20TeacherTodayOpen=function(key){
+    var data=buildTeacherTodayFiles(), files=data.files;
+    var groups=todayGroupDefs(files), f=groups.find(function(z){return z.key===key;});
+    if(!f) f=files.find(function(z){return z.key===key;});
+    if(!f)return;
+    var rows=f.items.length?f.items.map(function(t){
+      var isSug=t.id&&String(t.id).indexOf('sug_')===0;
+      var action='';
+      if(isSug && t.open){ action='<button type="button" class="btn today-open-related" style="padding:7px 10px;white-space:nowrap" data-today-related="'+esc(t.open)+'">فتح ←</button>'; }
+      return '<div class="today-item"><span class="today-task-icon">'+t.icon+'</span><span class="today-task-main"><strong>'+esc(t.title)+'</strong><small>'+esc(t.detail)+'</small></span>'+action+(isSug?'':'<button type="button" class="today-done" data-today-done="'+esc(t.id)+'">✓ تم</button>')+'</div>';
+    }).join(''):'<div class="today-card today-empty"><strong>لا توجد مهام مستحقة هنا اليوم.</strong><small>إذا برمجتِ مهمة لهذا اليوم، ستظهر هنا تلقائيًا.</small></div>';
+    show(f.icon+' '+esc(f.title),'<div class="today-wrap"><div class="today-head"><div class="big-icon">'+f.icon+'</div><h3>'+esc(f.title)+'</h3><p>'+dateLabel()+'</p></div><div class="today-task-list">'+rows+'</div><button class="btn secondary" style="width:100%;margin-top:10px" type="button" data-today-back>← العودة إلى لوحة اليوم</button></div>',true);
+    document.querySelectorAll('[data-today-done]').forEach(function(b){b.addEventListener('click',function(){finish(this.getAttribute('data-today-done'));});});
+    document.querySelectorAll('[data-today-related]').forEach(function(b){b.addEventListener('click',function(){window.t20TeacherTodayOpen(this.getAttribute('data-today-related'));});});
+    var back=document.querySelector('[data-today-back]');if(back)back.addEventListener('click',window.t20TeacherToday);
+  };
+
+  window.t20TeacherToday=function(){
+    var data=buildTeacherTodayFiles(), files=data.files, groups=todayGroupDefs(files);
+    var total=files.slice(0,7).reduce((n,f)=>n+f.items.length,0);
+    var grid='<div class="student-mini-grid today-four-grid">'+groups.map(function(g){
+      return '<button type="button" class="student-mini-card today-four-card" data-today-file="'+g.key+'"><span class="ico">'+g.icon+'</span><b>'+esc(g.title)+'</b><small>'+esc(g.sub)+'</small></button>';
+    }).join('')+'</div>';
+    show('📅 لوحة اليوم','<div class="today-wrap"><div class="today-head"><div class="big-icon">📅</div><h3>لوحة اليوم</h3><p>'+dateLabel()+'</p><div class="today-total">'+total+' '+(total===1?'مهمة':'مهام')+' تحتاج إلى إجراء</div></div><div class="today-reminder-intro">هذه اللوحة لكِ فقط: تعرض ما يجب فعله اليوم، وليس ما تم إنجازه.</div>'+grid+'<button class="btn secondary" style="width:100%;margin-top:10px" type="button" data-today-home>← العودة إلى فضاء الأستاذة حياة</button></div>',true);
+    document.querySelectorAll('[data-today-file]').forEach(function(b){b.addEventListener('click',function(){window.t20TeacherTodayOpen(this.getAttribute('data-today-file'));});});
+    var home=document.querySelector('[data-today-home]');if(home)home.addEventListener('click',function(){window.adminDashboard();});
+  };
+  window.todayDashboard=window.t20TeacherToday;
+
+  var routes={
+    'مهام التحدي اليوم':window.t20TeacherToday,
+    'لوحة اليوم':window.t20TeacherToday,
+    'تلاميذ التحدي':window.realStudents,
+    'أولياء التحدي':window.realParents,
+    'أسرة التحدي':window.realTeachers,
+    'مكتبة التحدي':function(){ if(typeof window.adminContent==='function'){ window.adminContent(); } },
+    'رزنامة التحدي':window.realSchedules,
+    'اشتراكات التحدي':window.realPayments,
+    'حصيلة التحدي':window.realStats,
+    'نبض التحدي':window.notificationCenter,
+    'طلبات التحدي':window.requestCenter,
+    'تحديات الـ20':window.realChallenges,
+    'بث التحدي':window.testBroadcast,
+    'ورشة التحدي':window.realMaintenance,
+    'أمان التحدي':window.realSecurity
+  };
+  window.t20TeacherOpen=function(title){var fn=routes[title];if(typeof fn==='function'){fn();return false;}if(typeof window.adminModule==='function'){window.adminModule(title);return false;}return false;};
+
+  /* Window capture runs before older document-capture handlers, so the old routing cannot swallow these clicks. */
+  window.addEventListener('click',function(e){
+    var el=e.target&&e.target.closest?e.target.closest('.t20-today-entry,.t20-center-card'):null;
+    if(!el)return;
+    var title=el.getAttribute('data-admin-module')||'';
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    window.t20TeacherOpen(title);
+  },true);
+})();
+</script>
+
+<script>
+/* V135 — توحيد ربط الحصص: الإضافة ← الرزنامة ← حصصي اليوم ← تفاصيل الحصة */
+(function(){
+  'use strict';
+  function q(id){return document.getElementById(id)}
+  function val(id){var e=q(id);return e?String(e.value||'').trim():''}
+  function escV(v){return typeof esc==='function'?esc(v):String(v==null?'':v).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+  function supportLabelV(m,t){return (m==='Zoom'?'💻 Zoom':m==='حضوري'?'🏫 حضوري':'')+' • '+(t==='فردية'?'👤 فردية':t==='جماعية'||t==='عادية'?'👥 جماعية':'')}
+  function students(){return R(DB.students).filter(function(x){return x.active!==false})}
+  function scheduleById(id){return R(DB.schedules).find(function(x){return String(x.id)===String(id)})}
+  function attendanceFor(sc,st){return R(DB.attendance).find(function(a){return String(a.scheduleId)===String(sc.id)&&String(a.studentId)===String(st.id)})}
+  function matchingStudents(sc){
+    var all=students().filter(function(st){return String(st.level||'')===String(sc.level||'') && (st.service==null || st.service==='دروس الدعم' || st.service==='')});
+    if(sc.supportType==='فردية') return all.filter(function(st){return (sc.studentId&&String(st.id)===String(sc.studentId)) || (sc.studentName&&st.name===sc.studentName)});
+    return all.filter(function(st){return (!sc.supportMode || !st.supportMode || st.supportMode===sc.supportMode) && (!sc.supportType || !st.supportType || st.supportType===sc.supportType)});
+  }
+  function saveAtt(sc,st,status){
+    var a=R(DB.attendance), i=a.findIndex(function(x){return String(x.scheduleId)===String(sc.id)&&String(x.studentId)===String(st.id)});
+    var rec={id:i>=0?a[i].id:id('att'),scheduleId:sc.id,studentId:st.id,student:st.name,level:st.level,service:'دروس الدعم',supportMode:sc.supportMode||'',supportType:sc.supportType||'',status:status,date:sc.date,time:sc.time};
+    if(i>=0)a[i]=Object.assign({},a[i],rec);else a.push(rec); W(DB.attendance,a);
+  }
+
+  window.newSchedule=function(){
+    var st=students();
+    show('➕ إضافة حصة',realWrap('➕ حصة جديدة','الحصة التي تحفظينها هنا هي نفسها التي تظهر في الرزنامة ولوحة «حصصي اليوم».',
+      '<div class="real-form">'+
+      form('عنوان الحصة','scTitle','مثال: دعم السنة الثالثة متوسط')+
+      '<label>المستوى</label><select id="scLevel" class="field">'+levels().map(function(x){return '<option>'+escV(x)+'</option>'}).join('')+'</select>'+ 
+      '<label>طريقة الدعم</label><select id="scMode" class="field"><option value="Zoom">💻 Zoom</option><option value="حضوري">🏫 حضوري</option></select>'+ 
+      '<label>نوع الحصة</label><select id="scType" class="field"><option value="جماعية">👥 جماعية</option><option value="فردية">👤 فردية</option></select>'+ 
+      '<label>التلميذ (للحصة الفردية)</label><select id="scStudent" class="field"><option value="">— اختياري للحصة الجماعية —</option>'+st.map(function(x){return '<option value="'+escV(x.id)+'">'+escV(x.name)+' • '+escV(x.level)+'</option>'}).join('')+'</select>'+ 
+      form('اسم المجموعة (اختياري)','scGroup','مثال: مجموعة الثالثة متوسط')+
+      form('التاريخ','scDate','YYYY-MM-DD')+
+      form('الوقت','scTime','19:00 - 20:00')+
+      form('رابط Zoom (اختياري)','scLink','ضعي الرابط إذا كانت عبر Zoom')+
+      '<button class="btn" onclick="saveSchedule()">💾 حفظ الحصة</button></div>'));
+  };
+
+  window.saveSchedule=function(){
+    var type=val('scType'), sid=val('scStudent');
+    if(type==='فردية'&&!sid){alert('الحصة الفردية لازم تربطيها بتلميذ محدد.');return;}
+    var st=sid?students().find(function(x){return String(x.id)===String(sid)}):null;
+    var x={id:id('sch'),title:val('scTitle'),service:'دروس الدعم',level:val('scLevel'),date:val('scDate'),time:val('scTime'),supportMode:val('scMode'),supportType:type,studentId:sid,studentName:st?st.name:'',groupName:val('scGroup'),type:type==='فردية'?'دروس دعم فردية':'دروس دعم جماعية',link:val('scLink')};
+    if(!x.title||!x.date||!x.time){alert('أدخلي عنوان الحصة والتاريخ والوقت.');return;}
+    var a=R(DB.schedules);a.push(x);W(DB.schedules,a);realSchedules();
+  };
+
+  window.openScheduleById=function(scheduleId){
+    var sc=scheduleById(scheduleId); if(!sc){realSchedules();return;}
+    var sts=matchingStudents(sc);
+    var rows=sts.length?sts.map(function(st){var r=attendanceFor(sc,st);return '<div class="real-row"><div><strong>'+escV(st.name)+'</strong><small>'+escV(st.level)+' • '+escV(r&&r.status||'لم يُسجّل بعد')+'</small></div><div class="real-actions"><button onclick="markScheduleAttendance('+JSON.stringify(sc.id)+','+JSON.stringify(st.id)+',\'حاضر\')">✅ حاضر</button><button onclick="markScheduleAttendance('+JSON.stringify(sc.id)+','+JSON.stringify(st.id)+',\'غائب\')">❌ غائب</button></div></div>'}).join(''):'<div class="real-empty">لا يوجد تلاميذ مرتبطون بهذه الحصة.</div>';
+    var body='<div class="real-row"><strong>'+escV(sc.title)+'</strong><small>'+escV(sc.date)+' • '+escV(sc.time)+' • '+escV(sc.level)+'</small><small>'+escV(sc.supportMode==='Zoom'?'💻 Zoom':'🏫 حضوري')+' • '+escV(sc.supportType==='فردية'?'👤 فردية':'👥 جماعية')+(sc.studentName?' • 👤 '+escV(sc.studentName):'')+'</small>'+(sc.link?'<div class="real-actions"><a class="btn" href="'+escV(sc.link)+'" target="_blank" rel="noopener">🔗 فتح الرابط</a></div>':'')+'</div><h4 class="subhead">🟢 الحضور المرتبط بهذه الحصة</h4><div class="real-table">'+rows+'</div>'+back('realSchedules');
+    show('🕐 تفاصيل الحصة',realWrap('🕐 تفاصيل الحصة','كل ما يخص هذه الحصة مرتبط بنفس سجل الحصة.',body));
+  };
+
+  window.markScheduleAttendance=function(scheduleId,studentId,status){var sc=scheduleById(scheduleId),st=students().find(function(x){return String(x.id)===String(studentId)});if(!sc||!st)return;saveAtt(sc,st,status);openScheduleById(scheduleId)};
+
+  window.realSchedules=function(){
+    var list=R(DB.schedules);var rows=list.length?list.slice().sort(function(a,b){return String(a.date||'').localeCompare(String(b.date||''))||String(a.time||'').localeCompare(String(b.time||''))}).map(function(x){return '<div class="real-row"><div class="real-row-top"><div><strong>'+escV(x.title)+'</strong><small>'+escV(x.date)+' • '+escV(x.time)+' • '+escV(x.level)+'</small><small>'+escV(x.supportMode==='Zoom'?'💻 Zoom':x.supportMode==='حضوري'?'🏫 حضوري':x.type||'')+' • '+escV(x.supportType==='فردية'?'👤 فردية':x.supportType==='جماعية'||x.supportType==='عادية'?'👥 جماعية':'')+'</small></div></div><small style="display:block;margin-top:6px">'+(x.supportType==='فردية'?'👤 '+escV(x.studentName||'تلميذ غير محدد'):'👥 حصة جماعية')+(x.groupName?' • '+escV(x.groupName):'')+'</small><div class="real-actions"><button onclick="openScheduleById('+JSON.stringify(x.id)+')">🕐 فتح الحصة</button><button class="real-danger" onclick="deleteSchedule('+JSON.stringify(x.id)+')">🗑️ حذف</button></div></div>'}).join(''):'<div class="real-empty">🗓️ لا توجد حصص مبرمجة.</div>';
+    show('🗓️ الحصص والرزنامة',realWrap('🗓️ الحصص والرزنامة','نفس الحصة مرتبطة بالرزنامة، «حصصي اليوم»، والتسجيل المرتبط بالحضور.','<div class="real-toolbar"><button class="btn" onclick="newSchedule()">➕ إضافة حصة</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')));
+  };
+
+  /* حصصي اليوم: نفس سجل الحصة، وليس نسخة مستقلة منه. */
+  var oldBuild=window.buildTeacherTodayFiles;
+  if(typeof oldBuild==='function'){
+    /* لا نعيد بناء اللوحة؛ نغيّر فقط وجهة فتح الحصة من القائمة اليومية. */
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target&&e.target.closest?e.target.closest('[data-today-file]'):null;
+    if(!b)return;
+    if(b.getAttribute('data-today-file')==='sessions'){
+      e.preventDefault();e.stopImmediatePropagation();
+      var today=(function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})();
+      var arr=R(DB.schedules).filter(function(x){return String(x.date||'')===today}).sort(function(a,b){return String(a.time||'').localeCompare(String(b.time||''))});
+      var rows=arr.length?arr.map(function(x){return '<div class="real-row"><strong>'+escV(x.title)+'</strong><small>'+escV(x.time)+' • '+escV(x.level)+'</small><div class="real-actions"><button onclick="openScheduleById('+JSON.stringify(x.id)+')">🕐 فتح الحصة</button></div></div>'}).join(''):'<div class="real-empty">🕐 لا توجد حصص اليوم.</div>';
+      show('🕐 حصصي اليوم',realWrap('🕐 حصصي اليوم','الحصص مأخوذة مباشرة من نفس بيانات «الحصص والرزنامة».','<div class="real-table">'+rows+'</div>'+back('t20TeacherToday')));
+    }
+  },true);
+})();
+</script>
+
+<script>
+</script>
+
+<script id="v138-schedule-final-fix">
+(function(){
+  'use strict';
+  function q(id){return document.getElementById(id)}
+  function v(id){var e=q(id);return e?String(e.value||'').trim():''}
+  function e(vv){return typeof esc==='function'?esc(vv):String(vv==null?'':vv).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+  function students(){return R(DB.students).filter(function(x){return x.active!==false})}
+  function findSchedule(idv){return R(DB.schedules).find(function(x){return String(x.id)===String(idv)})}
+  function input(label,idv,placeholder,type,value){return '<label>'+label+'</label><input class="field" id="'+idv+'" type="'+(type||'text')+'" placeholder="'+e(placeholder||'')+'" value="'+e(value||'')+'">'}
+  function select(label,idv,opts,value){return '<label>'+label+'</label><select class="field" id="'+idv+'">'+opts.map(function(o){return '<option value="'+e(o.value)+'"'+(String(o.value)===String(value)?' selected':'')+'>'+e(o.label)+'</option>'}).join('')+'</select>'}
+  function renderScheduleList(){
+    var list=R(DB.schedules).slice().sort(function(a,b){return String(a.date||'').localeCompare(String(b.date||''))||String(a.time||'').localeCompare(String(b.time||''))});
+    var rows=list.length?list.map(function(x){
+      var mode=x.supportMode==='Zoom'?'💻 Zoom':x.supportMode==='حضوري'?'🏫 حضوري':(x.supportMode||'');
+      var typ=x.supportType==='فردية'?'👤 فردية':(x.supportType==='جماعية'||x.supportType==='عادية'?'👥 جماعية':(x.supportType||''));
+      return '<div class="real-row"><div class="real-row-top"><div><strong>'+e(x.title||'حصة مبرمجة')+'</strong><small>'+e(x.date||'')+' • '+e(x.time||'')+' • '+e(x.level||'')+'</small><small>'+e(mode)+' • '+e(typ)+(x.studentName?' • 👤 '+e(x.studentName):'')+'</small><small>'+(x.link?'🔗 '+e(x.link):'بدون رابط')+'</small></div></div><div class="real-actions"><button type="button" data-schedule-action="open" data-schedule-id="'+e(x.id)+'">🕐 فتح الحصة</button><button type="button" data-schedule-action="edit" data-schedule-id="'+e(x.id)+'">✏️ تعديل</button><button type="button" class="real-danger" data-schedule-action="delete" data-schedule-id="'+e(x.id)+'">🗑️ حذف</button></div></div>';
+    }).join(''):'<div class="real-empty">🗓️ لا توجد حصص مبرمجة.</div>';
+    show('🗓️ الحصص والرزنامة',realWrap('🗓️ الحصص والرزنامة','نفس الحصة مرتبطة بالرزنامة، «حصصي اليوم»، والتسجيل المرتبط بالحضور.','<div class="real-toolbar"><button type="button" class="btn" data-schedule-action="add">➕ إضافة حصة</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')));
+  }
+  window.realSchedules=renderScheduleList;
+  window.newSchedule=function(){
+    var st=students();
+    var levelsList=levels().map(function(x){return {value:x,label:x}});
+    var body='<div class="real-form">'+
+      input('عنوان الحصة','scTitle','مثال: دعم السنة الثالثة متوسط')+
+      select('المستوى','scLevel',levelsList,'')+
+      select('طريقة الدعم','scMode',[{value:'Zoom',label:'💻 Zoom'},{value:'حضوري',label:'🏫 حضوري'}],'Zoom')+
+      select('نوع الحصة','scType',[{value:'جماعية',label:'👥 جماعية'},{value:'فردية',label:'👤 فردية'}],'جماعية')+
+      select('التلميذ (للحصة الفردية)','scStudent',[{value:'',label:'— اختياري للحصة الجماعية —'}].concat(st.map(function(x){return {value:x.id,label:x.name+' • '+x.level}})),'')+
+      input('اسم المجموعة (اختياري)','scGroup','مثال: مجموعة الثالثة متوسط')+
+      input('التاريخ','scDate','','date')+
+      input('الوقت','scTime','19:00 - 20:00')+
+      input('رابط Zoom (اختياري)','scLink','https://...')+
+      '<div class="real-actions"><button type="button" class="btn" data-schedule-action="save">💾 حفظ الحصة</button><button type="button" class="btn secondary" data-schedule-action="cancel">← إلغاء</button></div></div>';
+    show('➕ إضافة حصة',realWrap('➕ حصة جديدة','أضيفي الحصة مرة واحدة، وستُستخدم نفسها في الرزنامة ولوحة اليوم والحضور.',body));
+  };
+  window.saveSchedule=function(){
+    var type=v('scType'),sid=v('scStudent');
+    var title=v('scTitle'),date=v('scDate'),time=v('scTime');
+    if(!title||!date||!time){alert('أدخلي عنوان الحصة والتاريخ والوقت.');return false;}
+    if(type==='فردية'&&!sid){alert('الحصة الفردية لازم تربطيها بتلميذ محدد.');return false;}
+    var st=sid?students().find(function(x){return String(x.id)===String(sid)}):null;
+    var x={id:id('sch'),title:title,service:'دروس الدعم',level:v('scLevel'),date:date,time:time,supportMode:v('scMode'),supportType:type,studentId:sid,studentName:st?st.name:'',groupName:v('scGroup'),type:type==='فردية'?'دروس دعم فردية':'دروس دعم جماعية',link:v('scLink')};
+    var a=R(DB.schedules);a.push(x);W(DB.schedules,a);renderScheduleList();return false;
+  };
+  window.editSchedule=function(idv){
+    var x=findSchedule(idv);if(!x){alert('الحصة غير موجودة.');return;}
+    var st=students();
+    var body='<div class="real-form">'+
+      input('عنوان الحصة','esTitle','', 'text',x.title||'')+
+      select('المستوى','esLevel',levels().map(function(z){return {value:z,label:z}}),x.level||'')+
+      select('طريقة الدعم','esMode',[{value:'Zoom',label:'💻 Zoom'},{value:'حضوري',label:'🏫 حضوري'}],x.supportMode||'Zoom')+
+      select('نوع الحصة','esType',[{value:'جماعية',label:'👥 جماعية'},{value:'فردية',label:'👤 فردية'}],x.supportType||'جماعية')+
+      select('التلميذ (للحصة الفردية)','esStudent',[{value:'',label:'— اختياري للحصة الجماعية —'}].concat(st.map(function(z){return {value:z.id,label:z.name+' • '+z.level}})),x.studentId||'')+
+      input('اسم المجموعة (اختياري)','esGroup','', 'text',x.groupName||'')+
+      input('التاريخ','esDate','', 'date',x.date||'')+
+      input('الوقت','esTime','19:00 - 20:00','text',x.time||'')+
+      input('رابط Zoom (اختياري)','esLink','https://...','text',x.link||'')+
+      '<div class="real-actions"><button type="button" class="btn" data-schedule-action="save-edit" data-schedule-id="'+e(x.id)+'">💾 حفظ التعديل</button><button type="button" class="btn secondary" data-schedule-action="cancel">← إلغاء</button></div></div>';
+    show('✏️ تعديل الحصة',realWrap('✏️ تعديل الحصة','نعدّل نفس الحصة، بدون إنشاء نسخة ثانية.',body));
+  };
+  window.saveScheduleEdit=function(idv){
+    var a=R(DB.schedules),i=a.findIndex(function(x){return String(x.id)===String(idv)});if(i<0){alert('الحصة غير موجودة.');return false;}
+    var type=v('esType'),sid=v('esStudent'),title=v('esTitle'),date=v('esDate'),time=v('esTime');
+    if(!title||!date||!time){alert('أدخلي عنوان الحصة والتاريخ والوقت.');return false;}
+    if(type==='فردية'&&!sid){alert('الحصة الفردية لازم تربطيها بتلميذ محدد.');return false;}
+    var st=sid?students().find(function(x){return String(x.id)===String(sid)}):null;
+    a[i]=Object.assign({},a[i],{title:title,level:v('esLevel'),supportMode:v('esMode'),supportType:type,studentId:sid,studentName:st?st.name:'',groupName:v('esGroup'),date:date,time:time,link:v('esLink'),type:type==='فردية'?'دروس دعم فردية':'دروس دعم جماعية'});
+    W(DB.schedules,a);renderScheduleList();return false;
+  };
+  window.deleteSchedule=function(idv){if(!confirm('حذف هذه الحصة؟'))return;W(DB.schedules,R(DB.schedules).filter(function(x){return String(x.id)!==String(idv)}));renderScheduleList()};
+  document.addEventListener('click',function(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest('[data-schedule-action]'):null;if(!b)return;
+    var a=b.getAttribute('data-schedule-action'),sid=b.getAttribute('data-schedule-id');
+    if(a==='add'){ev.preventDefault();ev.stopImmediatePropagation();window.newSchedule();return;}
+    if(a==='save'){ev.preventDefault();ev.stopImmediatePropagation();window.saveSchedule();return;}
+    if(a==='save-edit'){ev.preventDefault();ev.stopImmediatePropagation();window.saveScheduleEdit(sid);return;}
+    if(a==='edit'){ev.preventDefault();ev.stopImmediatePropagation();window.editSchedule(sid);return;}
+    if(a==='open'){ev.preventDefault();ev.stopImmediatePropagation();if(window.openScheduleById)window.openScheduleById(sid);return;}
+    if(a==='delete'){ev.preventDefault();ev.stopImmediatePropagation();window.deleteSchedule(sid);return;}
+    if(a==='cancel'){ev.preventDefault();ev.stopImmediatePropagation();renderScheduleList();return;}
+  },true);
+})();
+</script>
+
+<script id="v139-schedule-direct-buttons">
+(function(){
+  'use strict';
+  function q(id){return document.getElementById(id)}
+  function val(id){var e=q(id);return e?String(e.value||'').trim():''}
+  function escT(v){return typeof esc==='function'?esc(v):String(v==null?'':v).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+  function students(){return R(DB.students).filter(function(x){return x.active!==false})}
+  function find(idv){return R(DB.schedules).find(function(x){return String(x.id)===String(idv)})}
+  function input(label,idv,placeholder,type,value){return '<label>'+label+'</label><input class="field" id="'+idv+'" type="'+(type||'text')+'" placeholder="'+escT(placeholder||'')+'" value="'+escT(value||'')+'">'}
+  function select(label,idv,opts,value){return '<label>'+label+'</label><select class="field" id="'+idv+'">'+opts.map(function(o){return '<option value="'+escT(o.value)+'"'+(String(o.value)===String(value)?' selected':'')+'>'+escT(o.label)+'</option>'}).join('')+'</select>'}
+  function list(){
+    var a=R(DB.schedules).slice().sort(function(x,y){return String(x.date||'').localeCompare(String(y.date||''))||String(x.time||'').localeCompare(String(y.time||''))});
+    var rows=a.length?a.map(function(x){
+      var mode=x.supportMode==='Zoom'?'💻 Zoom':x.supportMode==='حضوري'?'🏫 حضوري':(x.supportMode||'');
+      var typ=x.supportType==='فردية'?'👤 فردية':(x.supportType==='جماعية'||x.supportType==='عادية'?'👥 جماعية':(x.supportType||''));
+      return '<div class="real-row"><div class="real-row-top"><div><strong>'+escT(x.title||'حصة مبرمجة')+'</strong><small>'+escT(x.date||'')+' • '+escT(x.time||'')+' • '+escT(x.level||'')+'</small><small>'+escT(mode)+' • '+escT(typ)+(x.studentName?' • 👤 '+escT(x.studentName):'')+'</small><small>'+(x.link?'🔗 '+escT(x.link):'بدون رابط')+'</small></div></div><div class="real-actions"><button type="button" onclick="window.t20ScheduleOpen(\''+String(x.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')">🕐 فتح الحصة</button><button type="button" onclick="window.t20ScheduleEdit(\''+String(x.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')">✏️ تعديل</button><button type="button" class="real-danger" onclick="window.t20ScheduleDelete(\''+String(x.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')">🗑️ حذف</button></div></div>';
+    }).join(''):'<div class="real-empty">🗓️ لا توجد حصص مبرمجة.</div>';
+    show('🗓️ الحصص والرزنامة',realWrap('🗓️ الحصص والرزنامة','نفس الحصة مرتبطة بالرزنامة، «حصصي اليوم»، والتسجيل المرتبط بالحضور.','<div class="real-toolbar"><button type="button" class="btn" onclick="window.t20ScheduleAdd()">➕ إضافة حصة</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')));
+  }
+  window.t20ScheduleAdd=function(){
+    var st=students();
+    var body='<div class="real-form">'+input('عنوان الحصة','scTitle','مثال: دعم السنة الثالثة متوسط')+select('المستوى','scLevel',levels().map(function(x){return {value:x,label:x}}),'')+select('طريقة الدعم','scMode',[{value:'Zoom',label:'💻 Zoom'},{value:'حضوري',label:'🏫 حضوري'}],'Zoom')+select('نوع الحصة','scType',[{value:'جماعية',label:'👥 جماعية'},{value:'فردية',label:'👤 فردية'}],'جماعية')+select('التلميذ (للحصة الفردية)','scStudent',[{value:'',label:'— اختياري للحصة الجماعية —'}].concat(st.map(function(x){return {value:x.id,label:x.name+' • '+x.level}})),'')+input('اسم المجموعة (اختياري)','scGroup','مثال: مجموعة الثالثة متوسط')+input('التاريخ','scDate','','date')+input('الوقت','scTime','19:00 - 20:00')+input('رابط Zoom (اختياري)','scLink','https://...')+'<div class="real-actions"><button type="button" class="btn" onclick="window.t20ScheduleSave()">💾 حفظ الحصة</button><button type="button" class="btn secondary" onclick="window.realSchedules()">← إلغاء</button></div></div>';
+    show('➕ إضافة حصة',realWrap('➕ حصة جديدة','أضيفي الحصة مرة واحدة، وستُستخدم نفسها في الرزنامة ولوحة اليوم والحضور.',body));
+  };
+  window.t20ScheduleSave=function(){
+    var type=val('scType'),sid=val('scStudent'),title=val('scTitle'),date=val('scDate'),time=val('scTime');
+    if(!title||!date||!time){alert('أدخلي عنوان الحصة والتاريخ والوقت.');return;}
+    if(type==='فردية'&&!sid){alert('الحصة الفردية لازم تربطيها بتلميذ محدد.');return;}
+    var st=sid?students().find(function(x){return String(x.id)===String(sid)}):null;
+    var a=R(DB.schedules);a.push({id:id('sch'),title:title,service:'دروس الدعم',level:val('scLevel'),date:date,time:time,supportMode:val('scMode'),supportType:type,studentId:sid,studentName:st?st.name:'',groupName:val('scGroup'),type:type==='فردية'?'دروس دعم فردية':'دروس دعم جماعية',link:val('scLink')});W(DB.schedules,a);window.realSchedules();
+  };
+  window.t20ScheduleEdit=function(idv){
+    var x=find(idv);if(!x){alert('الحصة غير موجودة.');return;}
+    var st=students();
+    var body='<div class="real-form">'+input('عنوان الحصة','esTitle','', 'text',x.title||'')+select('المستوى','esLevel',levels().map(function(z){return {value:z,label:z}}),x.level||'')+select('طريقة الدعم','esMode',[{value:'Zoom',label:'💻 Zoom'},{value:'حضوري',label:'🏫 حضوري'}],x.supportMode||'Zoom')+select('نوع الحصة','esType',[{value:'جماعية',label:'👥 جماعية'},{value:'فردية',label:'👤 فردية'}],x.supportType||'جماعية')+select('التلميذ (للحصة الفردية)','esStudent',[{value:'',label:'— اختياري للحصة الجماعية —'}].concat(st.map(function(z){return {value:z.id,label:z.name+' • '+z.level}})),x.studentId||'')+input('اسم المجموعة (اختياري)','esGroup','', 'text',x.groupName||'')+input('التاريخ','esDate','', 'date',x.date||'')+input('الوقت','esTime','19:00 - 20:00','text',x.time||'')+input('رابط Zoom (اختياري)','esLink','https://...','text',x.link||'')+'<div class="real-actions"><button type="button" class="btn" onclick="window.t20ScheduleSaveEdit(\''+String(x.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')">💾 حفظ التعديل</button><button type="button" class="btn secondary" onclick="window.realSchedules()">← إلغاء</button></div></div>';
+    show('✏️ تعديل الحصة',realWrap('✏️ تعديل الحصة','نعدّل نفس الحصة، بدون إنشاء نسخة ثانية.',body));
+  };
+  window.t20ScheduleSaveEdit=function(idv){
+    var a=R(DB.schedules),i=a.findIndex(function(x){return String(x.id)===String(idv)});if(i<0){alert('الحصة غير موجودة.');return;}
+    var type=val('esType'),sid=val('esStudent'),title=val('esTitle'),date=val('esDate'),time=val('esTime');
+    if(!title||!date||!time){alert('أدخلي عنوان الحصة والتاريخ والوقت.');return;}
+    if(type==='فردية'&&!sid){alert('الحصة الفردية لازم تربطيها بتلميذ محدد.');return;}
+    var st=sid?students().find(function(x){return String(x.id)===String(sid)}):null;
+    a[i]=Object.assign({},a[i],{title:title,level:val('esLevel'),supportMode:val('esMode'),supportType:type,studentId:sid,studentName:st?st.name:'',groupName:val('esGroup'),date:date,time:time,link:val('esLink'),type:type==='فردية'?'دروس دعم فردية':'دروس دعم جماعية'});W(DB.schedules,a);window.realSchedules();
+  };
+  window.t20ScheduleDelete=function(idv){if(!confirm('حذف هذه الحصة؟'))return;W(DB.schedules,R(DB.schedules).filter(function(x){return String(x.id)!==String(idv)}));window.realSchedules()};
+  window.t20ScheduleOpen=function(idv){if(typeof window.openScheduleById==='function'){window.openScheduleById(idv)}else{window.realSchedules()}};
+  window.realSchedules=list;
+})();
+</script>
+
+<script id="t20-v141-content-grouped-inside-types">
+(function(){
+  'use strict';
+  /* V141: فقط تنظيم صفحة مكتبة التحدي — المحتويات أصبحت داخل نوعها.
+     لا نغيّر فضاء التلاميذ أو أي جزء آخر من المنصة. */
+  window.adminContent=function(){
+    var all=v102Unique(typeof getContents==='function'?getContents():R('t20_contents',[]));
+    var types=[['🎥','فيديو/تسجيل'],['📄','ملف/ملخص'],['🧩','تحدي'],['🏆','نتيجة'],['🎓','الدورات']];
+    var published=all.filter(function(x){return x.status==='منشور';}).length;
+    var blocks=types.map(function(t){
+      var list=all.filter(function(x){
+        var z=v102Norm(x.type), wanted=v102Norm(t[1]);
+        return z===wanted || z.endsWith(wanted);
+      });
+      return '<section class="t20-v141-type-block">'+
+        '<div class="t20-v141-type-head">'+
+          '<div class="t20-v141-type-title"><span>'+t[0]+'</span><div><b>'+t[1]+'</b><small>'+list.length+' محتوى</small></div></div>'+
+        '</div>'+
+        '<div class="t20-v141-type-content">'+v102LibRows(list)+'</div>'+
+      '</section>';
+    }).join('');
+
+    var html='<div class="content-admin t20-v141-content-admin">'+
+      '<div class="section-intro"><div class="big-icon">📚</div><h3>مكتبة التحدي</h3><p>كل مورد يُحفظ مرة واحدة، وتظهره المنصة داخل نوع المحتوى الخاص به.</p></div>'+
+      '<div class="t20-connection-box"><div class="t20-connection-ok">🔗 المكتبة مرتبطة بفضاء التلاميذ</div><div class="t20-connection-note">المورد الواحد لا يظهر مكررًا في قائمة مستقلة؛ بل يبقى داخل نوعه.</div></div>'+
+      '<div class="admin-actions"><button type="button" class="btn" onclick="newContent()">➕ إضافة محتوى جديد</button><button type="button" class="btn secondary" onclick="adminDashboard()">العودة للوحة التحكم</button></div>'+ 
+      '<h4 class="subhead">أنواع المحتوى</h4>'+blocks+
+      '<div class="t20-v141-total">📌 إجمالي المحتويات: '+all.length+' — المنشور: '+published+'</div>'+ 
+      '</div>';
+    show('📚 مكتبة التحدي',html);
+  };
+})();
+</script>
+<style id="t20-v141-content-grouped-style">
+.t20-v141-content-admin .t20-v141-type-block{
+  border:1px solid #d7e7e0;
+  border-radius:18px;
+  background:#fff;
+  margin:10px 0;
+  overflow:hidden;
+  box-shadow:0 4px 14px rgba(20,80,65,.05);
+}
+.t20-v141-content-admin .t20-v141-type-head{
+  padding:13px 14px;
+  background:linear-gradient(135deg,#f0faf5,#fbfffd);
+  border-bottom:1px solid #e1eee8;
+}
+.t20-v141-content-admin .t20-v141-type-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  direction:rtl;
+}
+.t20-v141-content-admin .t20-v141-type-title>span{font-size:28px;line-height:1}
+.t20-v141-content-admin .t20-v141-type-title b{display:block;color:#155f50;font-size:18px}
+.t20-v141-content-admin .t20-v141-type-title small{display:block;color:#71857d;margin-top:3px;font-size:12px}
+.t20-v141-content-admin .t20-v141-type-content{padding:8px}
+.t20-v141-content-admin .t20-v141-type-content .t20-library-list{margin:0}
+.t20-v141-content-admin .t20-v141-type-content .t20-library-empty{padding:14px;text-align:center;color:#71857d;background:#fafdfb;border-radius:12px}
+.t20-v141-content-admin .t20-v141-total{margin-top:12px;padding:10px 12px;text-align:center;color:#63766f;font-size:13px}
+</style>
+
+<script id="t20-v144-library-open-fix">
+(function(){
+  'use strict';
+  /* V144: إصلاح فتح مكتبة التحدي فقط. لا نغيّر بقية أزرار مركز التحدي. */
+  var oldAdminModule=window.adminModule;
+  window.adminModule=function(title){
+    if(String(title||'')==='مكتبة التحدي'){
+      try{
+        if(typeof window.adminContent==='function'){ window.adminContent(); return false; }
+      }catch(err){
+        console.error('T20 library open error:',err);
+        if(typeof window.show==='function'){
+          window.show('📚 مكتبة التحدي','<div class="section-intro"><div class="big-icon">📚</div><h3>مكتبة التحدي</h3><p>تعذر فتح المكتبة بسبب خطأ داخلي. لم يتم تغيير أي بيانات.</p><button type="button" class="btn secondary" onclick="adminDashboard()">العودة إلى لوحة التحكم</button></div>');
+        }
+        return false;
+      }
+    }
+    if(typeof oldAdminModule==='function') return oldAdminModule(title);
+    return false;
+  };
+})();
+</script>
+<script id="v147-schedule-flow-final">
+(function(){
+  'use strict';
+  function q(idv){return document.getElementById(idv)}
+  function val(idv){var el=q(idv);return el?String(el.value||'').trim():''}
+  function escV(v){return typeof esc==='function'?esc(v):String(v==null?'':v).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+  function students(){return R(DB.students).filter(function(x){return x.active!==false})}
+  function scheduleById(idv){return R(DB.schedules).find(function(x){return String(x.id)===String(idv)})}
+  function inp(label,idv,placeholder,type,value){return '<label>'+escV(label)+'</label><input class="field" id="'+idv+'" type="'+(type||'text')+'" placeholder="'+escV(placeholder||'')+'" value="'+escV(value||'')+'">'}
+  function sel(label,idv,opts,value){return '<label>'+escV(label)+'</label><select class="field" id="'+idv+'">'+opts.map(function(o){return '<option value="'+escV(o.value)+'"'+(String(o.value)===String(value)?' selected':'')+'>'+escV(o.label)+'</option>'}).join('')+'</select>'}
+  function renderList(){
+    var list=R(DB.schedules).slice().sort(function(a,b){return String(a.date||'').localeCompare(String(b.date||''))||String(a.time||'').localeCompare(String(b.time||''))});
+    var rows=list.length?list.map(function(x){
+      var mode=x.supportMode==='Zoom'?'💻 Zoom':x.supportMode==='حضوري'?'🏫 حضوري':(x.supportMode||'');
+      var typ=x.supportType==='فردية'?'👤 فردية':(x.supportType==='جماعية'||x.supportType==='عادية'?'👥 جماعية':(x.supportType||''));
+      var idj=JSON.stringify(String(x.id));
+      return '<div class="real-row"><div class="real-row-top"><div><strong>'+escV(x.title||'حصة مبرمجة')+'</strong><small>'+escV(x.date||'')+' • '+escV(x.time||'')+' • '+escV(x.level||'')+'</small><small>'+escV(mode)+' • '+escV(typ)+(x.studentName?' • 👤 '+escV(x.studentName):'')+'</small><small>'+(x.link?'🔗 '+escV(x.link):'بدون رابط')+'</small></div></div><div class="real-actions"><button type="button" onclick="window.v147OpenSchedule("'+idj+'")">🕐 فتح الحصة</button><button type="button" onclick="window.v147EditSchedule("'+idj+'")">✏️ تعديل</button><button type="button" class="real-danger" onclick="window.v147DeleteSchedule("'+idj+'")">🗑️ حذف</button></div></div>';
+    }).join(''):'<div class="real-empty">🗓️ لا توجد حصص مبرمجة.</div>';
+    show('🗓️ الحصص والرزنامة',realWrap('🗓️ الحصص والرزنامة','نفس الحصة مرتبطة بالرزنامة، «حصصي اليوم»، والتسجيل المرتبط بالحضور.','<div class="real-toolbar"><button type="button" class="btn" onclick="window.v147NewSchedule()">➕ إضافة حصة</button></div><div class="real-table">'+rows+'</div>'+back('adminDashboard')));
+  }
+  function newForm(){
+    var st=students();
+    var body='<div class="real-form">'+
+      inp('عنوان الحصة','v147Title','مثال: دعم السنة الثالثة متوسط')+
+      sel('المستوى','v147Level',levels().map(function(x){return {value:x,label:x}}),'')+
+      sel('طريقة الدعم','v147Mode',[{value:'Zoom',label:'💻 Zoom'},{value:'حضوري',label:'🏫 حضوري'}],'Zoom')+
+      sel('نوع الحصة','v147Type',[{value:'جماعية',label:'👥 جماعية'},{value:'فردية',label:'👤 فردية'}],'جماعية')+
+      sel('التلميذ (للحصة الفردية)','v147Student',[{value:'',label:'— اختياري للحصة الجماعية —'}].concat(st.map(function(x){return {value:x.id,label:x.name+' • '+x.level}})),'')+
+      inp('اسم المجموعة (اختياري)','v147Group','مثال: مجموعة الثالثة متوسط')+
+      inp('التاريخ','v147Date','','date')+
+      inp('الوقت','v147Time','19:00 - 20:00')+
+      inp('رابط Zoom (اختياري)','v147Link','https://...')+
+      '<div class="real-actions"><button type="button" class="btn" onclick="window.v147SaveSchedule()">💾 حفظ الحصة</button><button type="button" class="btn secondary" onclick="window.realSchedules()">← إلغاء</button></div></div>';
+    show('➕ إضافة حصة',realWrap('➕ حصة جديدة','أضيفي الحصة مرة واحدة، وستُستخدم نفسها في الرزنامة ولوحة اليوم والحضور.',body));
+  }
+  window.v147NewSchedule=newForm;
+  window.v147SaveSchedule=function(){
+    var type=val('v147Type'),sid=val('v147Student'),title=val('v147Title'),date=val('v147Date'),time=val('v147Time');
+    if(!title||!date||!time){alert('أدخلي عنوان الحصة والتاريخ والوقت.');return false;}
+    if(type==='فردية'&&!sid){alert('الحصة الفردية لازم تربطيها بتلميذ محدد.');return false;}
+    var st=sid?students().find(function(x){return String(x.id)===String(sid)}):null;
+    var a=R(DB.schedules);a.push({id:id('sch'),title:title,service:'دروس الدعم',level:val('v147Level'),date:date,time:time,supportMode:val('v147Mode'),supportType:type,studentId:sid,studentName:st?st.name:'',groupName:val('v147Group'),type:type==='فردية'?'دروس دعم فردية':'دروس دعم جماعية',link:val('v147Link')});
+    W(DB.schedules,a);renderList();return false;
+  };
+  window.v147OpenSchedule=function(idv){if(typeof window.openScheduleById==='function')window.openScheduleById(idv);else renderList()};
+  window.v147EditSchedule=function(idv){
+    var x=scheduleById(idv);if(!x){alert('الحصة غير موجودة.');return;}
+    var st=students();
+    var body='<div class="real-form">'+
+      inp('عنوان الحصة','v147eTitle','', 'text',x.title||'')+
+      sel('المستوى','v147eLevel',levels().map(function(z){return {value:z,label:z}}),x.level||'')+
+      sel('طريقة الدعم','v147eMode',[{value:'Zoom',label:'💻 Zoom'},{value:'حضوري',label:'🏫 حضوري'}],x.supportMode||'Zoom')+
+      sel('نوع الحصة','v147eType',[{value:'جماعية',label:'👥 جماعية'},{value:'فردية',label:'👤 فردية'}],x.supportType||'جماعية')+
+      sel('التلميذ (للحصة الفردية)','v147eStudent',[{value:'',label:'— اختياري للحصة الجماعية —'}].concat(st.map(function(z){return {value:z.id,label:z.name+' • '+z.level}})),x.studentId||'')+
+      inp('اسم المجموعة (اختياري)','v147eGroup','', 'text',x.groupName||'')+
+      inp('التاريخ','v147eDate','', 'date',x.date||'')+
+      inp('الوقت','v147eTime','19:00 - 20:00','text',x.time||'')+
+      inp('رابط Zoom (اختياري)','v147eLink','https://...','text',x.link||'')+
+      '<div class="real-actions"><button type="button" class="btn" onclick="window.v147SaveEditSchedule('+JSON.stringify(String(x.id))+')">💾 حفظ التعديل</button><button type="button" class="btn secondary" onclick="window.realSchedules()">← إلغاء</button></div></div>';
+    show('✏️ تعديل الحصة',realWrap('✏️ تعديل الحصة','نعدّل نفس الحصة، بدون إنشاء نسخة ثانية.',body));
+  };
+  window.v147SaveEditSchedule=function(idv){
+    var a=R(DB.schedules),i=a.findIndex(function(x){return String(x.id)===String(idv)});if(i<0){alert('الحصة غير موجودة.');return false;}
+    var type=val('v147eType'),sid=val('v147eStudent'),title=val('v147eTitle'),date=val('v147eDate'),time=val('v147eTime');
+    if(!title||!date||!time){alert('أدخلي عنوان الحصة والتاريخ والوقت.');return false;}
+    if(type==='فردية'&&!sid){alert('الحصة الفردية لازم تربطيها بتلميذ محدد.');return false;}
+    var st=sid?students().find(function(x){return String(x.id)===String(sid)}):null;
+    a[i]=Object.assign({},a[i],{title:title,level:val('v147eLevel'),supportMode:val('v147eMode'),supportType:type,studentId:sid,studentName:st?st.name:'',groupName:val('v147eGroup'),date:date,time:time,link:val('v147eLink'),type:type==='فردية'?'دروس دعم فردية':'دروس دعم جماعية'});
+    W(DB.schedules,a);renderList();return false;
+  };
+  window.v147DeleteSchedule=function(idv){if(!confirm('حذف هذه الحصة؟'))return;W(DB.schedules,R(DB.schedules).filter(function(x){return String(x.id)!==String(idv)}));renderList()};
+  window.realSchedules=renderList;
+  window.newSchedule=newForm;
+  window.saveSchedule=function(){return window.v147SaveSchedule()};
+  window.editSchedule=function(idv){return window.v147EditSchedule(idv)};
+  window.deleteSchedule=function(idv){return window.v147DeleteSchedule(idv)};
+})();
+</script>
 </body>
 </html>
