@@ -5808,6 +5808,59 @@ window.t20OpenHayaSpace=function(e){
   };
 })();
 </script>
+
+<!-- A120: direct binding for the legacy Haya dashboard schedule card -->
+<script id="t20-a120-schedule-card-direct-fix">
+(function(){
+  'use strict';
+  function openSchedules(e){
+    var b=e.target&&e.target.closest?e.target.closest('button'):null;
+    if(!b) return;
+    var txt=String(b.textContent||'').replace(/\s+/g,' ').trim();
+    if(txt.indexOf('الرزنامة والحصص')===-1) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if(typeof window.realSchedules==='function'){
+      try{ window.realSchedules(); }catch(err){
+        console.error('T20 A120 schedule card:',err);
+        alert('تعذر فتح الرزنامة والحصص. لم يتم تغيير أي بيانات.');
+      }
+    }else{
+      alert('وظيفة الرزنامة غير متاحة في هذه النسخة. لم يتم تغيير أي بيانات.');
+    }
+  }
+  window.addEventListener('click',openSchedules,true);
+})();
+</script>
+
+<script id="t20-a121-schedule-working-path">
+(function(){
+  'use strict';
+  function escT(v){return typeof escapeHtml==='function'?escapeHtml(String(v==null?'':v)):String(v==null?'':v).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\\"':'&quot;',"'":'&#39;'}[c]||c;});}
+  function localWrap(title,sub,body){
+    return '<div class="real-shell"><div class="real-head"><h3>'+escT(title)+'</h3><p>'+escT(sub)+'</p></div>'+body+'</div>';
+  }
+  function localBack(){
+    return '<button type="button" class="btn secondary real-back" onclick="adminDashboard();return false;">← العودة إلى فضاء الأستاذة حياة</button>';
+  }
+  function renderWorkingSchedules(){
+    var list=[];
+    try{ list=R(DB.schedules); }catch(err){ list=[]; console.error('T20 A121 schedule data read:',err); }
+    if(!Array.isArray(list)) list=[];
+    list=list.slice().sort(function(a,b){
+      return String(a.date||'').localeCompare(String(b.date||'')) || String(a.time||'').localeCompare(String(b.time||''));
+    });
+    var rows=list.length?list.map(function(x){
+      var mode=x.supportMode==='Zoom'?'💻 Zoom':x.supportMode==='حضوري'?'🏫 حضوري':(x.supportMode||'');
+      var typ=x.supportType==='فردية'?'👤 فردية':(x.supportType==='جماعية'||x.supportType==='عادية'?'👥 جماعية':(x.supportType||''));
+      var id=String(x.id||'');
+      return '<div class="real-row"><div class="real-row-top"><div><strong>'+escT(x.title||'حصة مبرمجة')+'</strong><small>'+escT(x.date||'')+' • '+escT(x.time||'')+' • '+escT(x.level||'')+'</small><small>'+escT(mode)+' • '+escT(typ)+(x.studentName?' • 👤 '+escT(x.studentName):'')+'</small><small>'+(x.link?'🔗 '+escT(x.link):'بدون رابط')+'</small></div></div><div class="real-actions"><button type="button" onclick="window.v147OpenSchedule && window.v147OpenSchedule('+JSON.stringify(id)+')">🕐 فتح الحصة</button><button type="button" onclick="window.v147EditSchedule && window.v147EditSchedule('+JSON.stringify(id)+')">✏️ تعديل</button><button type="button" class="real-danger" onclick="window.v147DeleteSchedule && window.v147DeleteSchedule('+JSON.stringify(id)+')">🗑️ حذف</button></div></div>';
+    }).join(''):'<div class="real-empty">🗓️ لا توجد حصص مبرمجة.</div>';
+    show('🗓️ الحصص والرزنامة',localWrap('🗓️ الحصص والرزنامة','نفس بيانات الحصص الموجودة — دون إنشاء بيانات جديدة.','<div class="real-toolbar"><button type="button" class="btn" onclick="window.v147NewSchedule && window.v147NewSchedule()">➕ إضافة حصة</button></div><div class="real-table">'+rows+'</div>'+localBack()));
+  }
+  window.realSchedules=renderWorkingSchedules;
+})();
+</script>
 </body>
 <script id="v129-registration-approval-actions">
 (function(){
