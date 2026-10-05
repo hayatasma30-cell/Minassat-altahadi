@@ -4463,7 +4463,24 @@ if(!window.__t20StudentLegacyContentClickBound){
 
 <script id="t20-v12-admin-redesign">
 (function(){
-  window.adminDashboard=function(){
+  window.t20AdminHasSavedSession=async function(){
+ try{
+  if(typeof window.t20SupabaseReady!=='function'||typeof window.t20GetSupabaseClient!=='function')return false;
+  await window.t20SupabaseReady();
+  var c=window.t20GetSupabaseClient(); if(!c||!c.auth)return false;
+  var s=await c.auth.getSession();
+  var user=s.data&&s.data.session&&s.data.session.user;
+  var box=document.getElementById('t20AdminQuickEntry');
+  if(user){
+    if(box)box.style.display='block';
+    return true;
+  }
+  if(box)box.style.display='none';
+ }catch(e){console.warn('T20 A117 saved session check:',e);}
+ return false;
+};
+
+window.adminDashboard=function(){
     var cards=[
       ['👥','التلاميذ','إضافة، تعديل، متابعة ملفات التلاميذ','realStudents'],
       ['👨‍👩‍👧','الأولياء','حسابات الأولياء وربط الأبناء','realParents'],
@@ -4601,7 +4618,7 @@ autoSafetySnapshot();
     if(!window.supabase || typeof window.supabase.createClient !== 'function') return null;
 
     window.__t20SupabaseClient =
-      window.supabase.createClient(c.url, c.publishableKey, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+      window.supabase.createClient(c.url, c.publishableKey, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storage:window.localStorage}});
 
     return window.__t20SupabaseClient;
   };
@@ -5679,7 +5696,8 @@ function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'
 function loginView(message){
  var savedEmail=String(localStorage.getItem('t20_admin_saved_email')||'').trim();
  var msg=message?'<div style="margin:10px 0;padding:10px 12px;border-radius:12px;background:#fff3f3;border:1px solid #efcaca;color:#9b3d3d;line-height:1.7">'+esc(message)+'</div>':'';
- show('🔐 دخول آمن — فضاء الأستاذة حياة','<div class="form-stack"><div style="text-align:center;padding:4px 4px 10px"><div style="font-size:48px">🌿</div><h3 style="color:var(--deep);margin:6px 0">فضاء الأستاذة حياة</h3><p style="color:var(--muted);line-height:1.8;margin:0">هذا الدخول مخصص للحساب الإداري المعتمد فقط.</p></div>'+msg+'<label for="t20AdminEmail">البريد الإلكتروني</label><input id="t20AdminEmail" class="field" type="email" autocomplete="username" placeholder="البريد الإلكتروني" value="'+esc(savedEmail)+'" '+(savedEmail?'readonly':'')+'>'+'<label for="t20AdminPassword">كلمة المرور</label><input id="t20AdminPassword" class="field" type="password" autocomplete="current-password" placeholder="كلمة المرور"><button id="t20AdminLoginBtn" class="btn" type="button" style="width:100%;margin-top:10px" onclick="t20AdminSignIn()">🔐 دخول</button><button id="t20SupabaseSetupLoginBtn" class="btn secondary" type="button" style="width:100%;margin-top:9px" onclick="window.t20OpenSupabaseSetup()">🔗 إعداد اتصال Supabase</button><button class="btn secondary" type="button" style="width:100%;margin-top:9px" onclick="closeM()">← رجوع</button><div id="t20AdminLoginStatus" style="text-align:center;color:#71817b;font-size:12px;margin-top:10px;line-height:1.7"></div></div>',true);
+ show('🔐 دخول آمن — فضاء الأستاذة حياة','<div class="form-stack"><div style="text-align:center;padding:4px 4px 10px"><div style="font-size:48px">🌿</div><h3 style="color:var(--deep);margin:6px 0">فضاء الأستاذة حياة</h3><p style="color:var(--muted);line-height:1.8;margin:0">هذا الدخول مخصص للحساب الإداري المعتمد فقط.</p></div>'+msg+'<div id="t20AdminQuickEntry" style="display:none;margin:8px 0 12px;padding:12px;border-radius:14px;background:#eef9f4;border:1px solid #cfe8dc"><div style="font-weight:800;color:var(--deep);margin-bottom:6px">🔓 جلسة دخول محفوظة</div><div style="color:#63766f;font-size:13px;line-height:1.7;margin-bottom:8px">يمكنك العودة إلى فضاء الأستاذة حياة مباشرة دون كتابة كلمة المرور.</div><button id="t20AdminQuickEntryBtn" class="btn" type="button" style="width:100%" onclick="t20AdminOpenSecureSpace(true)">🌿 الدخول مباشرة إلى فضاء الأستاذة حياة</button></div><label for="t20AdminEmail">البريد الإلكتروني</label><input id="t20AdminEmail" class="field" type="email" autocomplete="username" placeholder="البريد الإلكتروني" value="'+esc(savedEmail)+'" '+(savedEmail?'readonly':'')+'>'+'<label for="t20AdminPassword">كلمة المرور</label><input id="t20AdminPassword" class="field" type="password" autocomplete="current-password" placeholder="كلمة المرور"><button id="t20AdminLoginBtn" class="btn" type="button" style="width:100%;margin-top:10px" onclick="t20AdminSignIn()">🔐 دخول</button><button id="t20SupabaseSetupLoginBtn" class="btn secondary" type="button" style="width:100%;margin-top:9px" onclick="window.t20OpenSupabaseSetup()">🔗 إعداد اتصال Supabase</button><button class="btn secondary" type="button" style="width:100%;margin-top:9px" onclick="closeM()">← العودة</button><div id="t20AdminLoginStatus" style="text-align:center;color:#71817b;font-size:12px;margin-top:10px;line-height:1.7"></div></div>',true);
+ setTimeout(function(){ if(typeof window.t20AdminHasSavedSession==='function') window.t20AdminHasSavedSession(); },0);
 }
 window.t20AdminSignIn=async function(){
  var emailEl=document.getElementById('t20AdminEmail'),passEl=document.getElementById('t20AdminPassword'),btn=document.getElementById('t20AdminLoginBtn'),status=document.getElementById('t20AdminLoginStatus');
@@ -5708,7 +5726,7 @@ window.t20AdminSignOut=async function(){
  try{var c=typeof window.t20GetSupabaseClient==='function'?window.t20GetSupabaseClient():null;if(c)await c.auth.signOut();}catch(e){console.warn('T20 admin signout:',e);}
  sessionStorage.removeItem('t20_admin_authenticated');sessionStorage.removeItem('t20_admin_user_id');sessionStorage.removeItem('t20_admin_email');closeM();
 };
-window.t20AdminOpenSecureSpace=async function(){
+window.t20AdminOpenSecureSpace=async function(fromQuickEntry){
  try{
   if(typeof window.t20SupabaseReady!=='function'||typeof window.t20GetSupabaseClient!=='function'){loginView('خدمة Supabase غير جاهزة.');return;}
   await window.t20SupabaseReady();var c=window.t20GetSupabaseClient();if(!c){loginView('مفتاح Supabase Publishable غير مضبوط على هذا الجهاز.');return;}
@@ -5805,6 +5823,18 @@ window.t20OpenHayaSpace=function(e){
   window.t20AdminSignIn = async function(){
     await clearLocalAuthSession();
     return previousSignIn.apply(this, arguments);
+  };
+})();
+</script>
+
+<!-- T20 A117 — تثبيت جلسة Supabase محليًا وإضافة إعادة دخول سريعة إلى فضاء الأستاذة حياة -->
+<script id="t20-a117-admin-quick-reentry">
+(function(){
+  'use strict';
+  var oldOpen=window.t20AdminOpenSecureSpace;
+  if(typeof oldOpen!=='function') return;
+  window.t20AdminOpenSecureSpace=async function(fromQuickEntry){
+    return oldOpen.apply(this, arguments);
   };
 })();
 </script>
