@@ -4549,7 +4549,8 @@ autoSafetySnapshot();
 
   window.T20_SUPABASE_CONFIG = window.T20_SUPABASE_CONFIG || {
     url: 'https://bcqysqdxkidqrvzuwtzt.supabase.co',
-    publishableKey: localStorage.getItem('t20_supabase_publishable_key') || ''
+    publishableKey: 'ضعي_مفتاح_Publishable_هنا', // لا تضعي Secret key
+    localBackupKey: localStorage.getItem('t20_supabase_publishable_key') || ''
   };
 
   var loading = null;
@@ -4579,7 +4580,7 @@ autoSafetySnapshot();
 
   window.t20SupabaseIsConfigured = function(){
     var c = window.T20_SUPABASE_CONFIG || {};
-    return !!(c.url && c.publishableKey);
+    return !!(c.url && c.publishableKey && c.publishableKey !== 'ضعي_مفتاح_Publishable_هنا');
   };
 
   window.t20ConfigureSupabase = function(key){
