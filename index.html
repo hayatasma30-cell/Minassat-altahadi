@@ -4549,8 +4549,7 @@ autoSafetySnapshot();
 
   window.T20_SUPABASE_CONFIG = window.T20_SUPABASE_CONFIG || {
     url: 'https://bcqysqdxkidqrvzuwtzt.supabase.co',
-    publishableKey: 'ضعي_مفتاح_Publishable_هنا', // لا تضعي Secret key
-    localBackupKey: localStorage.getItem('t20_supabase_publishable_key') || ''
+    publishableKey: localStorage.getItem('t20_supabase_publishable_key') || ''
   };
 
   var loading = null;
@@ -4580,7 +4579,7 @@ autoSafetySnapshot();
 
   window.t20SupabaseIsConfigured = function(){
     var c = window.T20_SUPABASE_CONFIG || {};
-    return !!(c.url && c.publishableKey && c.publishableKey !== 'ضعي_مفتاح_Publishable_هنا');
+    return !!(c.url && c.publishableKey);
   };
 
   window.t20ConfigureSupabase = function(key){
@@ -5770,6 +5769,46 @@ window.t20OpenHayaSpace=function(e){
   };
 })();
 </script>
+
+<!-- T20 A116 — تنظيف جلسة Supabase المحلية القديمة قبل تسجيل دخول الأستاذة حياة -->
+<script id="t20-a116-admin-auth-session-reset">
+(function(){
+  'use strict';
+
+  /*
+   * A116: إصلاح مشكلة إعادة الدخول عندما تكون جلسة Supabase المحلية
+   * القديمة/الفاسدة سببًا في إرسال ترويسة غير صالحة للمتصفح.
+   * لا نحذف أي بيانات تلاميذ أو أولياء أو محتوى؛ نعالج جلسة Auth فقط.
+   */
+  var previousSignIn = window.t20AdminSignIn;
+  if(typeof previousSignIn !== 'function') return;
+
+  async function clearLocalAuthSession(){
+    try{
+      if(typeof window.t20SupabaseReady !== 'function' || typeof window.t20GetSupabaseClient !== 'function') return;
+      await window.t20SupabaseReady();
+      var client = window.t20GetSupabaseClient();
+      if(!client || !client.auth) return;
+
+      /* local يمسح جلسة هذا المتصفح فقط، ولا يلغي جلسات الأجهزة الأخرى. */
+      try{
+        await client.auth.signOut({scope:'local'});
+      }catch(e){
+        /* إذا كانت الجلسة القديمة تالفة، لا نمنع محاولة الدخول الجديدة. */
+        console.warn('T20 A116 local auth cleanup:', e);
+      }
+    }catch(e){
+      console.warn('T20 A116 auth preparation:', e);
+    }
+  }
+
+  window.t20AdminSignIn = async function(){
+    await clearLocalAuthSession();
+    return previousSignIn.apply(this, arguments);
+  };
+})();
+</script>
+
 </body>
 <script id="v129-registration-approval-actions">
 (function(){
